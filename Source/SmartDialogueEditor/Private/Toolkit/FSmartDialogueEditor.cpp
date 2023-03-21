@@ -119,11 +119,11 @@ void FSmartDialogueEditor::RegisterTabSpawners(const TSharedRef<FTabManager>& In
 		.SetGroup(WorkspaceMenuCategory.ToSharedRef());
 
 	InTabManager->RegisterTabSpawner(SmartDialogue_SelectedBranchPropertiesTabId, FOnSpawnTab::CreateSP(this, &FSmartDialogueEditor::SpawnTab_SelectedBranchProperties))
-		.SetDisplayName(FText::FromString("Selected Branch Properties"))
+		.SetDisplayName(FText::FromString("Properties"))
 		.SetGroup(WorkspaceMenuCategory.ToSharedRef());
 
 	InTabManager->RegisterTabSpawner(SmartDialogue_SelectedBranchPhrasesTabId, FOnSpawnTab::CreateSP(this, &FSmartDialogueEditor::SpawnTab_SelectedBranchPhrases))
-		.SetDisplayName(FText::FromString("Selected Branch Phrases"))
+		.SetDisplayName(FText::FromString("Phrases"))
 		.SetGroup(WorkspaceMenuCategory.ToSharedRef());
 }
 
@@ -152,7 +152,7 @@ TSharedRef<SDockTab> FSmartDialogueEditor::SpawnTab_SelectedBranchProperties(con
 	check(Args.GetTabId() == SmartDialogue_SelectedBranchPropertiesTabId);
 
 	return SNew(SDockTab) 
-		.Label(FText::FromString("Selected Branch Properties"))
+		.Label(FText::FromString("Properties"))
 		[
 			CreateSelectedBranchPropertiesWidget()
 		];
@@ -163,7 +163,7 @@ TSharedRef<SDockTab> FSmartDialogueEditor::SpawnTab_SelectedBranchPhrases(const 
 	check(Args.GetTabId() == SmartDialogue_SelectedBranchPhrasesTabId);
 
 	return SNew(SDockTab)
-		.Label(FText::FromString("Selected Branch Phrases"))
+		.Label(FText::FromString("Phrases"))
 		[
 			CreateSelectedBranchPhrasesWidget()
 		];
