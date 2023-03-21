@@ -13,20 +13,15 @@ public class SmartDialogueEditor : ModuleRules
             }
         );
 
-        PrivateDependencyModuleNames.AddRange(
-            new string[]
-            {
-                "SmartDialogueCore",
-                "CoreUObject", 
-                "Engine", 
-                "InputCore", 
-                "UnrealEd", 
-                "Slate", 
-                "SlateCore", 
-                "AssetTools", 
-                "ContentBrowser", 
-                "WorkspaceMenuStructure",
-            }
-        );
+        PrivateDependencyModuleNames.AddRange(new string[]
+        {
+            "Core", 
+            "CoreUObject", 
+            "Engine", 
+            "InputCore", 
+            "UnrealEd", 
+            "SmartDialogueCore"
+        });
+
     }
 }
