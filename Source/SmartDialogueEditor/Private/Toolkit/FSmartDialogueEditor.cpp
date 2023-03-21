@@ -2,6 +2,8 @@
 
 
 #include "FSmartDialogueEditor.h"
+
+#include "FSmartDialogueEditorCommands.h"
 #include "Widgets/Docking/SDockTab.h"
 #include "SmartDialogue.h"
 #include "SBranchInfoWidget.h"
@@ -17,7 +19,18 @@ void FSmartDialogueEditor::InitSmartDialogueEditor(EToolkitMode::Type Mode, cons
 {
 	SetDialogue(SmartDialogue);
 
+	FSmartDialogueEditorCommands::Register();
+	ToolkitCommands = MakeShareable(new FUICommandList);
+
+	BindCommands();
+
 	InitAssetEditor(Mode, InitToolkitHost, GetToolkitFName(), GetDefaultTabContents(), /*bCreateDefaultStandaloneMenu=*/ true, /*bCreateDefaultToolbar=*/ true, SmartDialogue);
+
+
+	TSharedPtr<FExtender> ToolbarExtender = GetToolbarExtender();
+	FAssetEditorToolkit::AddToolbarExtender(ToolbarExtender);
+
+	RegenerateMenusAndToolbars();
 }
 
 void FSmartDialogueEditor::SetDialogue(USmartDialogue* InDialogue)
@@ -35,6 +48,38 @@ void FSmartDialogueEditor::SetDialogue(USmartDialogue* InDialogue)
 				.Editor(SharedThis(this)));
 		}
 	}
+}
+
+void FSmartDialogueEditor::BindCommands()
+{
+	ToolkitCommands->MapAction(
+		FSmartDialogueEditorCommands::Get().AddNewBranch,
+		FExecuteAction::CreateSP(this, &FSmartDialogueEditor::AddNewBranch),
+		FCanExecuteAction());
+}
+
+TSharedPtr<FExtender> FSmartDialogueEditor::GetToolbarBuilder()
+{
+	FToolBarBuilder ToolbarBuilder(ToolkitCommands, FMultiBoxCustomization::None);
+	ToolbarBuilder.AddToolBarButton(FSmartDialogueEditorCommands::Get().AddNewBranch, NAME_None, FText::GetEmpty(), TAttribute<FText>(), FSlateIcon(FEditorStyle::GetStyleSetName(), "Icons.Plus"));
+
+	return MakeShareable(new FExtender());
+}
+
+TSharedPtr<FExtender> FSmartDialogueEditor::GetToolbarExtender()
+{
+	TSharedPtr<FExtender> Extender = MakeShared<FExtender>();
+	Extender->AddToolBarExtension(
+		"Asset",
+		EExtensionHook::After,
+		ToolkitCommands,
+		FToolBarExtensionDelegate::CreateLambda([this](FToolBarBuilder& ToolbarBuilder)
+		{
+			ToolbarBuilder.AddToolBarButton(FSmartDialogueEditorCommands::Get().AddNewBranch, NAME_None, FText::GetEmpty(), TAttribute<FText>(), FSlateIcon(FEditorStyle::GetStyleSetName(), "Icons.Plus"));
+		})
+	);
+
+	return Extender;
 }
 
 FName FSmartDialogueEditor::GetToolkitFName() const
