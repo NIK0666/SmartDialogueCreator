@@ -19,6 +19,7 @@ public class SmartDialogueEditor : ModuleRules
             "CoreUObject", 
             "Engine", 
             "Slate", 
+            "SlateCore",
             "InputCore", 
             "UnrealEd", 
             "AssetTools",

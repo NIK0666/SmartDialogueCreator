@@ -182,6 +182,8 @@ TSharedRef<SWidget> FSmartDialogueEditor::CreateBranchesListWidget()
 	// Создайте виджет на основе SListView или другого подходящего виджета для представления списка веток.
 	// Здесь вы также можете настроить отображение элементов списка и обработчики событий.
 	// ...
+	return SNullWidget::NullWidget;
+
 }
 
 TSharedRef<SWidget> FSmartDialogueEditor::CreateSelectedBranchPropertiesWidget()
@@ -189,6 +191,8 @@ TSharedRef<SWidget> FSmartDialogueEditor::CreateSelectedBranchPropertiesWidget()
 	// Создайте виджет на основе SDetailsView или другого подходящего виджета для представления свойств выбранной ветки.
 	// Здесь вы также можете настроить отображение и редактирование свойств.
 	// ...
+	return SNullWidget::NullWidget;
+
 }
 
 TSharedRef<SWidget> FSmartDialogueEditor::CreateSelectedBranchPhrasesWidget()
@@ -196,6 +200,8 @@ TSharedRef<SWidget> FSmartDialogueEditor::CreateSelectedBranchPhrasesWidget()
 	// Создайте виджет на основе SListView или другого подходящего виджета для представления фраз выбранной ветки диалога.
 	// Здесь вы также можете настроить отображение элементов списка и обработчики событий.
 	// ...
+	return SNullWidget::NullWidget;
+
 }
 
 #undef LOCTEXT_NAMESPACE
