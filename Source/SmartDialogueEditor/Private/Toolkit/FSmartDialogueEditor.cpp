@@ -54,4 +54,61 @@ FLinearColor FSmartDialogueEditor::GetWorldCentricTabColorScale() const
 	return FLinearColor::White;
 }
 
+TSharedRef<SDockTab> FSmartDialogueEditor::HandleTabManagerSpawnTabDialogueBranches(const FSpawnTabArgs& Args)
+{
+    check(Args.GetTabId().TabType == DialogueBranchesTabId);
+
+    // TODO: Create the DialogueBranchesList widget here
+    return SNew(SDockTab)
+        .TabRole(ETabRole::PanelTab)
+        [
+            SNew(SVerticalBox)
+            // Add your DialogueBranchesList widget here
+        ];
+}
+
+TSharedRef<SDockTab> FSmartDialogueEditor::HandleTabManagerSpawnTabDialogueBranchDetails(const FSpawnTabArgs& Args)
+{
+    check(Args.GetTabId().TabType == DialogueBranchDetailsTabId);
+
+    FDetailsViewArgs DetailsViewArgs;
+    DetailsViewArgs.bAllowSearch = true;
+    DetailsViewArgs.bHideSelectionTip = true;
+    DetailsViewArgs.bLockable = false;
+    DetailsViewArgs.bShowOptions = true;
+    DetailsViewArgs.bShowModifiedPropertiesOption = false;
+    DetailsViewArgs.bUpdatesFromSelection = false;
+    DetailsViewArgs.NotifyHook = this;
+
+    DialogueBranchDetailsView = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor").CreateDetailView(DetailsViewArgs);
+
+    return SNew(SDockTab)
+        .TabRole(ETabRole::PanelTab)
+        [
+            DialogueBranchDetailsView.ToSharedRef()
+        ];
+}
+
+TSharedRef<SDockTab> FSmartDialogueEditor::HandleTabManagerSpawnTabDialoguePhrasesDetails(const FSpawnTabArgs& Args)
+{
+    check(Args.GetTabId().TabType == DialoguePhrasesDetailsTabId);
+
+    FDetailsViewArgs DetailsViewArgs;
+    DetailsViewArgs.bAllowSearch = true;
+    DetailsViewArgs.bHideSelectionTip = true;
+    DetailsViewArgs.bLockable = false;
+    DetailsViewArgs.bShowOptions = true;
+    DetailsViewArgs.bShowModifiedPropertiesOption = false;
+    DetailsViewArgs.bUpdatesFromSelection = false;
+    DetailsViewArgs.NotifyHook = this;
+
+    DialoguePhrasesDetailsView = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor").CreateDetailView(DetailsViewArgs);
+
+    return SNew(SDockTab)
+        .TabRole(ETabRole::PanelTab)
+        [
+            DialoguePhrasesDetailsView.ToSharedRef()
+        ];
+}
+
 #undef LOCTEXT_NAMESPACE
