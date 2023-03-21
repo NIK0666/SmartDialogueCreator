@@ -1,6 +1,8 @@
 // SmartDialogueActions.h
 #pragma once
 
+#include "CoreMinimal.h"
+#include "Toolkits/AssetEditorToolkit.h"
 #include "AssetTypeActions_Base.h"
 
 class FSmartDialogueActions : public FAssetTypeActions_Base
