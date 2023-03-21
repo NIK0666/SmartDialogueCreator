@@ -2,29 +2,40 @@
 
 #include "AssetToolsModule.h"
 #include "IAssetTools.h"
-#include "SmartDialogueActions.h"
+#include "AssetTypeActions_SmartDialogue.h"
 
 #define LOCTEXT_NAMESPACE "SmartDialogueEditor"
 
 void FSmartDialogueEditorModule::StartupModule()
 {
+	UE_LOG(LogTemp, Log, TEXT("Load Module: SmartDialogueEditor"));
+
+	// Register asset types
 	IAssetTools& AssetTools = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools").Get();
 
-	// Регистрируем категорию Smart Dialogue
-	EAssetTypeCategories::Type SmartDialogueCategoryBit = AssetTools.RegisterAdvancedAssetCategory(FName(TEXT("Smart Dialogue")), FText::FromString(TEXT("Smart Dialogue")));
+	SmartDialogueCategoryBit = AssetTools.RegisterAdvancedAssetCategory(FName(TEXT("SmartDialogueAsset")), LOCTEXT("SmartDialogueAssetCategory", "SmartDialogue"));
 
-	// Регистрируем тип ассета
-	TSharedPtr<IAssetTypeActions> SmartDialogueAssetType = MakeShareable(new FSmartDialogueActions(SmartDialogueCategoryBit));
-	AssetTools.RegisterAssetTypeActions(SmartDialogueAssetType.ToSharedRef());
+	TSharedRef<IAssetTypeActions> Action = MakeShareable(new FAssetTypeActions_SmartDialogue(SmartDialogueCategoryBit));
+	AssetTools.RegisterAssetTypeActions(Action);
+	RegisteredAssetTypeActions.Add(Action);
 }
 
 void FSmartDialogueEditorModule::ShutdownModule()
 {
-	for (auto& Actions : RegisteredAssetTypeActions)
+	UE_LOG(LogTemp, Log, TEXT("Unload Module: CustomAssetEditor"));
+
+	// Unregister all the asset types that we registered
+	if (FModuleManager::Get().IsModuleLoaded("AssetTools"))
 	{
-		FModuleManager::GetModuleChecked<FAssetToolsModule>("AssetTools").Get().UnregisterAssetTypeActions(Actions.ToSharedRef());
+		IAssetTools& AssetTools = FModuleManager::GetModuleChecked<FAssetToolsModule>("AssetTools").Get();
+		for (int32 Index = 0; Index < RegisteredAssetTypeActions.Num(); ++Index)
+		{
+			AssetTools.UnregisterAssetTypeActions(RegisteredAssetTypeActions[Index].ToSharedRef());
+		}
 	}
 	RegisteredAssetTypeActions.Empty();
 }
 
 IMPLEMENT_PRIMARY_GAME_MODULE(FSmartDialogueEditorModule, SmartDialogueEditor, "SmartDialogueEditor");
+
+#undef LOCTEXT_NAMESPACE

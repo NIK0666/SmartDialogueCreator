@@ -7,6 +7,20 @@
 
 #define LOCTEXT_NAMESPACE "SmartDialogueEditor"
 
+
+void FSmartDialogueEditor::InitSmartDialogueEditor(EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, USmartDialogue* SmartDialogue)
+{
+	TSharedRef<FTabManager::FLayout> StandaloneDefaultLayout = FTabManager::NewLayout("Standalone_SmartDialogueEditor_Layout")
+	->AddArea
+		(
+			FTabManager::NewPrimaryArea()
+			->SetOrientation(Orient_Vertical)
+		);
+
+	InitAssetEditor(Mode, InitToolkitHost, GetToolkitFName(), StandaloneDefaultLayout, /*bCreateDefaultStandaloneMenu=*/ true, /*bCreateDefaultToolbar=*/ true, SmartDialogue);
+
+}
+
 FName FSmartDialogueEditor::GetToolkitFName() const
 {
 	return FName("SmartDialogueEditor");

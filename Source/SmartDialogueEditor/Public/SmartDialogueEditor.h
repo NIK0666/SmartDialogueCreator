@@ -1,8 +1,10 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "AssetTypeCategories.h"
 #include "Modules/ModuleManager.h"
 
+class IAssetTypeActions;
 class FAssetTypeActions_Base;
 
 class FSmartDialogueEditorModule : public IModuleInterface
@@ -12,5 +14,6 @@ public:
     virtual void ShutdownModule() override;
     
 private:    
-    TArray<TSharedPtr<FAssetTypeActions_Base>> RegisteredAssetTypeActions;
+    TArray< TSharedPtr<IAssetTypeActions>> RegisteredAssetTypeActions;
+    EAssetTypeCategories::Type SmartDialogueCategoryBit;
 };
