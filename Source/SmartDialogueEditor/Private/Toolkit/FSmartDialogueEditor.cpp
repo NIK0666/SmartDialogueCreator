@@ -2,10 +2,15 @@
 
 
 #include "FSmartDialogueEditor.h"
-
+#include "Widgets/Docking/SDockTab.h"
 #include "SmartDialogue.h"
+#include "PropertyEditor/Private/SDetailsView.h"
 
 #define LOCTEXT_NAMESPACE "SmartDialogueEditor"
+
+static const FName SmartDialogue_BranchesListTabId(TEXT("SmartDialogue_BranchesListTab"));
+static const FName SmartDialogue_SelectedBranchPropertiesTabId(TEXT("SmartDialogue_SelectedBranchPropertiesTab"));
+static const FName SmartDialogue_SelectedBranchPhrasesTabId(TEXT("SmartDialogue_SelectedBranchPhrasesTab"));
 
 
 void FSmartDialogueEditor::InitSmartDialogueEditor(EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, USmartDialogue* SmartDialogue)
@@ -56,7 +61,7 @@ FLinearColor FSmartDialogueEditor::GetWorldCentricTabColorScale() const
 
 TSharedRef<SDockTab> FSmartDialogueEditor::HandleTabManagerSpawnTabDialogueBranches(const FSpawnTabArgs& Args)
 {
-    check(Args.GetTabId().TabType == DialogueBranchesTabId);
+    check(Args.GetTabId().TabType == SmartDialogue_BranchesListTabId);
 
     // TODO: Create the DialogueBranchesList widget here
     return SNew(SDockTab)
@@ -69,7 +74,7 @@ TSharedRef<SDockTab> FSmartDialogueEditor::HandleTabManagerSpawnTabDialogueBranc
 
 TSharedRef<SDockTab> FSmartDialogueEditor::HandleTabManagerSpawnTabDialogueBranchDetails(const FSpawnTabArgs& Args)
 {
-    check(Args.GetTabId().TabType == DialogueBranchDetailsTabId);
+    check(Args.GetTabId().TabType == SmartDialogue_SelectedBranchPropertiesTabId);
 
     FDetailsViewArgs DetailsViewArgs;
     DetailsViewArgs.bAllowSearch = true;
@@ -91,7 +96,7 @@ TSharedRef<SDockTab> FSmartDialogueEditor::HandleTabManagerSpawnTabDialogueBranc
 
 TSharedRef<SDockTab> FSmartDialogueEditor::HandleTabManagerSpawnTabDialoguePhrasesDetails(const FSpawnTabArgs& Args)
 {
-    check(Args.GetTabId().TabType == DialoguePhrasesDetailsTabId);
+    check(Args.GetTabId().TabType == SmartDialogue_SelectedBranchPhrasesTabId);
 
     FDetailsViewArgs DetailsViewArgs;
     DetailsViewArgs.bAllowSearch = true;
@@ -109,6 +114,88 @@ TSharedRef<SDockTab> FSmartDialogueEditor::HandleTabManagerSpawnTabDialoguePhras
         [
             DialoguePhrasesDetailsView.ToSharedRef()
         ];
+}
+
+void FSmartDialogueEditor::RegisterTabSpawners(const TSharedRef<FTabManager>& InTabManager)
+{
+	WorkspaceMenuCategory = TabManager->AddLocalWorkspaceMenuCategory(FText::FromString("Smart Dialogue Editor"));
+
+	FAssetEditorToolkit::RegisterTabSpawners(InTabManager);
+
+	InTabManager->RegisterTabSpawner(SmartDialogue_BranchesListTabId, FOnSpawnTab::CreateSP(this, &FSmartDialogueEditor::SpawnTab_BranchesList))
+		.SetDisplayName(FText::FromString("Branches List"))
+		.SetGroup(WorkspaceMenuCategory.ToSharedRef());
+
+	InTabManager->RegisterTabSpawner(SmartDialogue_SelectedBranchPropertiesTabId, FOnSpawnTab::CreateSP(this, &FSmartDialogueEditor::SpawnTab_SelectedBranchProperties))
+		.SetDisplayName(FText::FromString("Selected Branch Properties"))
+		.SetGroup(WorkspaceMenuCategory.ToSharedRef());
+
+	InTabManager->RegisterTabSpawner(SmartDialogue_SelectedBranchPhrasesTabId, FOnSpawnTab::CreateSP(this, &FSmartDialogueEditor::SpawnTab_SelectedBranchPhrases))
+		.SetDisplayName(FText::FromString("Selected Branch Phrases"))
+		.SetGroup(WorkspaceMenuCategory.ToSharedRef());
+}
+
+void FSmartDialogueEditor::UnregisterTabSpawners(const TSharedRef<FTabManager>& InTabManager)
+{
+	FAssetEditorToolkit::UnregisterTabSpawners(InTabManager);
+
+	InTabManager->UnregisterTabSpawner(SmartDialogue_BranchesListTabId);
+	InTabManager->UnregisterTabSpawner(SmartDialogue_SelectedBranchPropertiesTabId);
+	InTabManager->UnregisterTabSpawner(SmartDialogue_SelectedBranchPhrasesTabId);
+}
+
+TSharedRef<SDockTab> FSmartDialogueEditor::SpawnTab_BranchesList(const FSpawnTabArgs& Args)
+{
+	check(Args.GetTabId() == SmartDialogue_BranchesListTabId);
+
+	return SNew(SDockTab)
+		.Label(FText::FromString("Branches List"))
+		[
+			CreateBranchesListWidget()
+		];
+}
+
+TSharedRef<SDockTab> FSmartDialogueEditor::SpawnTab_SelectedBranchProperties(const FSpawnTabArgs& Args)
+{
+	check(Args.GetTabId() == SmartDialogue_SelectedBranchPropertiesTabId);
+
+	return SNew(SDockTab)
+		.Label(FText::FromString("Selected Branch Properties"))
+		[
+			CreateSelectedBranchPropertiesWidget()
+		];
+}
+
+TSharedRef<SDockTab> FSmartDialogueEditor::SpawnTab_SelectedBranchPhrases(const FSpawnTabArgs& Args)
+{
+	check(Args.GetTabId() == SmartDialogue_SelectedBranchPhrasesTabId);
+
+	return SNew(SDockTab)
+		.Label(FText::FromString("Selected Branch Phrases"))
+		[
+			CreateSelectedBranchPhrasesWidget()
+		];
+}
+
+TSharedRef<SWidget> FSmartDialogueEditor::CreateBranchesListWidget()
+{
+	// Создайте виджет на основе SListView или другого подходящего виджета для представления списка веток.
+	// Здесь вы также можете настроить отображение элементов списка и обработчики событий.
+	// ...
+}
+
+TSharedRef<SWidget> FSmartDialogueEditor::CreateSelectedBranchPropertiesWidget()
+{
+	// Создайте виджет на основе SDetailsView или другого подходящего виджета для представления свойств выбранной ветки.
+	// Здесь вы также можете настроить отображение и редактирование свойств.
+	// ...
+}
+
+TSharedRef<SWidget> FSmartDialogueEditor::CreateSelectedBranchPhrasesWidget()
+{
+	// Создайте виджет на основе SListView или другого подходящего виджета для представления фраз выбранной ветки диалога.
+	// Здесь вы также можете настроить отображение элементов списка и обработчики событий.
+	// ...
 }
 
 #undef LOCTEXT_NAMESPACE

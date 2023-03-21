@@ -8,7 +8,7 @@
 
 class USmartDialogue;
 
-class SMARTDIALOGUEEDITOR_API FSmartDialogueEditor final : public FAssetEditorToolkit
+class SMARTDIALOGUEEDITOR_API FSmartDialogueEditor final : public FAssetEditorToolkit, public FNotifyHook
 {
 public:
 	virtual FName GetToolkitFName() const override;
@@ -18,7 +18,9 @@ public:
 	virtual FLinearColor GetWorldCentricTabColorScale() const override;
 	
 	void InitSmartDialogueEditor(EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost >& InitToolkitHost, USmartDialogue* SmartDialogue);
-	
+
+	virtual void RegisterTabSpawners(const TSharedRef<FTabManager>& TabManager) override;
+	virtual void UnregisterTabSpawners(const TSharedRef<FTabManager>& TabManager) override;
 	
 private:
 
@@ -26,6 +28,19 @@ private:
 	TSharedRef<SDockTab> HandleTabManagerSpawnTabDialogueBranchDetails(const FSpawnTabArgs& Args);
 	TSharedRef<SDockTab> HandleTabManagerSpawnTabDialoguePhrasesDetails(const FSpawnTabArgs& Args);
 
+	TSharedRef<SDockTab> SpawnTab_BranchesList(const FSpawnTabArgs& Args);
+	TSharedRef<SDockTab> SpawnTab_SelectedBranchProperties(const FSpawnTabArgs& Args);
+	TSharedRef<SDockTab> SpawnTab_SelectedBranchPhrases(const FSpawnTabArgs& Args);
+
+	TSharedRef<SWidget> CreateBranchesListWidget();
+	TSharedRef<SWidget> CreateSelectedBranchPropertiesWidget();
+	TSharedRef<SWidget> CreateSelectedBranchPhrasesWidget();
+
+
+
+	TSharedPtr<SDockTab> BranchesListTab;
+	TSharedPtr<SDockTab> SelectedBranchPropertiesTab;
+	TSharedPtr<SDockTab> SelectedBranchPhrasesTab;
 	
 	USmartDialogue* EditingObject;
 	
