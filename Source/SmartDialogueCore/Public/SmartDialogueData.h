@@ -110,7 +110,7 @@ struct FSmartDialogueBranch
 	FString Name;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Branch")
-	FString TextId;
+	FString Text;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Branch")
 	TArray<FSmartDialoguePhrases> Phrases;
