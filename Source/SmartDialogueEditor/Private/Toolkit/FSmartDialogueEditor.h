@@ -35,7 +35,7 @@ private:
 	TSharedRef<SWidget> CreateBranchesListWidget();
 	TSharedRef<SWidget> CreateSelectedBranchPropertiesWidget();
 	TSharedRef<SWidget> CreateSelectedBranchPhrasesWidget();
-
+	TSharedRef<FTabManager::FLayout> GetDefaultTabContents();
 
 
 	TSharedPtr<SDockTab> BranchesListTab;

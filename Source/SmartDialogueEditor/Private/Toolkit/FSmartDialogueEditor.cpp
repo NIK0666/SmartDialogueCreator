@@ -17,16 +17,8 @@ void FSmartDialogueEditor::InitSmartDialogueEditor(EToolkitMode::Type Mode, cons
 {
 
 	EditingObject = SmartDialogue;
-	
-	TSharedRef<FTabManager::FLayout> StandaloneDefaultLayout = FTabManager::NewLayout("Standalone_SmartDialogueEditor_Layout")
-	->AddArea
-		(
-			FTabManager::NewPrimaryArea()
-			->SetOrientation(Orient_Vertical)
-		);
 
-	InitAssetEditor(Mode, InitToolkitHost, GetToolkitFName(), StandaloneDefaultLayout, /*bCreateDefaultStandaloneMenu=*/ true, /*bCreateDefaultToolbar=*/ true, SmartDialogue);
-
+	InitAssetEditor(Mode, InitToolkitHost, GetToolkitFName(), GetDefaultTabContents(), /*bCreateDefaultStandaloneMenu=*/ true, /*bCreateDefaultToolbar=*/ true, SmartDialogue);
 }
 
 FName FSmartDialogueEditor::GetToolkitFName() const
@@ -159,7 +151,7 @@ TSharedRef<SDockTab> FSmartDialogueEditor::SpawnTab_SelectedBranchProperties(con
 {
 	check(Args.GetTabId() == SmartDialogue_SelectedBranchPropertiesTabId);
 
-	return SNew(SDockTab)
+	return SNew(SDockTab) 
 		.Label(FText::FromString("Selected Branch Properties"))
 		[
 			CreateSelectedBranchPropertiesWidget()
@@ -202,6 +194,45 @@ TSharedRef<SWidget> FSmartDialogueEditor::CreateSelectedBranchPhrasesWidget()
 	// ...
 	return SNullWidget::NullWidget;
 
+}
+
+TSharedRef<FTabManager::FLayout> FSmartDialogueEditor::GetDefaultTabContents()
+{
+	return FTabManager::NewLayout("SmartDialogueEditor_DefaultLayout")
+		->AddArea
+		(
+			FTabManager::NewPrimaryArea()
+			->SetOrientation(Orient_Horizontal)
+			->Split
+			(
+				FTabManager::NewSplitter()
+				->SetOrientation(Orient_Horizontal)
+				->SetSizeCoefficient(0.5f)
+				->Split
+				(
+					FTabManager::NewStack()
+					->AddTab(SmartDialogue_BranchesListTabId, ETabState::OpenedTab)
+				)
+			)
+			->Split
+			(
+				FTabManager::NewSplitter()
+				->SetOrientation(Orient_Vertical)
+				->SetSizeCoefficient(0.5f)
+				->Split
+				(
+					FTabManager::NewStack()
+					->AddTab(SmartDialogue_SelectedBranchPropertiesTabId, ETabState::OpenedTab)
+				)
+				->Split
+				(
+					FTabManager::NewStack()
+					->AddTab(SmartDialogue_SelectedBranchPhrasesTabId, ETabState::OpenedTab)
+				)
+			)
+		);
+
+	// GetTabManager()->RestoreFrom(DefaultLayout, TSharedPtr<SWindow>());
 }
 
 #undef LOCTEXT_NAMESPACE
