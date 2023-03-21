@@ -4,7 +4,7 @@
 #include "FSmartDialogueEditor.h"
 #include "Widgets/Docking/SDockTab.h"
 #include "SmartDialogue.h"
-#include "PropertyEditor/Private/SDetailsView.h"
+#include "SBranchInfoWidget.h"
 
 #define LOCTEXT_NAMESPACE "SmartDialogueEditor"
 
@@ -15,10 +15,26 @@ static const FName SmartDialogue_SelectedBranchPhrasesTabId(TEXT("SmartDialogue_
 
 void FSmartDialogueEditor::InitSmartDialogueEditor(EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, USmartDialogue* SmartDialogue)
 {
-
-	EditingObject = SmartDialogue;
+	SetDialogue(SmartDialogue);
 
 	InitAssetEditor(Mode, InitToolkitHost, GetToolkitFName(), GetDefaultTabContents(), /*bCreateDefaultStandaloneMenu=*/ true, /*bCreateDefaultToolbar=*/ true, SmartDialogue);
+}
+
+void FSmartDialogueEditor::SetDialogue(USmartDialogue* InDialogue)
+{
+	Dialogue = InDialogue;
+
+	if (Dialogue)
+	{
+		DialogueBranchWidgets.Reset();
+
+		for (FSmartDialogueBranch& Branch : Dialogue->Branches)
+		{
+			DialogueBranchWidgets.Add(SNew(SBranchInfoWidget)
+				.Branch(Branch)
+				.Editor(SharedThis(this)));
+		}
+	}
 }
 
 FName FSmartDialogueEditor::GetToolkitFName() const
@@ -28,10 +44,10 @@ FName FSmartDialogueEditor::GetToolkitFName() const
 
 FText FSmartDialogueEditor::GetToolkitName() const
 {
-	const bool bDirtyState = EditingObject->GetOutermost()->IsDirty();
+	const bool bDirtyState = Dialogue->GetOutermost()->IsDirty();
 
 	FFormatNamedArguments Args;
-	Args.Add(TEXT("AssetName"), FText::FromString(EditingObject->GetName()));
+	Args.Add(TEXT("AssetName"), FText::FromString(Dialogue->GetName()));
 	Args.Add(TEXT("DirtyState"), bDirtyState ? FText::FromString( TEXT( "*" ) ) : FText::GetEmpty());
 	return FText::Format(LOCTEXT("CustomAssetTypeEditorAppLabel", "{SpriteName}{DirtyState}"), Args);
 }
@@ -171,11 +187,10 @@ TSharedRef<SDockTab> FSmartDialogueEditor::SpawnTab_SelectedBranchPhrases(const 
 
 TSharedRef<SWidget> FSmartDialogueEditor::CreateBranchesListWidget()
 {
-	// Создайте виджет на основе SListView или другого подходящего виджета для представления списка веток.
-	// Здесь вы также можете настроить отображение элементов списка и обработчики событий.
-	// ...
-	return SNullWidget::NullWidget;
-
+	return SNew(SListView<TSharedRef<SBranchInfoWidget>>)
+		.SelectionMode(ESelectionMode::None)
+		.ListItemsSource(&DialogueBranchWidgets)
+		.OnGenerateRow(this, &FSmartDialogueEditor::OnGenerateRowForBranchList);
 }
 
 TSharedRef<SWidget> FSmartDialogueEditor::CreateSelectedBranchPropertiesWidget()
@@ -233,6 +248,15 @@ TSharedRef<FTabManager::FLayout> FSmartDialogueEditor::GetDefaultTabContents()
 		);
 
 	// GetTabManager()->RestoreFrom(DefaultLayout, TSharedPtr<SWindow>());
+}
+
+TSharedRef<ITableRow> FSmartDialogueEditor::OnGenerateRowForBranchList(TSharedRef<SBranchInfoWidget> InWidget, const TSharedRef<STableViewBase>& OwnerTable)
+{
+	return SNew(STableRow<TSharedRef<SBranchInfoWidget>>, OwnerTable)
+		.Content()
+		[
+			InWidget
+		];
 }
 
 #undef LOCTEXT_NAMESPACE

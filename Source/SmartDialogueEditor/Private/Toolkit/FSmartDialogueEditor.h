@@ -6,18 +6,21 @@
 #include "SmartDialogueData.h"
 #include "Toolkits/AssetEditorToolkit.h"
 
+class SBranchInfoWidget;
 class USmartDialogue;
 
 class SMARTDIALOGUEEDITOR_API FSmartDialogueEditor final : public FAssetEditorToolkit, public FNotifyHook
 {
 public:
+	
+	void InitSmartDialogueEditor(EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost >& InitToolkitHost, USmartDialogue* SmartDialogue);
+	void SetDialogue(USmartDialogue* InDialogue);
+	
 	virtual FName GetToolkitFName() const override;
 	virtual FText GetToolkitName() const override;
 	virtual FText GetBaseToolkitName() const override;
 	virtual FString GetWorldCentricTabPrefix() const override;
 	virtual FLinearColor GetWorldCentricTabColorScale() const override;
-	
-	void InitSmartDialogueEditor(EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost >& InitToolkitHost, USmartDialogue* SmartDialogue);
 
 	virtual void RegisterTabSpawners(const TSharedRef<FTabManager>& TabManager) override;
 	virtual void UnregisterTabSpawners(const TSharedRef<FTabManager>& TabManager) override;
@@ -37,14 +40,21 @@ private:
 	TSharedRef<SWidget> CreateSelectedBranchPhrasesWidget();
 	TSharedRef<FTabManager::FLayout> GetDefaultTabContents();
 
+	TSharedRef<ITableRow> OnGenerateRowForBranchList(TSharedRef<SBranchInfoWidget> InWidget, const TSharedRef<STableViewBase>& OwnerTable);
+
+
+
+
 
 	TSharedPtr<SDockTab> BranchesListTab;
 	TSharedPtr<SDockTab> SelectedBranchPropertiesTab;
 	TSharedPtr<SDockTab> SelectedBranchPhrasesTab;
 	
-	USmartDialogue* EditingObject;
+	USmartDialogue* Dialogue;
 	
 	TSharedPtr<STreeView<TSharedPtr<FSmartDialogueBranch>>> DialogueBranchesList;
 	TSharedPtr<IDetailsView> DialogueBranchDetailsView;
 	TSharedPtr<IDetailsView> DialoguePhrasesDetailsView;
+	
+	TArray<TSharedRef<SBranchInfoWidget>> DialogueBranchWidgets;
 };

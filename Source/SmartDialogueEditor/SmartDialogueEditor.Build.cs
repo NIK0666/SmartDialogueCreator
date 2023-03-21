@@ -21,6 +21,7 @@ public class SmartDialogueEditor : ModuleRules
             "Slate", 
             "SlateCore",
             "InputCore", 
+            "EditorStyle",
             "UnrealEd", 
             "AssetTools",
             "SmartDialogueCore"
