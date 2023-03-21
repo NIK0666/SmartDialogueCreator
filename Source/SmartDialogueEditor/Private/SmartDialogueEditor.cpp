@@ -8,10 +8,13 @@
 
 void FSmartDialogueEditorModule::StartupModule()
 {
+
 	IAssetTools& AssetTools = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools").Get();
-	TSharedPtr<FAssetTypeActions_Base> SmartDialogueActions = MakeShareable(new FSmartDialogueActions());
-	AssetTools.RegisterAssetTypeActions(SmartDialogueActions.ToSharedRef());
-	RegisteredAssetTypeActions.Add(SmartDialogueActions);
+
+	EAssetTypeCategories::Type DialogueCategoryBit = AssetTools.RegisterAdvancedAssetCategory(FName(TEXT("SmartDialogue")), LOCTEXT("SmartDialogueCategory", "Smart Dialogue"));
+
+	TSharedPtr<IAssetTypeActions> SmartDialogueAction = MakeShareable(new FSmartDialogueActions(DialogueCategoryBit));
+	AssetTools.RegisterAssetTypeActions(SmartDialogueAction.ToSharedRef());
 }
 
 void FSmartDialogueEditorModule::ShutdownModule()

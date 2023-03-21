@@ -2,6 +2,11 @@
 #include "SmartDialogueActions.h"
 #include "SmartDialogue.h"
 
+FSmartDialogueActions::FSmartDialogueActions(EAssetTypeCategories::Type InCategory)
+{
+	DialogueCategoryBit = InCategory;
+}
+
 FText FSmartDialogueActions::GetName() const
 {
 	return NSLOCTEXT("AssetTypeActions", "AssetTypeActions_SmartDialogue", "Smart Dialogue");
@@ -19,5 +24,5 @@ FColor FSmartDialogueActions::GetTypeColor() const
 
 uint32 FSmartDialogueActions::GetCategories()
 {
-	return EAssetTypeCategories::Basic;
+	return DialogueCategoryBit;
 }
