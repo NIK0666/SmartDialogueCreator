@@ -10,6 +10,9 @@
 
 void FSmartDialogueEditor::InitSmartDialogueEditor(EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, USmartDialogue* SmartDialogue)
 {
+
+	EditingObject = SmartDialogue;
+	
 	TSharedRef<FTabManager::FLayout> StandaloneDefaultLayout = FTabManager::NewLayout("Standalone_SmartDialogueEditor_Layout")
 	->AddArea
 		(

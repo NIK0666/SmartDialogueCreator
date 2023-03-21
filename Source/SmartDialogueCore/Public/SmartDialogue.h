@@ -6,7 +6,7 @@
 #include "SmartDialogueData.h"
 #include "SmartDialogue.generated.h"
 
-UCLASS()
+UCLASS(Blueprintable)
 class SMARTDIALOGUECORE_API USmartDialogue : public UObject
 {
 	GENERATED_BODY()
