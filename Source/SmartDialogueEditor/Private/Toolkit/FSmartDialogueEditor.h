@@ -14,7 +14,7 @@ class SMARTDIALOGUEEDITOR_API FSmartDialogueEditor final : public FAssetEditorTo
 public:
 	
 	void InitSmartDialogueEditor(EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost >& InitToolkitHost, USmartDialogue* SmartDialogue);
-	void SetDialogue(USmartDialogue* InDialogue);
+	void SetDialogue(USmartDialogue* InDialogue);	
 	
 	virtual FName GetToolkitFName() const override;
 	virtual FText GetToolkitName() const override;
@@ -43,7 +43,7 @@ private:
 	TSharedRef<ITableRow> OnGenerateRowForBranchList(TSharedRef<SBranchInfoWidget> InWidget, const TSharedRef<STableViewBase>& OwnerTable);
 
 
-
+	void AddNewBranch();
 
 
 	TSharedPtr<SDockTab> BranchesListTab;

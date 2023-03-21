@@ -259,4 +259,20 @@ TSharedRef<ITableRow> FSmartDialogueEditor::OnGenerateRowForBranchList(TSharedRe
 		];
 }
 
+void FSmartDialogueEditor::AddNewBranch()
+{
+	if (Dialogue)
+	{
+		FSmartDialogueBranch NewBranch;
+		NewBranch.Name = "New Branch";
+		NewBranch.Text = "New Branch Text";
+		Dialogue->Branches.Add(NewBranch);
+
+		TSharedRef<SBranchInfoWidget> NewBranchWidget = SNew(SBranchInfoWidget)
+			.Branch(NewBranch)
+			.Editor(SharedThis(this));
+		DialogueBranchWidgets.Add(NewBranchWidget);
+	}
+}
+
 #undef LOCTEXT_NAMESPACE
