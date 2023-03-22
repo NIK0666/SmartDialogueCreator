@@ -16,7 +16,6 @@ public:
 	void InitSmartDialogueEditor(EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost >& InitToolkitHost, USmartDialogue* SmartDialogue);
 	void SetDialogue(USmartDialogue* InDialogue);
 	void BindCommands();
-	TSharedPtr<FExtender> GetToolbarBuilder();
 	TSharedPtr<FExtender> GetToolbarExtender();
 	
 	virtual FName GetToolkitFName() const override;

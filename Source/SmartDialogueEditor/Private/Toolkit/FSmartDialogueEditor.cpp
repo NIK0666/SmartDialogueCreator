@@ -58,14 +58,6 @@ void FSmartDialogueEditor::BindCommands()
 		FCanExecuteAction());
 }
 
-TSharedPtr<FExtender> FSmartDialogueEditor::GetToolbarBuilder()
-{
-	FToolBarBuilder ToolbarBuilder(ToolkitCommands, FMultiBoxCustomization::None);
-	ToolbarBuilder.AddToolBarButton(FSmartDialogueEditorCommands::Get().AddNewBranch, NAME_None, FText::GetEmpty(), TAttribute<FText>(), FSlateIcon(FEditorStyle::GetStyleSetName(), "Icons.Plus"));
-
-	return MakeShareable(new FExtender());
-}
-
 TSharedPtr<FExtender> FSmartDialogueEditor::GetToolbarExtender()
 {
 	TSharedPtr<FExtender> Extender = MakeShared<FExtender>();
