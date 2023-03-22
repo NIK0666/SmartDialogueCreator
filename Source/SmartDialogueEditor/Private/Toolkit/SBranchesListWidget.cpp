@@ -7,6 +7,7 @@
 #include "SmartDialogue.h"
 #include "SBranchInfoWidget.h"
 #include "SmartDialogueEditor.h"
+#include "Widgets/Layout/SScrollBox.h"
 
 void SBranchesListWidget::Construct(const FArguments& InArgs)
 {
@@ -19,16 +20,21 @@ void SBranchesListWidget::Construct(const FArguments& InArgs)
 	
 	ChildSlot
 	[
-		// Создаем вертикальный список
-		SNew(SVerticalBox)
-		+ SVerticalBox::Slot()
-		.AutoHeight()
+		SNew(SScrollBox)
+		.Orientation(Orient_Vertical)
+		+ SScrollBox::Slot()
 		[
-			// Заполняем список элементами SBranchInfoWidget
-			SAssignNew(BranchesList, SListView<TSharedPtr<SBranchInfoWidget>>)
-			.SelectionMode(ESelectionMode::None)
-			.ListItemsSource(&BranchesInfoWidgets)
-			.OnGenerateRow(this, &SBranchesListWidget::GenerateBranchInfoWidgetRow)
+			// Создаем вертикальный список
+			SNew(SVerticalBox)
+			+ SVerticalBox::Slot()
+			.FillHeight(1.f)
+			[
+				// Заполняем список элементами SBranchInfoWidget
+				SAssignNew(BranchesList, SListView<TSharedPtr<SBranchInfoWidget>>)
+				.SelectionMode(ESelectionMode::None)
+				.ListItemsSource(&BranchesInfoWidgets)
+				.OnGenerateRow(this, &SBranchesListWidget::GenerateBranchInfoWidgetRow)
+			]
 		]
 	];
 }
