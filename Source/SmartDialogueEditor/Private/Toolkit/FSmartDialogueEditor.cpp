@@ -37,11 +37,6 @@ void FSmartDialogueEditor::InitSmartDialogueEditor(EToolkitMode::Type Mode, cons
 void FSmartDialogueEditor::SetDialogue(USmartDialogue* InDialogue)
 {
 	Dialogue = InDialogue;
-
-	if (Dialogue)
-	{
-		OnBranchListModified.ExecuteIfBound();
-	}
 }
 
 USmartDialogue* FSmartDialogueEditor::GetDialogue()
@@ -293,7 +288,7 @@ void FSmartDialogueEditor::AddNewBranch()
 		NewBranch.Text = "New Branch Text";
 		Dialogue->Branches.Add(NewBranch);
 
-		OnBranchListModified.ExecuteIfBound();
+		OnBranchItemAdded.ExecuteIfBound(NewBranch);
 	}
 }
 

@@ -11,16 +11,8 @@ void SBranchesListWidget::Construct(const FArguments& InArgs)
 {
 	SmartDialogueEditor = InArgs._SmartDialogueEditor;
 
-	// Подписываемся на делегат
-	SmartDialogueEditor->OnBranchListModified.BindSP(this, &SBranchesListWidget::UpdateBranchesList);
-
-	ChildSlot
-	[
-		SNew(SListView<TSharedRef<SBranchInfoWidget>>)
-			.SelectionMode(ESelectionMode::None)
-			.ListItemsSource(&DialogueBranchWidgets)
-			.OnGenerateRow(this, &SBranchesListWidget::OnGenerateRowForBranchList)
-	];
+	SmartDialogueEditor->OnBranchItemAdded.BindSP(this, &SBranchesListWidget::BranchItemAdded);
+	SmartDialogueEditor->OnBranchItemDeleted.BindSP(this, &SBranchesListWidget::BranchItemDeleted);
 	
 	// Обновляем список веток при создании виджета
 	UpdateBranchesList();
@@ -28,21 +20,19 @@ void SBranchesListWidget::Construct(const FArguments& InArgs)
 
 void SBranchesListWidget::UpdateBranchesList()
 {
-	DialogueBranchWidgets.Reset();
-	
-	for (FSmartDialogueBranch& Branch : SmartDialogueEditor->GetDialogue()->Branches)
+	// Здесь должен быть код очистки списка и генерации его из массива Branches
+	for (auto L_Branch : SmartDialogueEditor.Get()->GetDialogue()->Branches)
 	{
-		DialogueBranchWidgets.Add(SNew(SBranchInfoWidget)
-			.Branch(Branch)
-			.Editor(SmartDialogueEditor));
+		// 
 	}
 }
 
-TSharedRef<ITableRow> SBranchesListWidget::OnGenerateRowForBranchList(TSharedRef<SBranchInfoWidget> InWidget, const TSharedRef<STableViewBase>& OwnerTable)
+void SBranchesListWidget::BranchItemAdded(FSmartDialogueBranch& AddedBranch)
 {
-	return SNew(STableRow<TSharedRef<SBranchInfoWidget>>, OwnerTable)
-		.Content()
-		[
-			InWidget
-		];
+	// Здесь нужно добавить новый элемент SBranchInfoWidget в элемент списка
+}
+
+void SBranchesListWidget::BranchItemDeleted(FSmartDialogueBranch& DeletedBranch)
+{
+	// Здесь нужно удалить элемент SBranchInfoWidget из списка
 }

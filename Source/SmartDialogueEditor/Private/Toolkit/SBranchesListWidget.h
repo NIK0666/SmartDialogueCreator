@@ -14,12 +14,13 @@ public:
 	SLATE_ARGUMENT(TSharedPtr<FSmartDialogueEditor>, SmartDialogueEditor)
 	SLATE_END_ARGS()
 
+
 	void Construct(const FArguments& InArgs);
 	void UpdateBranchesList();
 
-private:
-	TSharedRef<ITableRow> OnGenerateRowForBranchList(TSharedRef<SBranchInfoWidget> InWidget, const TSharedRef<STableViewBase>& OwnerTable);
+	void BranchItemAdded(FSmartDialogueBranch& AddedBranch);
+	void BranchItemDeleted(FSmartDialogueBranch& DeletedBranch);
 
+private:
 	TSharedPtr<FSmartDialogueEditor> SmartDialogueEditor;
-	TArray<TSharedRef<SBranchInfoWidget>> DialogueBranchWidgets;
 };

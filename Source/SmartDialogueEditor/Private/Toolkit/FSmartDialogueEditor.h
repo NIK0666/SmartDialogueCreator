@@ -10,7 +10,8 @@ class SBranchInfoWidget;
 class SBranchesListWidget;
 class USmartDialogue;
 
-DECLARE_DELEGATE(FOnBranchListModified);
+DECLARE_DELEGATE_OneParam(FOnBranchItemAdded, FSmartDialogueBranch&);
+DECLARE_DELEGATE_OneParam(FOnBranchItemDeleted, FSmartDialogueBranch&);
 
 
 class SMARTDIALOGUEEDITOR_API FSmartDialogueEditor final : public FAssetEditorToolkit, public FNotifyHook
@@ -23,7 +24,8 @@ public:
 	void BindCommands();
 	TSharedPtr<FExtender> GetToolbarExtender();
 
-	FOnBranchListModified OnBranchListModified;
+	FOnBranchItemAdded OnBranchItemAdded;
+	FOnBranchItemDeleted OnBranchItemDeleted;
 
 	
 	virtual FName GetToolkitFName() const override;
