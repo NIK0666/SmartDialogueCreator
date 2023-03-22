@@ -9,13 +9,14 @@
 #include "Widgets/Input/SButton.h"
 #include "EditorStyle/Public/EditorStyleSet.h"
 
+#define LOCTEXT_NAMESPACE "SmartDialogueEditor"
+
 void SBranchInfoWidget::Construct(const FArguments& InArgs)
 {
 	BranchName = InArgs._BranchName;
 	Editor = InArgs._Editor;
 
 	DialoguePtr = Editor.Pin()->GetDialogue();
-	BranchPtr = DialoguePtr->GetBranchPtr(BranchName);
 
 	ChildSlot
 	[
@@ -35,7 +36,7 @@ void SBranchInfoWidget::Construct(const FArguments& InArgs)
 		.FillWidth(1.0f)
 		[
 			SAssignNew(BranchTextTextBox, SEditableTextBox)
-			.Text(BranchPtr ? BranchPtr->Text : FText::GetEmpty())
+			.Text_Raw(this, &SBranchInfoWidget::GetBranchText)
 			.OnTextCommitted(this, &SBranchInfoWidget::OnBranchTextTextCommitted)
 		]
 		+ SHorizontalBox::Slot()
@@ -65,6 +66,15 @@ void SBranchInfoWidget::Construct(const FArguments& InArgs)
 	];
 }
 
+FText SBranchInfoWidget::GetBranchText() const
+{
+	if (const auto BranchPtr = DialoguePtr->GetBranchPtr(BranchName))
+	{
+		return BranchPtr->Text;
+	}
+	return  FText::GetEmpty();
+}
+
 void SBranchInfoWidget::OnBranchNameTextCommitted(const FText& NewText, ETextCommit::Type CommitType)
 {
 	if (CommitType == ETextCommit::OnEnter || CommitType == ETextCommit::OnUserMovedFocus)
@@ -90,9 +100,16 @@ void SBranchInfoWidget::OnBranchTextTextCommitted(const FText& NewText, ETextCom
 {
 	if (CommitType == ETextCommit::OnEnter || CommitType == ETextCommit::OnUserMovedFocus)
 	{
-		if (!NewText.EqualTo(BranchPtr->Text))
+		if (const auto BranchPtr = DialoguePtr->GetBranchPtr(BranchName))
 		{
-			BranchPtr->Text = NewText;
-		}		
+			if (!NewText.EqualTo(BranchPtr->Text))
+			{
+				const FScopedTransaction Transaction(LOCTEXT("SmartDialogueEditor_SetBranchText", "Set Branch Text"));
+				DialoguePtr->Modify();
+				BranchPtr->Text = NewText;
+				DialoguePtr->PostEditChange();
+			}
+		}
 	}
 }
+#undef LOCTEXT_NAMESPACE

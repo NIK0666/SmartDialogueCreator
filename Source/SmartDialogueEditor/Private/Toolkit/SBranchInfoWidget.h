@@ -17,10 +17,12 @@ public:
 	SLATE_ARGUMENT(FName, BranchName) 
 	SLATE_ARGUMENT(TWeakPtr<FSmartDialogueEditor>, Editor)
 	SLATE_END_ARGS()
-
 	void Construct(const FArguments& InArgs);
 
 private:
+
+	FText GetBranchText() const;
+	
 	void OnBranchNameTextCommitted(const FText& NewText, ETextCommit::Type CommitType);
 	void OnBranchTextTextCommitted(const FText& NewText, ETextCommit::Type CommitType);
 	
@@ -30,5 +32,4 @@ private:
 	TSharedPtr<SEditableTextBox> BranchTextTextBox;
 	
 	USmartDialogue* DialoguePtr = nullptr;
-	FSmartDialogueBranch* BranchPtr = nullptr;
 };
