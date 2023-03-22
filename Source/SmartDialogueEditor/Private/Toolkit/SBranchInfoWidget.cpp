@@ -11,7 +11,7 @@
 
 void SBranchInfoWidget::Construct(const FArguments& InArgs)
 {
-	Branch = InArgs._Branch;
+	BranchPtr = InArgs._BranchPtr;
 	Editor = InArgs._Editor;
 
 	ChildSlot
@@ -24,7 +24,7 @@ void SBranchInfoWidget::Construct(const FArguments& InArgs)
 			.WidthOverride(150)
 			[
 				SAssignNew(BranchNameTextBox, SEditableTextBox)
-				.Text(FText::FromName(Branch.Name))
+				.Text(FText::FromName(BranchPtr->Name))
 				.OnTextCommitted(this, &SBranchInfoWidget::OnBranchNameTextCommitted)
 			]
 		]
@@ -32,7 +32,7 @@ void SBranchInfoWidget::Construct(const FArguments& InArgs)
 		.FillWidth(1.0f)
 		[
 			SAssignNew(BranchTextTextBox, SEditableTextBox)
-			.Text(Branch.Text)
+			.Text(BranchPtr->Text)
 			.OnTextCommitted(this, &SBranchInfoWidget::OnBranchTextTextCommitted)
 		]
 		+ SHorizontalBox::Slot()
@@ -66,14 +66,14 @@ void SBranchInfoWidget::OnBranchNameTextCommitted(const FText& NewText, ETextCom
 {
 	if (CommitType == ETextCommit::OnEnter || CommitType == ETextCommit::OnUserMovedFocus)
 	{
-		FName OldName = Branch.Name;
+		FName OldName = BranchPtr->Name;
 		FName NewName = FName(*NewText.ToString());
 
 		if (Editor.IsValid())
 		{
 			if (Editor.Pin()->GetDialogue() && Editor.Pin()->GetDialogue()->RenameBranch(OldName, NewName))
 			{
-				Branch.Name = NewName;
+				BranchPtr->Name = NewName;
 			}
 			else
 			{
@@ -87,9 +87,9 @@ void SBranchInfoWidget::OnBranchTextTextCommitted(const FText& NewText, ETextCom
 {
 	if (CommitType == ETextCommit::OnEnter || CommitType == ETextCommit::OnUserMovedFocus)
 	{
-		if (Editor.IsValid())
+		if (BranchPtr.IsValid())
 		{
-			
+			BranchPtr->Text = NewText;
 		}
 	}
 }

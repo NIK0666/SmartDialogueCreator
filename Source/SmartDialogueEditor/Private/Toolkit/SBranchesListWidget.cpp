@@ -63,7 +63,7 @@ void SBranchesListWidget::UpdateBranchesList()
 		{
 			BranchesInfoWidgets.Add(
 				SNew(SBranchInfoWidget)
-				.Branch(Pair.Value)
+				.BranchPtr(MakeShared<FSmartDialogueBranch>(Pair.Value))
 				.Editor(SmartDialogueEditor)
 			);
 		}
@@ -78,7 +78,7 @@ void SBranchesListWidget::UpdateBranchesList()
 void SBranchesListWidget::BranchItemAdded(FSmartDialogueBranch& AddedBranch)
 {
 	TSharedPtr<SBranchInfoWidget> NewBranchInfoWidget = SNew(SBranchInfoWidget)
-			.Branch(AddedBranch)
+			.BranchPtr(MakeShared<FSmartDialogueBranch>(AddedBranch))
 			.Editor(SmartDialogueEditor);
 
 	BranchesInfoWidgets.Add(NewBranchInfoWidget);
