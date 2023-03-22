@@ -27,33 +27,43 @@ void USmartDialogue::AddNewBranch(FSmartDialogueBranch& NewBranch)
 
 FName USmartDialogue::GenerateBranchName() const
 {
-	FString LastBranchNameStr = LastBranchName.IsNone() ? "branch_0" : LastBranchName.ToString();
-	int32 UnderscoreIndex;
-	if (LastBranchNameStr.FindLastChar('_', UnderscoreIndex))
+	FString BaseName;
+	int32 LastNumber = 0;
+
+	if (LastBranchName.IsNone())
 	{
-		FString NamePart = LastBranchNameStr.Left(UnderscoreIndex);
-		FString NumberPart = LastBranchNameStr.RightChop(UnderscoreIndex + 1);
-
-		if (NumberPart.IsNumeric())
+		BaseName = "branch";
+	}
+	else
+	{
+		FString LastBranchNameStr = LastBranchName.ToString();
+		int32 UnderscoreIndex;
+		if (LastBranchNameStr.FindLastChar('_', UnderscoreIndex))
 		{
-			int32 Number = FCString::Atoi(*NumberPart);
-			Number++;
+			FString NumberPart = LastBranchNameStr.RightChop(UnderscoreIndex + 1);
 
-			FName NewName;
-			do
+			if (NumberPart.IsNumeric())
 			{
-				FString FormattedNumber = FString::Printf(TEXT("%0*d"), NumberPart.Len(), Number);
-				NewName = FName(*FString::Printf(TEXT("%s_%s"), *NamePart, *FormattedNumber));
-				Number++;
+				LastNumber = FCString::Atoi(*NumberPart);
 			}
-			while (Branches.Contains(NewName));
-
-			return NewName;
+			BaseName = LastBranchNameStr.Left(UnderscoreIndex);
+		}
+		else
+		{
+			BaseName = LastBranchNameStr;
 		}
 	}
 
-	// Если что-то пошло не так, вернуть стандартное имя
-	return FName("branch_0");
+	FName NewName;
+	do
+	{
+		FString FormattedNumber = FString::Printf(TEXT("%0*d"), FString::FromInt(LastNumber).Len(), LastNumber);
+		NewName = FName(*FString::Printf(TEXT("%s_%s"), *BaseName, *FormattedNumber));
+		LastNumber++;
+	}
+	while (Branches.Contains(NewName));
+
+	return NewName;
 }
 
 bool USmartDialogue::RenameBranch(FName OldName, FName NewName)
