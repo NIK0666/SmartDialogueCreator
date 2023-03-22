@@ -24,6 +24,12 @@ void USmartDialogue::SetAutoBranch(const FString& NewAutoBranch)
 	AutoBranch = NewAutoBranch;
 }
 
+void USmartDialogue::AddNewBranch(FSmartDialogueBranch& NewBranch)
+{
+	Branches.Add(NewBranch);
+	BranchesChanged();
+}
+
 void USmartDialogue::BranchesChanged()
 {
 	OnBranchesChanged.Broadcast();

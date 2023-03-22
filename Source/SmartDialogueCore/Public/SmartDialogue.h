@@ -32,11 +32,7 @@ public:
 
 
 	UFUNCTION(BlueprintCallable, Category = "SmartDialogue")
-	void AddNewBranch(FSmartDialogueBranch& NewBranch)
-	{
-		Branches.Add(NewBranch);
-		BranchesChanged();
-	}
+	void AddNewBranch(FSmartDialogueBranch& NewBranch);
 
 	FOnBranchesChanged OnBranchesChanged;
 
