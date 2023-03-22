@@ -47,7 +47,7 @@ void SBranchInfoWidget::Construct(const FArguments& InArgs)
 			.ContentPadding(FMargin(1.0f, 1.0f, 1.0f, 1.0f))
 			[
 				SNew(SImage)
-				.Image(FEditorStyle::GetBrush("Cross"))
+				.Image(FAppStyle::GetBrush("SoftwareCursor_Grab"))
 			]
 			// ...
 		]
@@ -59,7 +59,7 @@ void SBranchInfoWidget::Construct(const FArguments& InArgs)
 			.ContentPadding(FMargin(1.0f, 1.0f, 1.0f, 1.0f))
 			[
 				SNew(SImage)
-				.Image(FEditorStyle::GetBrush("Cross"))
+				.Image(FAppStyle::GetBrush("Icons.Delete")) 
 			]
 			// ...
 		]
