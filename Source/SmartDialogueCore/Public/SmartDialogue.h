@@ -30,6 +30,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SmartDialogue")
 	void AddNewBranch(FSmartDialogueBranch& NewBranch);
 
+	FName GenerateBranchName() const;
+
 	FOnBranchesChanged OnBranchesChanged;
 
 protected:

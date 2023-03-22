@@ -284,9 +284,11 @@ void FSmartDialogueEditor::AddNewBranch()
 	if (Dialogue)
 	{
 		FSmartDialogueBranch NewBranch;
-		NewBranch.Name = "branch_0";
+		NewBranch.Name = Dialogue->GenerateBranchName();
 		NewBranch.Text = FText::GetEmpty();
 		Dialogue->AddNewBranch(NewBranch);
+
+		// Обновите LastBranchName в USmartDialogue
 
 		OnBranchItemAdded.ExecuteIfBound(NewBranch);
 	}
