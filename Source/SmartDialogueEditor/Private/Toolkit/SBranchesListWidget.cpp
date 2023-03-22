@@ -59,7 +59,7 @@ void SBranchesListWidget::UpdateBranchesList()
 
 	if (Dialogue)
 	{
-		for (auto& Branch : Dialogue->Branches)
+		for (auto& Branch : Dialogue->GetBranches())
 		{
 			BranchesInfoWidgets.Add(
 				SNew(SBranchInfoWidget)

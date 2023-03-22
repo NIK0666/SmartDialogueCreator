@@ -286,7 +286,7 @@ void FSmartDialogueEditor::AddNewBranch()
 		FSmartDialogueBranch NewBranch;
 		NewBranch.Name = "New Branch";
 		NewBranch.Text = "New Branch Text";
-		Dialogue->Branches.Add(NewBranch);
+		Dialogue->AddNewBranch(NewBranch);
 
 		OnBranchItemAdded.ExecuteIfBound(NewBranch);
 	}
