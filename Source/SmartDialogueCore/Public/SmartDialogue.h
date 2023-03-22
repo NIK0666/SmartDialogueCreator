@@ -44,4 +44,7 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SmartDialogue", meta = (AllowPrivateAccess = "true"))
 	FString AutoBranch;
+
+	UPROPERTY(BlueprintReadOnly, Category = "SmartDialogue", meta = (AllowPrivateAccess = "true"))
+	FName LastBranchName;
 };

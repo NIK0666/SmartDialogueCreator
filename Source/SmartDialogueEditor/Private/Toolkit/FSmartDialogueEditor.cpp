@@ -288,8 +288,6 @@ void FSmartDialogueEditor::AddNewBranch()
 		NewBranch.Text = FText::GetEmpty();
 		Dialogue->AddNewBranch(NewBranch);
 
-		// Обновите LastBranchName в USmartDialogue
-
 		OnBranchItemAdded.ExecuteIfBound(NewBranch);
 	}
 }

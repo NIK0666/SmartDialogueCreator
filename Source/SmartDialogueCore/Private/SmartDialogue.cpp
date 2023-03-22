@@ -21,37 +21,39 @@ void USmartDialogue::SetAutoBranch(const FString& NewAutoBranch)
 void USmartDialogue::AddNewBranch(FSmartDialogueBranch& NewBranch)
 {
 	Branches.Add(NewBranch.Name, NewBranch);
+	LastBranchName = NewBranch.Name;
 	BranchesChanged();
 }
 
 FName USmartDialogue::GenerateBranchName() const
 {
-	int32 MaxIndex = -1;
-
-	for (const auto& KeyValue : Branches)
+	FString LastBranchNameStr = LastBranchName.IsNone() ? "branch_0" : LastBranchName.ToString();
+	int32 UnderscoreIndex;
+	if (LastBranchNameStr.FindLastChar('_', UnderscoreIndex))
 	{
-		FString KeyStr = KeyValue.Key.ToString();
-		int32 UnderscoreIndex;
-		if (KeyStr.FindLastChar('_', UnderscoreIndex))
-		{
-			FString NamePart = KeyStr.Left(UnderscoreIndex);
-			FString NumberPart = KeyStr.RightChop(UnderscoreIndex + 1);
+		FString NamePart = LastBranchNameStr.Left(UnderscoreIndex);
+		FString NumberPart = LastBranchNameStr.RightChop(UnderscoreIndex + 1);
 
-			if (NumberPart.IsNumeric())
+		if (NumberPart.IsNumeric())
+		{
+			int32 Number = FCString::Atoi(*NumberPart);
+			Number++;
+
+			FName NewName;
+			do
 			{
-				int32 Number = FCString::Atoi(*NumberPart);
-				if (Number > MaxIndex)
-				{
-					MaxIndex = Number;
-				}
+				FString FormattedNumber = FString::Printf(TEXT("%0*d"), NumberPart.Len(), Number);
+				NewName = FName(*FString::Printf(TEXT("%s_%s"), *NamePart, *FormattedNumber));
+				Number++;
 			}
+			while (Branches.Contains(NewName));
+
+			return NewName;
 		}
 	}
 
-	MaxIndex++;
-
-	FString BaseName = "branch";
-	return FName(*FString::Printf(TEXT("%s_%d"), *BaseName, MaxIndex));
+	// Если что-то пошло не так, вернуть стандартное имя
+	return FName("branch_0");
 }
 
 void USmartDialogue::BranchesChanged()
