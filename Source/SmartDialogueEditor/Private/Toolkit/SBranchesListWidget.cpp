@@ -59,11 +59,11 @@ void SBranchesListWidget::UpdateBranchesList()
 
 	if (Dialogue)
 	{
-		for (auto& Branch : Dialogue->GetBranches())
+		for (const TPair<FName, FSmartDialogueBranch>& Pair : Dialogue->GetBranches())
 		{
 			BranchesInfoWidgets.Add(
 				SNew(SBranchInfoWidget)
-				.Branch(Branch)
+				.Branch(Pair.Value)
 				.Editor(SmartDialogueEditor)
 			);
 		}

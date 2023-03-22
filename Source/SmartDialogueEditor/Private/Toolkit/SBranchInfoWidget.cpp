@@ -21,7 +21,7 @@ void SBranchInfoWidget::Construct(const FArguments& InArgs)
 			.WidthOverride(150)
 			[
 				SNew(SEditableTextBox)
-				.Text(FText::FromString(Branch.Name))
+				.Text(FText::FromName(Branch.Name))
 				// ...
 			]
 		]
@@ -29,7 +29,7 @@ void SBranchInfoWidget::Construct(const FArguments& InArgs)
 		.FillWidth(1.0f)
 		[
 			SNew(SEditableTextBox)
-			.Text(FText::FromString(Branch.Text))
+			.Text(Branch.Text)
 			// ...
 		]
 		+ SHorizontalBox::Slot()

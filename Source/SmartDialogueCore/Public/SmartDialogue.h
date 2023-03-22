@@ -16,11 +16,7 @@ class SMARTDIALOGUECORE_API USmartDialogue : public UObject
 public:
 	// Геттер для массива Branches
 	UFUNCTION(BlueprintCallable, Category = "SmartDialogue")
-	TArray<FSmartDialogueBranch> GetBranches() const;
-
-	// Сеттер для массива Branches
-	UFUNCTION(BlueprintCallable, Category = "SmartDialogue")
-	void SetBranches(const TArray<FSmartDialogueBranch>& NewBranches);
+	TMap<FName, FSmartDialogueBranch> GetBranches() const;
 
 	// Геттер для AutoBranch
 	UFUNCTION(BlueprintCallable, Category = "SmartDialogue")
@@ -42,7 +38,7 @@ protected:
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SmartDialogue", meta = (AllowPrivateAccess = "true"))
-	TArray<FSmartDialogueBranch> Branches;
+	TMap<FName, FSmartDialogueBranch> Branches;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SmartDialogue", meta = (AllowPrivateAccess = "true"))
 	FString AutoBranch;

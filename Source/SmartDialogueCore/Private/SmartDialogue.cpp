@@ -3,15 +3,9 @@
 
 #include "SmartDialogue.h"
 
-TArray<FSmartDialogueBranch> USmartDialogue::GetBranches() const
+TMap<FName, FSmartDialogueBranch> USmartDialogue::GetBranches() const
 {
 	return Branches;
-}
-
-void USmartDialogue::SetBranches(const TArray<FSmartDialogueBranch>& NewBranches)
-{
-	Branches = NewBranches;
-	BranchesChanged();
 }
 
 FString USmartDialogue::GetAutoBranch() const
@@ -26,7 +20,7 @@ void USmartDialogue::SetAutoBranch(const FString& NewAutoBranch)
 
 void USmartDialogue::AddNewBranch(FSmartDialogueBranch& NewBranch)
 {
-	Branches.Add(NewBranch);
+	Branches.Add(NewBranch.Name, NewBranch);
 	BranchesChanged();
 }
 
