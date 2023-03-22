@@ -7,6 +7,7 @@
 #include "Toolkits/AssetEditorToolkit.h"
 
 class SBranchInfoWidget;
+class SBranchesListWidget;
 class USmartDialogue;
 
 DECLARE_DELEGATE(FOnBranchListModified);
@@ -18,6 +19,7 @@ public:
 	
 	void InitSmartDialogueEditor(EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost >& InitToolkitHost, USmartDialogue* SmartDialogue);
 	void SetDialogue(USmartDialogue* InDialogue);
+	USmartDialogue* GetDialogue();
 	void BindCommands();
 	TSharedPtr<FExtender> GetToolbarExtender();
 

@@ -50,6 +50,11 @@ void FSmartDialogueEditor::SetDialogue(USmartDialogue* InDialogue)
 	}
 }
 
+USmartDialogue* FSmartDialogueEditor::GetDialogue()
+{
+	return Dialogue;
+}
+
 void FSmartDialogueEditor::BindCommands()
 {
 	ToolkitCommands->MapAction(
@@ -309,8 +314,6 @@ void FSmartDialogueEditor::AddNewBranch()
 			.Branch(NewBranch)
 			.Editor(SharedThis(this));
 		DialogueBranchWidgets.Add(NewBranchWidget);
-
-		OnBranchListModified.ExecuteIfBound();
 	}
 }
 
