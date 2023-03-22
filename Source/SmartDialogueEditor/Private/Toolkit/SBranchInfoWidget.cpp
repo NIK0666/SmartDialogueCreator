@@ -31,9 +31,9 @@ void SBranchInfoWidget::Construct(const FArguments& InArgs)
 		+ SHorizontalBox::Slot()
 		.FillWidth(1.0f)
 		[
-			SNew(SEditableTextBox)
+			SAssignNew(BranchTextTextBox, SEditableTextBox)
 			.Text(Branch.Text)
-			// ...
+			.OnTextCommitted(this, &SBranchInfoWidget::OnBranchTextTextCommitted)
 		]
 		+ SHorizontalBox::Slot()
 		.AutoWidth()
@@ -79,6 +79,17 @@ void SBranchInfoWidget::OnBranchNameTextCommitted(const FText& NewText, ETextCom
 			{
 				BranchNameTextBox->SetText(FText::FromName(OldName));
 			}
+		}
+	}
+}
+
+void SBranchInfoWidget::OnBranchTextTextCommitted(const FText& NewText, ETextCommit::Type CommitType)
+{
+	if (CommitType == ETextCommit::OnEnter || CommitType == ETextCommit::OnUserMovedFocus)
+	{
+		if (Editor.IsValid())
+		{
+			
 		}
 	}
 }

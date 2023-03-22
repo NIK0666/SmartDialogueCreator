@@ -20,8 +20,10 @@ public:
 
 private:
 	void OnBranchNameTextCommitted(const FText& NewText, ETextCommit::Type CommitType);
+	void OnBranchTextTextCommitted(const FText& NewText, ETextCommit::Type CommitType);
 	
 	FSmartDialogueBranch Branch;
 	TWeakPtr<FSmartDialogueEditor> Editor;
 	TSharedPtr<SEditableTextBox> BranchNameTextBox;
+	TSharedPtr<SEditableTextBox> BranchTextTextBox;
 };
