@@ -9,6 +9,9 @@
 class SBranchInfoWidget;
 class USmartDialogue;
 
+DECLARE_DELEGATE(FOnBranchListModified);
+
+
 class SMARTDIALOGUEEDITOR_API FSmartDialogueEditor final : public FAssetEditorToolkit, public FNotifyHook
 {
 public:
@@ -17,6 +20,9 @@ public:
 	void SetDialogue(USmartDialogue* InDialogue);
 	void BindCommands();
 	TSharedPtr<FExtender> GetToolbarExtender();
+
+	FOnBranchListModified OnBranchListModified;
+
 	
 	virtual FName GetToolkitFName() const override;
 	virtual FText GetToolkitName() const override;

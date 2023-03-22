@@ -309,6 +309,8 @@ void FSmartDialogueEditor::AddNewBranch()
 			.Branch(NewBranch)
 			.Editor(SharedThis(this));
 		DialogueBranchWidgets.Add(NewBranchWidget);
+
+		OnBranchListModified.ExecuteIfBound();
 	}
 }
 
