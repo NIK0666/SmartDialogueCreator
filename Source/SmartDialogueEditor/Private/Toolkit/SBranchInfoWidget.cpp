@@ -85,11 +85,17 @@ void SBranchInfoWidget::OnBranchNameTextCommitted(const FText& NewText, ETextCom
 
 void SBranchInfoWidget::OnBranchTextTextCommitted(const FText& NewText, ETextCommit::Type CommitType)
 {
-	if (CommitType == ETextCommit::OnEnter || CommitType == ETextCommit::OnUserMovedFocus)
+	if (Editor.IsValid())
 	{
-		if (BranchPtr.IsValid())
+		if (Editor.Pin()->GetDialogue() && BranchPtr)
 		{
-			BranchPtr->Text = NewText;
+			FName BranchKey = BranchPtr->Name;
+			FSmartDialogueBranch* BranchInAsset = Editor.Pin()->GetDialogue()->GetBranches().Find(BranchKey);
+			if (BranchInAsset && !BranchInAsset->Text.EqualTo(NewText))
+			{
+				BranchInAsset->Text = NewText;
+				Editor.Pin()->GetDialogue()->MarkPackageDirty();
+			}
 		}
 	}
 }
