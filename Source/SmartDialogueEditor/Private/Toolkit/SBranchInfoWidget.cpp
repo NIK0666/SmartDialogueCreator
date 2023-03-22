@@ -11,8 +11,11 @@
 
 void SBranchInfoWidget::Construct(const FArguments& InArgs)
 {
-	BranchPtr = InArgs._BranchPtr;
+	BranchName = InArgs._BranchName;
 	Editor = InArgs._Editor;
+
+	DialoguePtr = Editor.Pin()->GetDialogue();
+	BranchPtr = DialoguePtr->GetBranchPtr(BranchName);
 
 	ChildSlot
 	[
@@ -24,7 +27,7 @@ void SBranchInfoWidget::Construct(const FArguments& InArgs)
 			.WidthOverride(150)
 			[
 				SAssignNew(BranchNameTextBox, SEditableTextBox)
-				.Text(FText::FromName(BranchPtr->Name))
+				.Text(FText::FromName(BranchName))
 				.OnTextCommitted(this, &SBranchInfoWidget::OnBranchNameTextCommitted)
 			]
 		]
@@ -32,7 +35,7 @@ void SBranchInfoWidget::Construct(const FArguments& InArgs)
 		.FillWidth(1.0f)
 		[
 			SAssignNew(BranchTextTextBox, SEditableTextBox)
-			.Text(BranchPtr->Text)
+			.Text(BranchPtr ? BranchPtr->Text : FText::GetEmpty())
 			.OnTextCommitted(this, &SBranchInfoWidget::OnBranchTextTextCommitted)
 		]
 		+ SHorizontalBox::Slot()
@@ -66,14 +69,14 @@ void SBranchInfoWidget::OnBranchNameTextCommitted(const FText& NewText, ETextCom
 {
 	if (CommitType == ETextCommit::OnEnter || CommitType == ETextCommit::OnUserMovedFocus)
 	{
-		FName OldName = BranchPtr->Name;
+		FName OldName = BranchName;
 		FName NewName = FName(*NewText.ToString());
 
 		if (Editor.IsValid())
 		{
-			if (Editor.Pin()->GetDialogue() && Editor.Pin()->GetDialogue()->RenameBranch(OldName, NewName))
+			if (DialoguePtr && DialoguePtr->RenameBranch(OldName, NewName))
 			{
-				BranchPtr->Name = NewName;
+				BranchName = NewName;
 			}
 			else
 			{
@@ -85,17 +88,11 @@ void SBranchInfoWidget::OnBranchNameTextCommitted(const FText& NewText, ETextCom
 
 void SBranchInfoWidget::OnBranchTextTextCommitted(const FText& NewText, ETextCommit::Type CommitType)
 {
-	if (Editor.IsValid())
+	if (CommitType == ETextCommit::OnEnter || CommitType == ETextCommit::OnUserMovedFocus)
 	{
-		if (Editor.Pin()->GetDialogue() && BranchPtr)
+		if (!NewText.EqualTo(BranchPtr->Text))
 		{
-			FName BranchKey = BranchPtr->Name;
-			FSmartDialogueBranch* BranchInAsset = Editor.Pin()->GetDialogue()->GetBranches().Find(BranchKey);
-			if (BranchInAsset && !BranchInAsset->Text.EqualTo(NewText))
-			{
-				BranchInAsset->Text = NewText;
-				Editor.Pin()->GetDialogue()->MarkPackageDirty();
-			}
-		}
+			BranchPtr->Text = NewText;
+		}		
 	}
 }

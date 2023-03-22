@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "SmartDialogueData.h"
+#include "SmartDialogueEditor/Private/Toolkit/SBranchInfoWidget.h"
 #include "SmartDialogue.generated.h"
 
 DECLARE_EVENT(USmartDialogue, FOnBranchesChanged);
@@ -32,6 +33,7 @@ public:
 
 	FName GenerateBranchName() const;
 
+	FSmartDialogueBranch* GetBranchPtr(const FName& Name);
 	bool RenameBranch(FName OldName, FName NewName);
 
 	FOnBranchesChanged OnBranchesChanged;

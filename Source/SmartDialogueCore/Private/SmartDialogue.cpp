@@ -66,6 +66,16 @@ FName USmartDialogue::GenerateBranchName() const
 	return NewName;
 }
 
+FSmartDialogueBranch* USmartDialogue::GetBranchPtr(const FName& Name)
+{
+	if (Branches.Contains(Name))
+	{
+		return &Branches[Name];
+	}
+
+	return nullptr;
+}
+
 bool USmartDialogue::RenameBranch(FName OldName, FName NewName)
 {
 	if (Branches.Contains(OldName) && !Branches.Contains(NewName))
