@@ -80,7 +80,7 @@ FText FSmartDialogueEditor::GetToolkitName() const
 	FFormatNamedArguments Args;
 	Args.Add(TEXT("AssetName"), FText::FromString(Dialogue->GetName()));
 	Args.Add(TEXT("DirtyState"), bDirtyState ? FText::FromString( TEXT( "*" ) ) : FText::GetEmpty());
-	return FText::Format(LOCTEXT("CustomAssetTypeEditorAppLabel", "{SpriteName}{DirtyState}"), Args);
+	return FText::Format(LOCTEXT("CustomAssetTypeEditorAppLabel", "{AssetName}{DirtyState}"), Args);
 }
 
 FText FSmartDialogueEditor::GetBaseToolkitName() const
