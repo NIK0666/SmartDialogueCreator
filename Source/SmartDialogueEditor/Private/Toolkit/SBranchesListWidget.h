@@ -18,7 +18,8 @@ public:
 	void UpdateBranchesList();
 
 private:
-	TSharedPtr<FSmartDialogueEditor> SmartDialogueEditor;
+	TSharedRef<ITableRow> OnGenerateRowForBranchList(TSharedRef<SBranchInfoWidget> InWidget, const TSharedRef<STableViewBase>& OwnerTable);
 
+	TSharedPtr<FSmartDialogueEditor> SmartDialogueEditor;
 	TArray<TSharedRef<SBranchInfoWidget>> DialogueBranchWidgets;
 };

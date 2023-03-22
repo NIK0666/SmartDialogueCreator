@@ -4,6 +4,7 @@
 #include "FSmartDialogueEditor.h"
 
 #include "FSmartDialogueEditorCommands.h"
+#include "SBranchesListWidget.h"
 #include "Widgets/Docking/SDockTab.h"
 #include "SmartDialogue.h"
 #include "SBranchInfoWidget.h"
@@ -39,14 +40,7 @@ void FSmartDialogueEditor::SetDialogue(USmartDialogue* InDialogue)
 
 	if (Dialogue)
 	{
-		DialogueBranchWidgets.Reset();
-
-		for (FSmartDialogueBranch& Branch : Dialogue->Branches)
-		{
-			DialogueBranchWidgets.Add(SNew(SBranchInfoWidget)
-				.Branch(Branch)
-				.Editor(SharedThis(this)));
-		}
+		OnBranchListModified.ExecuteIfBound();
 	}
 }
 
@@ -229,10 +223,8 @@ TSharedRef<SDockTab> FSmartDialogueEditor::SpawnTab_SelectedBranchPhrases(const 
 
 TSharedRef<SWidget> FSmartDialogueEditor::CreateBranchesListWidget()
 {
-	return SNew(SListView<TSharedRef<SBranchInfoWidget>>)
-		.SelectionMode(ESelectionMode::None)
-		.ListItemsSource(&DialogueBranchWidgets)
-		.OnGenerateRow(this, &FSmartDialogueEditor::OnGenerateRowForBranchList);
+	return SNew(SBranchesListWidget)
+		.SmartDialogueEditor(SharedThis(this));
 }
 
 TSharedRef<SWidget> FSmartDialogueEditor::CreateSelectedBranchPropertiesWidget()
@@ -292,15 +284,6 @@ TSharedRef<FTabManager::FLayout> FSmartDialogueEditor::GetDefaultTabContents()
 	// GetTabManager()->RestoreFrom(DefaultLayout, TSharedPtr<SWindow>());
 }
 
-TSharedRef<ITableRow> FSmartDialogueEditor::OnGenerateRowForBranchList(TSharedRef<SBranchInfoWidget> InWidget, const TSharedRef<STableViewBase>& OwnerTable)
-{
-	return SNew(STableRow<TSharedRef<SBranchInfoWidget>>, OwnerTable)
-		.Content()
-		[
-			InWidget
-		];
-}
-
 void FSmartDialogueEditor::AddNewBranch()
 {
 	if (Dialogue)
@@ -310,10 +293,7 @@ void FSmartDialogueEditor::AddNewBranch()
 		NewBranch.Text = "New Branch Text";
 		Dialogue->Branches.Add(NewBranch);
 
-		TSharedRef<SBranchInfoWidget> NewBranchWidget = SNew(SBranchInfoWidget)
-			.Branch(NewBranch)
-			.Editor(SharedThis(this));
-		DialogueBranchWidgets.Add(NewBranchWidget);
+		OnBranchListModified.ExecuteIfBound();
 	}
 }
 

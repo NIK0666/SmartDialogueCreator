@@ -14,6 +14,14 @@ void SBranchesListWidget::Construct(const FArguments& InArgs)
 	// Подписываемся на делегат
 	SmartDialogueEditor->OnBranchListModified.BindSP(this, &SBranchesListWidget::UpdateBranchesList);
 
+	ChildSlot
+	[
+		SNew(SListView<TSharedRef<SBranchInfoWidget>>)
+			.SelectionMode(ESelectionMode::None)
+			.ListItemsSource(&DialogueBranchWidgets)
+			.OnGenerateRow(this, &SBranchesListWidget::OnGenerateRowForBranchList)
+	];
+	
 	// Обновляем список веток при создании виджета
 	UpdateBranchesList();
 }
@@ -28,4 +36,13 @@ void SBranchesListWidget::UpdateBranchesList()
 			.Branch(Branch)
 			.Editor(SmartDialogueEditor));
 	}
+}
+
+TSharedRef<ITableRow> SBranchesListWidget::OnGenerateRowForBranchList(TSharedRef<SBranchInfoWidget> InWidget, const TSharedRef<STableViewBase>& OwnerTable)
+{
+	return SNew(STableRow<TSharedRef<SBranchInfoWidget>>, OwnerTable)
+		.Content()
+		[
+			InWidget
+		];
 }

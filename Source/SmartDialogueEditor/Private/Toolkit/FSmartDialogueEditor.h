@@ -50,9 +50,6 @@ private:
 	TSharedRef<SWidget> CreateSelectedBranchPhrasesWidget();
 	TSharedRef<FTabManager::FLayout> GetDefaultTabContents();
 
-	TSharedRef<ITableRow> OnGenerateRowForBranchList(TSharedRef<SBranchInfoWidget> InWidget, const TSharedRef<STableViewBase>& OwnerTable);
-
-
 	void AddNewBranch();
 
 
@@ -65,6 +62,4 @@ private:
 	TSharedPtr<STreeView<TSharedPtr<FSmartDialogueBranch>>> DialogueBranchesList;
 	TSharedPtr<IDetailsView> DialogueBranchDetailsView;
 	TSharedPtr<IDetailsView> DialoguePhrasesDetailsView;
-	
-	TArray<TSharedRef<SBranchInfoWidget>> DialogueBranchWidgets;
 };
