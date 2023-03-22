@@ -1,26 +1,43 @@
-// 
+// SBranchesListWidget.h
 
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SmartDialogueData.h"
 #include "Widgets/DeclarativeSyntaxSupport.h"
 #include "Widgets/SCompoundWidget.h"
-#include "Toolkit/FSmartDialogueEditor.h"
 
-class SMARTDIALOGUEEDITOR_API SBranchesListWidget : public SCompoundWidget
+class FSmartDialogueEditor;
+class SBranchInfoWidget;
+class USmartDialogue;
+
+class SBranchesListWidget : public SCompoundWidget
 {
 public:
 	SLATE_BEGIN_ARGS(SBranchesListWidget) {}
 	SLATE_ARGUMENT(TSharedPtr<FSmartDialogueEditor>, SmartDialogueEditor)
 	SLATE_END_ARGS()
 
-
 	void Construct(const FArguments& InArgs);
-	void UpdateBranchesList();
 
-	void BranchItemAdded(FSmartDialogueBranch& AddedBranch);
+	// Обновляет список веток диалога
+	void UpdateBranchesList();
+	
+protected:
+	// Добавляет новый элемент в список веток и обновляет его отображение
+	void BranchItemAdded(FSmartDialogueBranch& NewBranch);
 	void BranchItemDeleted(FSmartDialogueBranch& DeletedBranch);
 
 private:
-	TSharedPtr<FSmartDialogueEditor> SmartDialogueEditor;
+	// Генерирует строку SBranchInfoWidget для SListView
+	TSharedRef<ITableRow> GenerateBranchInfoWidgetRow(TSharedPtr<SBranchInfoWidget> InItem, const TSharedRef<STableViewBase>& OwnerTable);
+
+	// Ссылка на редактор SmartDialogue
+	TWeakPtr<FSmartDialogueEditor> SmartDialogueEditor;
+
+	// Список виджетов SBranchInfoWidget
+	TArray<TSharedPtr<SBranchInfoWidget>> BranchesInfoWidgets;
+
+	// Виджет SListView для отображения веток диалога
+	TSharedPtr<SListView<TSharedPtr<SBranchInfoWidget>>> BranchesList;
 };
