@@ -1,6 +1,9 @@
 // SBranchInfoWidget.cpp
 
 #include "SBranchInfoWidget.h"
+
+#include "FSmartDialogueEditor.h"
+#include "SmartDialogue.h"
 #include "Widgets/Input/SEditableTextBox.h"
 #include "Widgets/Images/SImage.h"
 #include "Widgets/Input/SButton.h"
@@ -20,9 +23,9 @@ void SBranchInfoWidget::Construct(const FArguments& InArgs)
 			SNew(SBox)
 			.WidthOverride(150)
 			[
-				SNew(SEditableTextBox)
+				SAssignNew(BranchNameTextBox, SEditableTextBox)
 				.Text(FText::FromName(Branch.Name))
-				// ...
+				.OnTextCommitted(this, &SBranchInfoWidget::OnBranchNameTextCommitted)
 			]
 		]
 		+ SHorizontalBox::Slot()
@@ -57,4 +60,25 @@ void SBranchInfoWidget::Construct(const FArguments& InArgs)
 			// ...
 		]
 	];
+}
+
+void SBranchInfoWidget::OnBranchNameTextCommitted(const FText& NewText, ETextCommit::Type CommitType)
+{
+	if (CommitType == ETextCommit::OnEnter || CommitType == ETextCommit::OnUserMovedFocus)
+	{
+		FName OldName = Branch.Name;
+		FName NewName = FName(*NewText.ToString());
+
+		if (Editor.IsValid())
+		{
+			if (Editor.Pin()->GetDialogue() && Editor.Pin()->GetDialogue()->RenameBranch(OldName, NewName))
+			{
+				Branch.Name = NewName;
+			}
+			else
+			{
+				BranchNameTextBox->SetText(FText::FromName(OldName));
+			}
+		}
+	}
 }

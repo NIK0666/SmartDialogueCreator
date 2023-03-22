@@ -19,6 +19,9 @@ public:
 	void Construct(const FArguments& InArgs);
 
 private:
+	void OnBranchNameTextCommitted(const FText& NewText, ETextCommit::Type CommitType);
+	
 	FSmartDialogueBranch Branch;
 	TWeakPtr<FSmartDialogueEditor> Editor;
+	TSharedPtr<SEditableTextBox> BranchNameTextBox;
 };

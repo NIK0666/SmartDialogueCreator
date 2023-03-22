@@ -56,9 +56,29 @@ FName USmartDialogue::GenerateBranchName() const
 	return FName("branch_0");
 }
 
+bool USmartDialogue::RenameBranch(FName OldName, FName NewName)
+{
+	if (Branches.Contains(OldName) && !Branches.Contains(NewName))
+	{
+		FSmartDialogueBranch BranchToRename = Branches[OldName];
+		BranchToRename.Name = NewName;
+		Branches.Remove(OldName);
+		Branches.Add(NewName, BranchToRename);
+		LastBranchName = NewName;
+		MarkAsDirty();
+		return true;
+	}
+	return false;
+}
+
 void USmartDialogue::BranchesChanged()
 {
 	OnBranchesChanged.Broadcast();
+	MarkAsDirty();
+}
+
+void USmartDialogue::MarkAsDirty()
+{
 	UPackage* Package = GetOutermost();
 	if (Package && !Package->IsDirty())
 	{

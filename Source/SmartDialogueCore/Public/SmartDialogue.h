@@ -32,11 +32,15 @@ public:
 
 	FName GenerateBranchName() const;
 
+	bool RenameBranch(FName OldName, FName NewName);
+
 	FOnBranchesChanged OnBranchesChanged;
 
 protected:
 	UFUNCTION(BlueprintCallable, Category = "SmartDialogue")
 	void BranchesChanged();
+
+	void MarkAsDirty();
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SmartDialogue", meta = (AllowPrivateAccess = "true"))
