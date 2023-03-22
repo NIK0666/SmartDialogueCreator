@@ -42,14 +42,15 @@ void SBranchInfoWidget::Construct(const FArguments& InArgs)
 		+ SHorizontalBox::Slot()
 		.AutoWidth()
 		[
-			SNew(SButton)
+			SAssignNew(GrabButton, SButton)
 			.ButtonStyle(FEditorStyle::Get(), "FlatButton")
 			.ContentPadding(FMargin(1.0f, 1.0f, 1.0f, 1.0f))
+			.OnPressed(this, &SBranchInfoWidget::OnGrabButtonPressed)
+			.OnReleased(this, &SBranchInfoWidget::OnGrabButtonReleased)
 			[
 				SNew(SImage)
 				.Image(FAppStyle::GetBrush("SoftwareCursor_Grab"))
 			]
-			// ...
 		]
 		+ SHorizontalBox::Slot()
 		.AutoWidth()
@@ -61,7 +62,6 @@ void SBranchInfoWidget::Construct(const FArguments& InArgs)
 				SNew(SImage)
 				.Image(FAppStyle::GetBrush("Icons.Delete")) 
 			]
-			// ...
 		]
 	];
 }
@@ -111,5 +111,21 @@ void SBranchInfoWidget::OnBranchTextTextCommitted(const FText& NewText, ETextCom
 			}
 		}
 	}
+}
+
+void SBranchInfoWidget::OnGrabButtonPressed()
+{
+	TSharedPtr<SWidget> ButtonContent = GrabButton->GetContent();
+	TSharedPtr<SImage> ButtonImage = StaticCastSharedPtr<SImage>(ButtonContent);
+
+	ButtonImage->SetImage(FAppStyle::GetBrush("SoftwareCursor_UpDown"));
+}
+
+void SBranchInfoWidget::OnGrabButtonReleased()
+{
+	TSharedPtr<SWidget> ButtonContent = GrabButton->GetContent();
+	TSharedPtr<SImage> ButtonImage = StaticCastSharedPtr<SImage>(ButtonContent);
+
+	ButtonImage->SetImage(FAppStyle::GetBrush("SoftwareCursor_Grab"));
 }
 #undef LOCTEXT_NAMESPACE

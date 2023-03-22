@@ -25,11 +25,14 @@ private:
 	
 	void OnBranchNameTextCommitted(const FText& NewText, ETextCommit::Type CommitType);
 	void OnBranchTextTextCommitted(const FText& NewText, ETextCommit::Type CommitType);
-	
+	void OnGrabButtonPressed();
+	void OnGrabButtonReleased();
+
 	FName BranchName;
 	TWeakPtr<FSmartDialogueEditor> Editor;
 	TSharedPtr<SEditableTextBox> BranchNameTextBox;
 	TSharedPtr<SEditableTextBox> BranchTextTextBox;
+	TSharedPtr<SButton> GrabButton;
 	
 	USmartDialogue* DialoguePtr = nullptr;
 };
