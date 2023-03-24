@@ -8,6 +8,7 @@
 #include "Widgets/Docking/SDockTab.h"
 #include "SmartDialogue.h"
 #include "SBranchInfoWidget.h"
+#include "SBranchPropertiesWidget.h"
 
 #define LOCTEXT_NAMESPACE "SmartDialogueEditor"
 
@@ -236,11 +237,8 @@ TSharedRef<SWidget> FSmartDialogueEditor::CreateBranchesListWidget()
 
 TSharedRef<SWidget> FSmartDialogueEditor::CreateSelectedBranchPropertiesWidget()
 {
-	// Создайте виджет на основе SDetailsView или другого подходящего виджета для представления свойств выбранной ветки.
-	// Здесь вы также можете настроить отображение и редактирование свойств.
-	// ...
-	return SNullWidget::NullWidget;
-
+	return SNew(SBranchPropertiesWidget)
+		.SmartDialogueEditor(SharedThis(this));
 }
 
 TSharedRef<SWidget> FSmartDialogueEditor::CreateSelectedBranchPhrasesWidget()
