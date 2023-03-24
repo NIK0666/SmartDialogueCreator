@@ -119,6 +119,9 @@ struct FSmartDialogueBranch
 	bool Choice;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Branch")
+	bool Closed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Branch")
 	bool OrCond;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Branch")

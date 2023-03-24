@@ -238,7 +238,8 @@ TSharedRef<SWidget> FSmartDialogueEditor::CreateBranchesListWidget()
 TSharedRef<SWidget> FSmartDialogueEditor::CreateSelectedBranchPropertiesWidget()
 {
 	return SNew(SBranchPropertiesWidget)
-		.SmartDialogueEditor(SharedThis(this));
+		.SmartDialogueEditor(SharedThis(this))
+		.DialogueBranchData({});
 }
 
 TSharedRef<SWidget> FSmartDialogueEditor::CreateSelectedBranchPhrasesWidget()
