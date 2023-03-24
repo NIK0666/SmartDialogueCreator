@@ -53,6 +53,8 @@ private:
 	TSharedRef<FTabManager::FLayout> GetDefaultTabContents();
 
 	void AddNewBranch();
+	void PlayDialogue();
+	void ShowConfig();
 
 
 	TSharedPtr<SDockTab> BranchesListTab;

@@ -50,6 +50,16 @@ void FSmartDialogueEditor::BindCommands()
 		FSmartDialogueEditorCommands::Get().AddNewBranch,
 		FExecuteAction::CreateSP(this, &FSmartDialogueEditor::AddNewBranch),
 		FCanExecuteAction());
+	
+	ToolkitCommands->MapAction(
+	FSmartDialogueEditorCommands::Get().PlayDialogue,
+	FExecuteAction::CreateSP(this, &FSmartDialogueEditor::PlayDialogue),
+	FCanExecuteAction());
+
+	ToolkitCommands->MapAction(
+		FSmartDialogueEditorCommands::Get().ShowConfig,
+		FExecuteAction::CreateSP(this, &FSmartDialogueEditor::ShowConfig),
+		FCanExecuteAction());
 }
 
 TSharedPtr<FExtender> FSmartDialogueEditor::GetToolbarExtender()
@@ -62,6 +72,8 @@ TSharedPtr<FExtender> FSmartDialogueEditor::GetToolbarExtender()
 		FToolBarExtensionDelegate::CreateLambda([this](FToolBarBuilder& ToolbarBuilder)
 		{
 			ToolbarBuilder.AddToolBarButton(FSmartDialogueEditorCommands::Get().AddNewBranch, NAME_None, FText::GetEmpty(), TAttribute<FText>(), FSlateIcon(FEditorStyle::GetStyleSetName(), "Icons.Plus"));
+			ToolbarBuilder.AddToolBarButton(FSmartDialogueEditorCommands::Get().PlayDialogue, NAME_None, FText::GetEmpty(), TAttribute<FText>(), FSlateIcon(FAppStyle::GetAppStyleSetName(), "Icons.Toolbar.Play"));
+			ToolbarBuilder.AddToolBarButton(FSmartDialogueEditorCommands::Get().ShowConfig, NAME_None, FText::GetEmpty(), TAttribute<FText>(), FSlateIcon(FAppStyle::Get().GetStyleSetName(), "Icons.Settings"));
 		})
 	);
 
@@ -290,6 +302,16 @@ void FSmartDialogueEditor::AddNewBranch()
 
 		OnBranchItemAdded.ExecuteIfBound(NewBranch);
 	}
+}
+
+void FSmartDialogueEditor::PlayDialogue()
+{
+	// код для воспроизведения диалога
+}
+
+void FSmartDialogueEditor::ShowConfig()
+{
+	// код для отображения настроек конфигурации
 }
 
 #undef LOCTEXT_NAMESPACE

@@ -1,4 +1,4 @@
-// 
+// FSmartDialogueEditorCommands.cpp
 
 #pragma once
 
@@ -16,4 +16,6 @@ public:
 	virtual void RegisterCommands() override;
 
 	TSharedPtr<FUICommandInfo> AddNewBranch;
+	TSharedPtr<FUICommandInfo> PlayDialogue;
+	TSharedPtr<FUICommandInfo> ShowConfig;
 };
