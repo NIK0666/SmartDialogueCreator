@@ -19,7 +19,7 @@ public:
 	TArray< TSharedPtr< FString > > GetAllStrings();
 	void OnSelected(const FString& SelectedItem);
 
-	void OnChangeButtonClicked();
+	FReply OnChangeButtonClicked();
 	
 	void OnRemoveButtonClicked(int32 IndexToRemove);
 	FReply OnAddButtonClicked();

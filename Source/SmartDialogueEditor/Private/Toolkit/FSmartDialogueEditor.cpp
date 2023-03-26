@@ -4,7 +4,7 @@
 #include "FSmartDialogueEditor.h"
 
 #include "FSmartDialogueEditorCommands.h"
-#include "SBranchesListWidget.h"
+#include "Lists/SBranchesListWidget.h"
 #include "Widgets/Docking/SDockTab.h"
 #include "SmartDialogue.h"
 #include "SBranchInfoWidget.h"

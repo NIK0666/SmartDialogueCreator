@@ -5,6 +5,7 @@
 
 #include "EditorStyleSet.h"
 #include "SBaseListItemWidget.h"
+#include "SBranchListItemWidget.h"
 #include "Widgets/Input/SButton.h"
 #include "Widgets/Input/SComboBox.h"
 #include "Widgets/Text/STextBlock.h"
@@ -49,7 +50,7 @@ void SVerticalListWidget::Construct(const FArguments& InArgs)
 		]
 	];
 
-	UpdateData(/*TArray<FString>()*/{TEXT("Item 1"), TEXT("Item 2")}); // Initialize the list with an empty array.
+	UpdateData(TArray<FString>()); // Initialize the list with an empty array.
 }
 
 void SVerticalListWidget::UpdateData(const TArray<FString>& NewData)
@@ -60,13 +61,16 @@ void SVerticalListWidget::UpdateData(const TArray<FString>& NewData)
 	for (int32 Index = 0; Index < Data.Num(); ++Index)
 	{
 		const FString& Item = Data[Index];
-
+		
 		ListContainer->AddSlot()
 		[
-			SNew(SBaseListItemWidget)
+			SNew(SBranchListItemWidget)
 			.Item(Item)
 			.OnChangeClicked(this, &SVerticalListWidget::OnChangeButtonClicked)
-			.OnRemoveClicked_Lambda([this, Index](){ return this->OnRemoveButtonClicked(Index); })
+			.OnRemoveClicked_Lambda([this, Index](){ 
+				this->OnRemoveButtonClicked(Index);
+				return FReply::Handled();
+			})
 		];
 	}
 }
@@ -83,9 +87,10 @@ void SVerticalListWidget::OnSelected(const FString& SelectedItem)
 	// Handle the selection of an item from the combo box.
 }
 
-void SVerticalListWidget::OnChangeButtonClicked()
+FReply SVerticalListWidget::OnChangeButtonClicked()
 {
 	ShowSelectionMenu();
+	return FReply::Handled();
 }
 
 void SVerticalListWidget::OnRemoveButtonClicked(int32 IndexToRemove)

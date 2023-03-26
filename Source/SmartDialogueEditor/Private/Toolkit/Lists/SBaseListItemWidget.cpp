@@ -9,7 +9,6 @@
 void SBaseListItemWidget::Construct(const FArguments& InArgs)
 {
 	Item = InArgs._Item;
-	OnChangeClicked = InArgs._OnChangeClicked;
 	OnRemoveClicked = InArgs._OnRemoveClicked;
 
 	ChildSlot
@@ -18,20 +17,7 @@ void SBaseListItemWidget::Construct(const FArguments& InArgs)
 		+ SHorizontalBox::Slot()
 		.FillWidth(1.0f)
 		[
-			SNew(STextBlock)
-			.Text(FText::FromString(Item))
-		]
-		+ SHorizontalBox::Slot()
-		.AutoWidth()
-		[
-			SNew(SButton)
-			.ButtonStyle(FEditorStyle::Get(), "FlatButton.Primary")
-			.ContentPadding(FMargin(0.5f, 1, 0.5f, 1))
-			.OnClicked(this, &SBaseListItemWidget::OnChangeButtonClicked)
-			[
-				SNew(SImage)
-				.Image(FEditorStyle::GetBrush("Icons.Edit"))
-			]
+			GetContent()
 		]
 		+ SHorizontalBox::Slot()
 		.AutoWidth()
@@ -48,14 +34,17 @@ void SBaseListItemWidget::Construct(const FArguments& InArgs)
 	];
 }
 
-FReply SBaseListItemWidget::OnChangeButtonClicked()
+FReply SBaseListItemWidget::OnRemoveButtonClicked()
 {
-	OnChangeClicked.ExecuteIfBound();
+	if (OnRemoveClicked.IsBound())
+	{
+		OnRemoveClicked.Execute();
+	}	
 	return FReply::Handled();
 }
 
-FReply SBaseListItemWidget::OnRemoveButtonClicked()
+TSharedRef<SWidget> SBaseListItemWidget::GetContent()
 {
-	OnRemoveClicked.ExecuteIfBound();
-	return FReply::Handled();
+	return SNew(STextBlock)
+		.Text(FText::FromString(Item));
 }

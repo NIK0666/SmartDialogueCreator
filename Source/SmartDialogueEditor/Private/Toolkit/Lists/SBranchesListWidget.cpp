@@ -3,9 +3,9 @@
 
 #include "SBranchesListWidget.h"
 
-#include "FSmartDialogueEditor.h"
+#include "Toolkit/FSmartDialogueEditor.h"
 #include "SmartDialogue.h"
-#include "SBranchInfoWidget.h"
+#include "Toolkit/SBranchInfoWidget.h"
 #include "SmartDialogueEditor.h"
 #include "Widgets/Layout/SScrollBox.h"
 
