@@ -7,7 +7,7 @@
 #include "Toolkits/AssetEditorToolkit.h"
 
 class SBranchInfoWidget;
-class SBranchesListWidget;
+class SBranchesWidget;
 class USmartDialogue;
 
 DECLARE_DELEGATE_OneParam(FOnBranchItemAdded, FSmartDialogueBranch&);

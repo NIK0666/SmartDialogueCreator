@@ -61,16 +61,10 @@ void SVerticalListWidget::UpdateData(const TArray<FString>& NewData)
 	for (int32 Index = 0; Index < Data.Num(); ++Index)
 	{
 		const FString& Item = Data[Index];
-		
+        
 		ListContainer->AddSlot()
 		[
-			SNew(SBranchListItemWidget)
-			.Item(Item)
-			.OnChangeClicked(this, &SVerticalListWidget::OnChangeButtonClicked)
-			.OnRemoveClicked_Lambda([this, Index](){ 
-				this->OnRemoveButtonClicked(Index);
-				return FReply::Handled();
-			})
+			GetItemContent(Item)
 		];
 	}
 }
@@ -85,12 +79,6 @@ TArray< TSharedPtr< FString > > SVerticalListWidget::GetAllStrings()
 void SVerticalListWidget::OnSelected(const FString& SelectedItem)
 {
 	// Handle the selection of an item from the combo box.
-}
-
-FReply SVerticalListWidget::OnChangeButtonClicked()
-{
-	ShowSelectionMenu();
-	return FReply::Handled();
 }
 
 void SVerticalListWidget::OnRemoveButtonClicked(int32 IndexToRemove)
@@ -141,25 +129,8 @@ void SVerticalListWidget::OnComboBoxSelectionChanged(TSharedPtr<FString> NewSele
 	}
 }
 
-void SVerticalListWidget::ShowSelectionMenu()
+TSharedRef<SWidget> SVerticalListWidget::GetItemContent(const FString& Item)
 {
-	TArray<TSharedPtr<FString>> AllStrings = GetAllStrings();
-	TSharedPtr<SComboBox<TSharedPtr<FString>>> ComboBox;
-	SAssignNew(ComboBox, SComboBox<TSharedPtr<FString>>)
-	.OptionsSource(&AllStrings)
-	.OnGenerateWidget(this, &SVerticalListWidget::GenerateStringItemWidget)
-	.OnSelectionChanged(this, &SVerticalListWidget::OnComboBoxSelectionChanged)
-	.Content()
-	[
-		SNew(STextBlock)
-		.Text(NSLOCTEXT("Temp", "SelectItem", "Select an item"))
-	];
-
-	FSlateApplication::Get().PushMenu(
-		SharedThis(this),
-		FWidgetPath(),
-		ComboBox.ToSharedRef(),
-		FSlateApplication::Get().GetCursorPos(),
-		FPopupTransitionEffect(FPopupTransitionEffect::ContextMenu)
-	);
+	return SNew(SBaseListItemWidget)
+		.Item(Item);
 }

@@ -16,19 +16,20 @@ public:
 
 	void Construct(const FArguments& InArgs);
 	void UpdateData(const TArray<FString>& NewData);
-	TArray< TSharedPtr< FString > > GetAllStrings();
-	void OnSelected(const FString& SelectedItem);
-
-	FReply OnChangeButtonClicked();
 	
 	void OnRemoveButtonClicked(int32 IndexToRemove);
 	FReply OnAddButtonClicked();
 	TSharedRef<SWidget> GenerateStringItemWidget(TSharedPtr<FString> InItem);
 	void OnComboBoxSelectionChanged(TSharedPtr<FString> NewSelection, ESelectInfo::Type SelectInfo);
-	void ShowSelectionMenu();
+	
+protected:
+	virtual TSharedRef<SWidget> GetItemContent(const FString& Item);
+	virtual TArray< TSharedPtr<FString>> GetAllStrings();
+	virtual void OnSelected(const FString& SelectedItem);
+	
+	FText Title;
 
 private:
 	TSharedPtr<SVerticalBox> ListContainer;
-	FText Title;
 	TArray<FString> Data;
 };

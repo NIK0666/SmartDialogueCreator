@@ -1,95 +1,46 @@
-// SBranchesListWidget.cpp
-
+// SBranchesListWidget.h
 
 #include "SBranchesListWidget.h"
 
-#include "Toolkit/FSmartDialogueEditor.h"
-#include "SmartDialogue.h"
-#include "Toolkit/SBranchInfoWidget.h"
-#include "SmartDialogueEditor.h"
-#include "Widgets/Layout/SScrollBox.h"
+#include "SBranchListItemWidget.h"
 
 void SBranchesListWidget::Construct(const FArguments& InArgs)
 {
-	SmartDialogueEditor = InArgs._SmartDialogueEditor;
-
-	UpdateBranchesList();
-
-	SmartDialogueEditor.Pin()->OnBranchItemAdded.BindSP(this, &SBranchesListWidget::BranchItemAdded);
-	SmartDialogueEditor.Pin()->OnBranchItemDeleted.BindSP(this, &SBranchesListWidget::BranchItemDeleted);
-	
-	ChildSlot
-	[
-		SNew(SScrollBox)
-		.Orientation(Orient_Vertical)
-		+ SScrollBox::Slot()
-		[
-			// Создаем вертикальный список
-			SNew(SVerticalBox)
-			+ SVerticalBox::Slot()
-			.FillHeight(1.f)
-			[
-				// Заполняем список элементами SBranchInfoWidget
-				SAssignNew(BranchesList, SListView<TSharedPtr<SBranchInfoWidget>>)
-				.SelectionMode(ESelectionMode::None)
-				.ListItemsSource(&BranchesInfoWidgets)
-				.OnGenerateRow(this, &SBranchesListWidget::GenerateBranchInfoWidgetRow)
-			]
-		]
-	];
+	SVerticalListWidget::Construct(InArgs);
 }
 
-TSharedRef<ITableRow> SBranchesListWidget::GenerateBranchInfoWidgetRow(TSharedPtr<SBranchInfoWidget> InItem, const TSharedRef<STableViewBase>& OwnerTable)
+TSharedRef<SWidget> SBranchesListWidget::GetItemContent(const FString& Item)
 {
-	return SNew(STableRow<TSharedPtr<SBranchInfoWidget>>, OwnerTable)
+	return SNew(SBranchListItemWidget)
+		.Item(Item)
+		.OnChangeClicked(this, &SBranchesListWidget::OnChangeButtonClicked);
+}
+
+void SBranchesListWidget::ShowSelectionMenu()
+{
+	TArray<TSharedPtr<FString>> AllStrings = GetAllStrings();
+	TSharedPtr<SComboBox<TSharedPtr<FString>>> ComboBox;
+	SAssignNew(ComboBox, SComboBox<TSharedPtr<FString>>)
+		.OptionsSource(&AllStrings)
+		.OnGenerateWidget(this, &SBranchesListWidget::GenerateStringItemWidget)
+		.OnSelectionChanged(this, &SBranchesListWidget::OnComboBoxSelectionChanged)
+		.Content()
 		[
-			InItem.ToSharedRef()
+			SNew(STextBlock)
+			.Text(NSLOCTEXT("Temp", "SelectItem", "Select an item"))
 		];
+
+	FSlateApplication::Get().PushMenu(
+		SharedThis(this),
+		FWidgetPath(),
+		ComboBox.ToSharedRef(),
+		FSlateApplication::Get().GetCursorPos(),
+		FPopupTransitionEffect(FPopupTransitionEffect::ContextMenu)
+	);
 }
 
-void SBranchesListWidget::UpdateBranchesList()
+FReply SBranchesListWidget::OnChangeButtonClicked()
 {
-	if (!SmartDialogueEditor.IsValid())
-	{
-		return;
-	}
-
-	BranchesInfoWidgets.Empty();
-	USmartDialogue* Dialogue = SmartDialogueEditor.Pin()->GetDialogue();
-
-	if (Dialogue)
-	{
-		for (const TPair<FName, FSmartDialogueBranch>& Pair : Dialogue->GetBranches())
-		{
-			BranchesInfoWidgets.Add(
-				SNew(SBranchInfoWidget)
-				.BranchName(Pair.Key)
-				.Editor(SmartDialogueEditor)
-			);
-		}
-	}
-
-	if (BranchesList.IsValid())
-	{
-		BranchesList->RequestListRefresh();
-	}
-}
-
-void SBranchesListWidget::BranchItemAdded(FSmartDialogueBranch& AddedBranch)
-{
-	TSharedPtr<SBranchInfoWidget> NewBranchInfoWidget = SNew(SBranchInfoWidget)
-			.BranchName(AddedBranch.Name)
-			.Editor(SmartDialogueEditor);
-
-	BranchesInfoWidgets.Add(NewBranchInfoWidget);
-
-	if (BranchesList.IsValid())
-	{
-		BranchesList->RequestListRefresh();
-	}
-}
-
-void SBranchesListWidget::BranchItemDeleted(FSmartDialogueBranch& DeletedBranch)
-{
-	// Здесь нужно удалить элемент SBranchInfoWidget из списка
+	ShowSelectionMenu();
+	return FReply::Handled();
 }

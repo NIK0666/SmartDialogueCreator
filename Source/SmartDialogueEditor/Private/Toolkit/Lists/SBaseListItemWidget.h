@@ -16,7 +16,7 @@ public:
 	void Construct(const FArguments& InArgs);
 	
 protected:
-	virtual TSharedRef<SWidget> GetContent() = 0;
+	virtual TSharedRef<SWidget> GetContent();
 	
 	FString Item;
 private:

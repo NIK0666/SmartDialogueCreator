@@ -4,6 +4,7 @@
 #include "SBranchPropertiesWidget.h"
 
 #include "EditorStyleSet.h"
+#include "Lists/SBranchesListWidget.h"
 #include "Lists/SVerticalListWidget.h"
 
 #define LOCTEXT_NAMESPACE "SmartDialogueEditor"

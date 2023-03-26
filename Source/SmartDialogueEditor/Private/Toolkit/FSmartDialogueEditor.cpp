@@ -4,7 +4,7 @@
 #include "FSmartDialogueEditor.h"
 
 #include "FSmartDialogueEditorCommands.h"
-#include "Lists/SBranchesListWidget.h"
+#include "Lists/SBranchesWidget.h"
 #include "Widgets/Docking/SDockTab.h"
 #include "SmartDialogue.h"
 #include "SBranchInfoWidget.h"
@@ -231,7 +231,7 @@ TSharedRef<SDockTab> FSmartDialogueEditor::SpawnTab_SelectedBranchPhrases(const 
 
 TSharedRef<SWidget> FSmartDialogueEditor::CreateBranchesListWidget()
 {
-	return SNew(SBranchesListWidget)
+	return SNew(SBranchesWidget)
 		.SmartDialogueEditor(SharedThis(this));
 }
 
