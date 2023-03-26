@@ -4,6 +4,7 @@
 #include "SVerticalListWidget.h"
 
 #include "EditorStyleSet.h"
+#include "SBaseListItemWidget.h"
 #include "Widgets/Input/SButton.h"
 #include "Widgets/Input/SComboBox.h"
 #include "Widgets/Text/STextBlock.h"
@@ -59,40 +60,13 @@ void SVerticalListWidget::UpdateData(const TArray<FString>& NewData)
 	for (int32 Index = 0; Index < Data.Num(); ++Index)
 	{
 		const FString& Item = Data[Index];
-		
+
 		ListContainer->AddSlot()
 		[
-			SNew(SHorizontalBox)
-			+ SHorizontalBox::Slot()
-			.FillWidth(1.0f)
-			[
-				SNew(STextBlock)
-				.Text(FText::FromString(Item))
-			]
-			+ SHorizontalBox::Slot()
-			.AutoWidth()
-			[
-				SNew(SButton)
-				.ButtonStyle(FEditorStyle::Get(), "FlatButton.Primary")
-				.ContentPadding(FMargin(0.5f, 1, 0.5f, 1))
-				.OnClicked(this, &SVerticalListWidget::OnChangeButtonClicked)
-				[
-					SNew(SImage)
-					.Image(FEditorStyle::GetBrush("Icons.Edit"))
-				]
-			]
-			+ SHorizontalBox::Slot()
-			.AutoWidth()
-			[
-				SNew(SButton)
-				.ButtonStyle(FEditorStyle::Get(), "FlatButton.Danger")
-				.ContentPadding(FMargin(0.5f, 1, 0.5f, 1))
-				.OnClicked_Lambda([this, Index](){ return this->OnRemoveButtonClicked(Index); })
-				[
-					SNew(SImage)
-					.Image(FEditorStyle::GetBrush("Cross"))
-				]
-			]
+			SNew(SBaseListItemWidget)
+			.Item(Item)
+			.OnChangeClicked(this, &SVerticalListWidget::OnChangeButtonClicked)
+			.OnRemoveClicked_Lambda([this, Index](){ return this->OnRemoveButtonClicked(Index); })
 		];
 	}
 }
@@ -109,20 +83,18 @@ void SVerticalListWidget::OnSelected(const FString& SelectedItem)
 	// Handle the selection of an item from the combo box.
 }
 
-FReply SVerticalListWidget::OnChangeButtonClicked()
+void SVerticalListWidget::OnChangeButtonClicked()
 {
 	ShowSelectionMenu();
-	return FReply::Handled();
 }
 
-FReply SVerticalListWidget::OnRemoveButtonClicked(int32 IndexToRemove)
+void SVerticalListWidget::OnRemoveButtonClicked(int32 IndexToRemove)
 {
 	if (IndexToRemove != INDEX_NONE)
 	{
 		Data.RemoveAt(IndexToRemove);
 		UpdateData(Data);
 	}
-	return FReply::Handled();
 }
 
 FReply SVerticalListWidget::OnAddButtonClicked()

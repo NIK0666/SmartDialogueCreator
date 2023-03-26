@@ -18,8 +18,10 @@ public:
 	void UpdateData(const TArray<FString>& NewData);
 	TArray< TSharedPtr< FString > > GetAllStrings();
 	void OnSelected(const FString& SelectedItem);
-	FReply OnChangeButtonClicked();
-	FReply OnRemoveButtonClicked(int32 IndexToRemove);
+
+	void OnChangeButtonClicked();
+	
+	void OnRemoveButtonClicked(int32 IndexToRemove);
 	FReply OnAddButtonClicked();
 	TSharedRef<SWidget> GenerateStringItemWidget(TSharedPtr<FString> InItem);
 	void OnComboBoxSelectionChanged(TSharedPtr<FString> NewSelection, ESelectInfo::Type SelectInfo);
