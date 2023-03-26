@@ -1,17 +1,13 @@
 // SBranchesListWidget.h
+#pragma once
 
+#include "CoreMinimal.h"
 #include "SVerticalListWidget.h"
 
 class SBranchesListWidget : public SVerticalListWidget
 {
 	
-public:
-	SLATE_BEGIN_ARGS(SBranchesListWidget)
-	: _Title(FText::GetEmpty())
-	{}
-	SLATE_ARGUMENT(FText, Title)
-	SLATE_END_ARGS()
-	
+public:	
 	void Construct(const FArguments& InArgs);
 
 protected:

@@ -6,7 +6,8 @@
 
 void SBranchesListWidget::Construct(const FArguments& InArgs)
 {
-	SVerticalListWidget::Construct(InArgs);
+	SVerticalListWidget::Construct(SVerticalListWidget::FArguments()
+	.Title(InArgs._Title));
 }
 
 TSharedRef<SWidget> SBranchesListWidget::GetItemContent(const FString& Item)

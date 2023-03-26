@@ -136,7 +136,7 @@ void SBranchPropertiesWidget::Construct(const FArguments& InArgs)
 			  .Padding(4.f, 0.f)
 			  .VAlign(VAlign_Center)
 			[
-				SNew(SVerticalListWidget)
+				SNew(SBranchesListWidget)
 				.Title(LOCTEXT("HideBranchesLabel", "Hide Branches:"))
 			]
 
@@ -145,7 +145,7 @@ void SBranchPropertiesWidget::Construct(const FArguments& InArgs)
 			  .Padding(4.f, 0.f)
 			  .VAlign(VAlign_Center)
 			[
-				SNew(SVerticalListWidget)
+				SNew(SBranchesListWidget)
 				.Title(LOCTEXT("ShowBranchesLabel", "Show Branches:"))
 			]
 

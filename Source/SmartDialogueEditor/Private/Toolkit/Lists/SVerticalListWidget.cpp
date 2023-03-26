@@ -24,7 +24,7 @@ void SVerticalListWidget::Construct(const FArguments& InArgs)
 		[
 			SNew(SHorizontalBox)
 			+ SHorizontalBox::Slot()
-			.FillWidth(1.0f)
+			.AutoWidth()
 			[
 				SNew(STextBlock)
 				.Text(Title)
@@ -41,6 +41,8 @@ void SVerticalListWidget::Construct(const FArguments& InArgs)
 					.Image(FEditorStyle::GetBrush("Plus"))
 				]
 			]
+			+ SHorizontalBox::Slot()
+			.FillWidth(1.0f)
 		]
 		+ SVerticalBox::Slot()
 		.HAlign(HAlign_Fill)
