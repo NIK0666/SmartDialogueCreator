@@ -2,16 +2,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SVerticalListWidget.h"
+#include "SBaseListWidget.h"
 
-class SBranchesListWidget : public SVerticalListWidget
+class SBranchesListWidget : public SBaseListWidget
 {
 	
-public:	
+public:
+	SLATE_BEGIN_ARGS(SBranchesListWidget) {}
+	SLATE_ARGUMENT(FText, Title)
+	SLATE_ARGUMENT(TWeakPtr<FSmartDialogueEditor>, Editor)
+	SLATE_ARGUMENT(bool, bIsShowed)
+	SLATE_END_ARGS()
+	
 	void Construct(const FArguments& InArgs);
 
 protected:
-	TSharedRef<SWidget> GetItemContent(const FString& Item) override;
+	TSharedRef<SWidget> GetItemContent(const FListItemData& Item) override;
 	void ShowSelectionMenu();
 	FReply OnChangeButtonClicked();
+	bool bIsShowed;
 };

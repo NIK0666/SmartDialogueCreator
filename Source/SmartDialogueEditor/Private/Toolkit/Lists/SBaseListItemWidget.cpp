@@ -9,8 +9,8 @@
 void SBaseListItemWidget::Construct(const FArguments& InArgs)
 {
 	Item = InArgs._Item;
-	OnRemoveClicked = InArgs._OnRemoveClicked;
-
+	Editor = InArgs._Editor;
+	
 	ChildSlot
 	[
 		SNew(SHorizontalBox)
@@ -25,7 +25,7 @@ void SBaseListItemWidget::Construct(const FArguments& InArgs)
 			SNew(SButton)
 			.ButtonStyle(FEditorStyle::Get(), "FlatButton.Danger")
 			.ContentPadding(FMargin(0.5f, 1, 0.5f, 1))
-			.OnClicked(this, &SBaseListItemWidget::OnRemoveButtonClicked)
+			.OnClicked(this, &SBaseListItemWidget::RemoveItem)
 			[
 				SNew(SImage)
 				.Image(FEditorStyle::GetBrush("Cross"))
@@ -34,17 +34,13 @@ void SBaseListItemWidget::Construct(const FArguments& InArgs)
 	];
 }
 
-FReply SBaseListItemWidget::OnRemoveButtonClicked()
-{
-	if (OnRemoveClicked.IsBound())
-	{
-		OnRemoveClicked.Execute();
-	}	
+FReply SBaseListItemWidget::RemoveItem()
+{	
 	return FReply::Handled();
 }
 
 TSharedRef<SWidget> SBaseListItemWidget::GetContent()
 {
 	return SNew(STextBlock)
-		.Text(FText::FromString(Item));
+		.Text(FText::FromString(Item.Name));
 }

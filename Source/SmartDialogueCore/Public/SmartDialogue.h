@@ -34,7 +34,9 @@ public:
 	FName GenerateBranchName() const;
 
 	FSmartDialogueBranch* GetBranchPtr(const FName& Name);
-	bool RenameBranch(FName OldName, FName NewName);
+	bool RenameBranch(FName OldName, FName NewName);	
+	
+	void RemoveBranchInList(bool bIsShowed, const FString& Name);
 
 	FOnBranchesChanged OnBranchesChanged;
 

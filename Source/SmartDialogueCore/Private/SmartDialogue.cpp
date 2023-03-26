@@ -91,6 +91,11 @@ bool USmartDialogue::RenameBranch(FName OldName, FName NewName)
 	return false;
 }
 
+void USmartDialogue::RemoveBranchInList(bool bIsShowed, const FString& Name)
+{
+	
+}
+
 void USmartDialogue::BranchesChanged()
 {
 	OnBranchesChanged.Broadcast();

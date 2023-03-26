@@ -3,6 +3,8 @@
 
 #include "SBranchListItemWidget.h"
 #include "EditorStyleSet.h"
+#include "SmartDialogue.h"
+#include "Toolkit/FSmartDialogueEditor.h"
 #include "Widgets/Input/SButton.h"
 #include "Widgets/Images/SImage.h"
 #include "Widgets/Text/STextBlock.h"
@@ -11,8 +13,9 @@ void SBranchListItemWidget::Construct(const FArguments& InArgs)
 {
 	SBaseListItemWidget::Construct(SBaseListItemWidget::FArguments()
 		.Item(InArgs._Item)
-		.OnRemoveClicked(InArgs._OnRemoveClicked));
-
+		.Editor(InArgs._Editor));
+	
+	bIsShowed = InArgs._bIsShowed;
 	OnChangeClicked = InArgs._OnChangeClicked;
 }
 
@@ -23,7 +26,7 @@ TSharedRef<SWidget> SBranchListItemWidget::GetContent()
 		.FillWidth(1.0f)
 		[
 			SNew(STextBlock)
-			.Text(FText::FromString(Item))
+			.Text(FText::FromString(Item.Name))
 		]
 		+ SHorizontalBox::Slot()
 		.AutoWidth()
@@ -37,6 +40,12 @@ TSharedRef<SWidget> SBranchListItemWidget::GetContent()
 				.Image(FEditorStyle::GetBrush("Icons.Edit"))
 			]
 		];
+}
+
+FReply SBranchListItemWidget::RemoveItem()
+{
+	Editor.Pin()->GetDialogue()->RemoveBranchInList(bIsShowed, Item.Name);
+	return SBaseListItemWidget::RemoveItem();
 }
 
 FReply SBranchListItemWidget::OnChangeButtonClicked()

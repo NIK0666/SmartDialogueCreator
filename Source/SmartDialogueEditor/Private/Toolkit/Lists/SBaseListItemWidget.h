@@ -3,14 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ListItemData.h"
 #include "Widgets/SCompoundWidget.h"
+
+class FSmartDialogueEditor;
 
 class SBaseListItemWidget : public SCompoundWidget
 {
 public:
 	SLATE_BEGIN_ARGS(SBaseListItemWidget) {}
-		SLATE_ARGUMENT(FString, Item)
-		SLATE_EVENT(FOnClicked, OnRemoveClicked)
+		SLATE_ARGUMENT(FListItemData, Item)
+		SLATE_ARGUMENT(TWeakPtr<FSmartDialogueEditor>, Editor)
+
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs);
@@ -18,8 +22,8 @@ public:
 protected:
 	virtual TSharedRef<SWidget> GetContent();
 	
-	FString Item;
-private:
-	FReply OnRemoveButtonClicked();
-	FOnClicked OnRemoveClicked;
+	FListItemData Item;
+	TWeakPtr<FSmartDialogueEditor> Editor;
+
+	virtual FReply RemoveItem();
 };

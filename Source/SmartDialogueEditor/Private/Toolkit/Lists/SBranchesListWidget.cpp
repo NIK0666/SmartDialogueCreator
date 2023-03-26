@@ -6,14 +6,18 @@
 
 void SBranchesListWidget::Construct(const FArguments& InArgs)
 {
-	SVerticalListWidget::Construct(SVerticalListWidget::FArguments()
-	.Title(InArgs._Title));
+	SBaseListWidget::Construct(SBaseListWidget::FArguments()
+		.Title(InArgs._Title)
+		.Editor(InArgs._Editor));
+	bIsShowed = InArgs._bIsShowed;
 }
 
-TSharedRef<SWidget> SBranchesListWidget::GetItemContent(const FString& Item)
+TSharedRef<SWidget> SBranchesListWidget::GetItemContent(const FListItemData& Item)
 {
 	return SNew(SBranchListItemWidget)
 		.Item(Item)
+		.bIsShowed(bIsShowed)
+		.Editor(Editor)
 		.OnChangeClicked(this, &SBranchesListWidget::OnChangeButtonClicked);
 }
 

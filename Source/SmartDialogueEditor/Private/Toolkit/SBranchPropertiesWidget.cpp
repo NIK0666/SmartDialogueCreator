@@ -5,7 +5,7 @@
 
 #include "EditorStyleSet.h"
 #include "Lists/SBranchesListWidget.h"
-#include "Lists/SVerticalListWidget.h"
+#include "Lists/SBaseListWidget.h"
 
 #define LOCTEXT_NAMESPACE "SmartDialogueEditor"
 
@@ -137,6 +137,8 @@ void SBranchPropertiesWidget::Construct(const FArguments& InArgs)
 			  .VAlign(VAlign_Center)
 			[
 				SNew(SBranchesListWidget)
+				.bIsShowed(false)
+				.Editor(SmartDialogueEditor)
 				.Title(LOCTEXT("HideBranchesLabel", "Hide Branches:"))
 			]
 
@@ -146,6 +148,8 @@ void SBranchPropertiesWidget::Construct(const FArguments& InArgs)
 			  .VAlign(VAlign_Center)
 			[
 				SNew(SBranchesListWidget)
+				.bIsShowed(true)
+				.Editor(SmartDialogueEditor)
 				.Title(LOCTEXT("ShowBranchesLabel", "Show Branches:"))
 			]
 
@@ -154,7 +158,8 @@ void SBranchPropertiesWidget::Construct(const FArguments& InArgs)
 			  .Padding(4.f, 0.f)
 			  .VAlign(VAlign_Center)
 			[
-				SNew(SVerticalListWidget)
+				SNew(SBaseListWidget)
+				.Editor(SmartDialogueEditor)
 				.Title(LOCTEXT("ModifyVariablesLabel", "Modify Variables:"))
 			]
 
@@ -163,7 +168,8 @@ void SBranchPropertiesWidget::Construct(const FArguments& InArgs)
 			  .Padding(4.f, 0.f)
 			  .VAlign(VAlign_Center)
 			[
-				SNew(SVerticalListWidget)
+				SNew(SBaseListWidget)
+				.Editor(SmartDialogueEditor)
 				.Title(LOCTEXT("CheckEntryConditionsLabel", "Check Entry Conditions:"))
 			]
 		]
