@@ -17,7 +17,7 @@ void SBranchInfoWidget::Construct(const FArguments& InArgs)
 	Editor = InArgs._Editor;
 
 	DialoguePtr = Editor.Pin()->GetDialogue();
-
+	
 	ChildSlot
 	[
 		SNew(SHorizontalBox)

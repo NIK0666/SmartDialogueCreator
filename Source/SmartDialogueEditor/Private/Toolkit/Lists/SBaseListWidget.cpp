@@ -77,12 +77,7 @@ void SBaseListWidget::UpdateData(const TArray<FListItemData>& NewData)
 
 TArray<FString> SBaseListWidget::GetAllStrings()
 {
-	TArray<FString> AllStrings;
-	AllStrings.Add(TEXT("test1"));
-	AllStrings.Add(TEXT("test2"));
-	AllStrings.Add(TEXT("test___3"));
-
-	return AllStrings;
+	return {};
 }
 
 void SBaseListWidget::OnSelected(const FListItemData& SelectedItem)

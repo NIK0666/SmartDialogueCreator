@@ -20,6 +20,7 @@ public class SmartDialogueEditor : ModuleRules
             "Engine", 
             "Slate", 
             "SlateCore",
+            "UMG",
             "InputCore", 
             "EditorStyle",
             "UnrealEd", 

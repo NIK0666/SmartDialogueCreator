@@ -7,6 +7,8 @@
 #include "Lists/SBranchesListWidget.h"
 #include "Lists/SBaseListWidget.h"
 #include "Lists/SOperationsListWidget.h"
+#include "Lists/SPhraseListItemWidget.h"
+#include "Widgets/Layout/SScrollBox.h"
 
 #define LOCTEXT_NAMESPACE "SmartDialogueEditor"
 
@@ -14,7 +16,16 @@ void SBranchPropertiesWidget::Construct(const FArguments& InArgs)
 {
 	SmartDialogueEditor = InArgs._SmartDialogueEditor;
 	DialogueBranchData = InArgs._DialogueBranchData;
-
+	
+	TSharedRef<SVerticalBox> MyList = SNew(SVerticalBox);
+	for (int32 i = 0; i < 5; ++i) // Пример добавления 5 элементов
+	{
+		MyList->AddSlot()
+		[
+			SNew(SPhraseListItemWidget)
+		];
+	}
+	
 	ChildSlot
 	[
 		SNew(SVerticalBox)
@@ -174,6 +185,15 @@ void SBranchPropertiesWidget::Construct(const FArguments& InArgs)
 				.Editor(SmartDialogueEditor)
 				.bIsExecution(false)
 				.Title(LOCTEXT("CheckEntryConditionsLabel", "Check Entry Conditions:"))
+			]
+		]
+		+SVerticalBox::Slot()
+		.FillHeight(1.f)
+		[
+			SNew(SScrollBox)
+			+ SScrollBox::Slot()
+			[
+				MyList
 			]
 		]
 	];
