@@ -47,6 +47,8 @@ private:
 	TSharedRef<SDockTab> SpawnTab_BranchesList(const FSpawnTabArgs& Args);
 	TSharedRef<SDockTab> SpawnTab_SelectedBranchProperties(const FSpawnTabArgs& Args);
 	TSharedRef<SDockTab> SpawnTab_SelectedBranchPhrases(const FSpawnTabArgs& Args);
+	TSharedRef<SDockTab> SpawnTab_Config(const FSpawnTabArgs& Args);
+	TSharedRef<SDockTab> SpawnTab_Player(const FSpawnTabArgs& Args);
 
 	TSharedRef<SWidget> CreateBranchesListWidget();
 	TSharedRef<SWidget> CreateSelectedBranchPropertiesWidget();
@@ -57,6 +59,7 @@ private:
 	void PlayDialogue();
 	void ShowConfig();
 
+	
 
 	TSharedPtr<SDockTab> BranchesListTab;
 	TSharedPtr<SDockTab> SelectedBranchPropertiesTab;

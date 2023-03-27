@@ -6,99 +6,201 @@
 #include "EditorStyleSet.h"
 #include "Widgets/Input/SMultiLineEditableTextBox.h"
 
+
 void SPhraseListItemWidget::Construct(const FArguments& InArgs)
 {
+
+	// Заполните массивы с опциями для комбо-боксов по вашим данным
+	CharacterOptions.Add(MakeShareable(new FString(TEXT("Option1"))));
+	CharacterOptions.Add(MakeShareable(new FString(TEXT("Option2"))));
+
+	VarOptions.Add(MakeShareable(new FString(TEXT("Var1"))));
+	VarOptions.Add(MakeShareable(new FString(TEXT("Var2"))));
+
+	ComparisonOptions.Add(MakeShareable(new FString(TEXT("=="))));
+	ComparisonOptions.Add(MakeShareable(new FString(TEXT("!="))));
+
+	
 	ChildSlot
 	[
-		SNew(SBox)
-		.WidthOverride(800.0f)
+		SNew(SVerticalBox)
+		+ SVerticalBox::Slot()
+		.AutoHeight()
 		[
 			SNew(SHorizontalBox)
 			+ SHorizontalBox::Slot()
+			.AutoWidth()
+			[
+				SAssignNew(CharacterComboBox, SComboBox<TSharedPtr<FString>>)
+				.ContentPadding(FMargin(2.0f))
+				.OptionsSource(&CharacterOptions)
+				.OnGenerateWidget(this, &SPhraseListItemWidget::GenerateCharacterOption)
+				.OnSelectionChanged(this, &SPhraseListItemWidget::OnCharacterSelected)
+				.InitiallySelectedItem(CharacterOptions[0])
+				[
+					SNew(STextBlock)
+					.Text(NSLOCTEXT("SPhraseListItemWidget", "Character", "[character]"))
+				]
+			]
+			+ SHorizontalBox::Slot()
+			.AutoWidth()
+			[
+				SNew(SEditableTextBox)
+				.HintText(NSLOCTEXT("SPhraseListItemWidget", "Animation", "Animation"))
+			]
+			+ SHorizontalBox::Slot()
+			.AutoWidth()
+			[
+				SAssignNew(VarComboBox, SComboBox<TSharedPtr<FString>>)
+				.ContentPadding(FMargin(2.0f))
+				.OptionsSource(&VarOptions)
+				.OnGenerateWidget(this, &SPhraseListItemWidget::GenerateVarOption)
+				.OnSelectionChanged(this, &SPhraseListItemWidget::OnVarSelected)
+				.InitiallySelectedItem(VarOptions[0])
+				[
+					SNew(STextBlock)
+					.Text(NSLOCTEXT("SPhraseListItemWidget", "Var", "[Var]"))
+				]
+			]
+			+ SHorizontalBox::Slot()
+			.AutoWidth()
+			[
+				SAssignNew(ComparisonComboBox, SComboBox<TSharedPtr<FString>>)
+				.ContentPadding(FMargin(2.0f))
+				.OptionsSource(&ComparisonOptions)
+				.OnGenerateWidget(this, &SPhraseListItemWidget::GenerateComparisonOption)
+				.OnSelectionChanged(this, &SPhraseListItemWidget::OnComparisonSelected)
+				.InitiallySelectedItem(ComparisonOptions[0])
+				[
+					SNew(STextBlock)
+					.Text(NSLOCTEXT("SPhraseListItemWidget", "Comparison", "=="))
+				]
+			]
+			+ SHorizontalBox::Slot()
+			.AutoWidth()
+			[
+				SNew(SEditableTextBox)
+				.HintText(NSLOCTEXT("SPhraseListItemWidget", "Value", "Value"))
+			]
+			+ SHorizontalBox::Slot()
+			.AutoWidth()
+			[
+				SNew(SCheckBox)
+				.OnCheckStateChanged(this, &SPhraseListItemWidget::OnOrCheckStateChanged)
+				.Content()
+				[
+					SNew(STextBlock)
+					.Text(NSLOCTEXT("SPhraseListItemWidget", "Or", "Or?"))
+				]
+			]
+			+ SHorizontalBox::Slot()
 			.FillWidth(1.0f)
 			[
-				SNew(SVerticalBox)
-				+ SVerticalBox::Slot()
-				.Padding(5.0f)
+				SNew(SBox)
+			]
+			+ SHorizontalBox::Slot()
+			.AutoWidth()
+			[
+				SNew(SButton)
+				.Content()
 				[
-					SNew(SHorizontalBox)
-					+ SHorizontalBox::Slot()
-					[
-						SNew(SButton)
-						.Text_Lambda([]() { return FText::FromString(TEXT("КнопкаПерсонажа v")); })
-					]
-					+ SHorizontalBox::Slot()
-					[
-						SNew(SButton)
-						.Text_Lambda([]() { return FText::FromString(TEXT("КнопкаАнимации v")); })
-					]
-					+ SHorizontalBox::Slot()
-					[
-						SNew(SButton)
-						.Text_Lambda([]() { return FText::FromString(TEXT("КнопкаПеременной")); })
-					]
-					+ SHorizontalBox::Slot()
-					[
-						SNew(SCheckBox)
-                            .Style(FCoreStyle::Get(), "ToggleButtonCheckbox")
-                            .ToolTipText(FText::FromString(TEXT("Или?")))
-					]
-					+ SHorizontalBox::Slot()
-					.HAlign(HAlign_Right)
-					[
-						SNew(SBox)
-                            .WidthOverride(90.0f)
-                            .HAlign(HAlign_Right)
-						[
-							SNew(SHorizontalBox)
-							+ SHorizontalBox::Slot()
-							[
-								SNew(SButton)
-                                    .ButtonStyle(FEditorStyle::Get(), "FlatButton.Default")
-                                    .ToolTipText(FText::FromString(TEXT("Настройки")))
-                                    .OnClicked_Lambda([]() { return FReply::Handled(); })
-                                    .Content()
-								[
-									SNew(SImage)
-									.Image(FEditorStyle::GetBrush("SettingsEditor.Settings"))
-								]
-							]
-							+ SHorizontalBox::Slot()
-							[
-								SNew(SButton)
-                                    .ButtonStyle(FEditorStyle::Get(), "FlatButton.Default")
-                                    .ToolTipText(FText::FromString(TEXT("Перетаскивание")))
-                                    .OnClicked_Lambda([]() { return FReply::Handled(); })
-                                    .Content()
-								[
-									SNew(SImage)
-									.Image(FEditorStyle::GetBrush("Icons.Grabber"))
-								]
-							]
-							+ SHorizontalBox::Slot()
-							[
-								SNew(SButton)
-                                    .ButtonStyle(FEditorStyle::Get(), "FlatButton.Default")
-                                    .ToolTipText(FText::FromString(TEXT("Удаление")))
-                                    .OnClicked_Lambda([]() { return FReply::Handled(); })
-                                    .Content()
-								[
-									SNew(SImage)
-									.Image(FEditorStyle::GetBrush("Icons.Delete"))
-								]
-							]
-						]
-					]
+					SNew(SImage)
+					.Image(FEditorStyle::GetBrush("Icons.Settings"))
 				]
-				+ SVerticalBox::Slot()
-				.Padding(5.0f)
+				.OnClicked(this, &SPhraseListItemWidget::OnSettingsButtonClicked)
+			]
+			+ SHorizontalBox::Slot()
+			.AutoWidth()
+			[
+				SNew(SButton)
+				.Content()
 				[
-					SNew(SMultiLineEditableTextBox)
-						.AutoWrapText(true)
-						// .MinDesiredWidth(500.0f)
-						// .MinDesiredHeight(40.0f)
+					SNew(SImage)
+					.Image(FAppStyle::GetBrush("SoftwareCursor_Grab"))
 				]
+				.OnClicked(this, &SPhraseListItemWidget::OnHandButtonClicked)
+			]
+			+ SHorizontalBox::Slot()
+			.AutoWidth()
+			[
+				SNew(SButton)
+				.Content()
+				[
+					SNew(SImage)
+					.Image(FEditorStyle::GetBrush("Icons.Cross"))
+				]
+				.OnClicked(this, &SPhraseListItemWidget::OnDeleteButtonClicked)
+			]
+		]
+		+ SVerticalBox::Slot()
+		.AutoHeight()
+		[
+			SNew(SBox)
+			.WidthOverride(300.0f)
+			[
+				SNew(SMultiLineEditableTextBox)
+			.AutoWrapText(true)
+			.OnTextChanged(this, &SPhraseListItemWidget::OnMultiLineTextChanged)
+			// .MinDesiredWidth(300.0f)
 			]
 		]
 	];
+}
+
+TSharedRef<SWidget> SPhraseListItemWidget::GenerateCharacterOption(TSharedPtr<FString> Option)
+{
+	return SNew(STextBlock).Text(FText::FromString(*Option));
+}
+
+TSharedRef<SWidget> SPhraseListItemWidget::GenerateVarOption(TSharedPtr<FString> Option)
+{
+	return SNew(STextBlock).Text(FText::FromString(*Option));
+}
+
+TSharedRef<SWidget> SPhraseListItemWidget::GenerateComparisonOption(TSharedPtr<FString> Option)
+{
+	return SNew(STextBlock).Text(FText::FromString(*Option));
+}
+
+void SPhraseListItemWidget::OnCharacterSelected(TSharedPtr<FString> NewSelection, ESelectInfo::Type SelectInfo)
+{
+	// Обработка выбора элемента из списка Character
+}
+
+void SPhraseListItemWidget::OnVarSelected(TSharedPtr<FString> NewSelection, ESelectInfo::Type SelectInfo)
+{
+	// Обработка выбора элемента из списка Var
+}
+
+void SPhraseListItemWidget::OnComparisonSelected(TSharedPtr<FString> NewSelection, ESelectInfo::Type SelectInfo)
+{
+	// из списка Comparison
+}
+
+void SPhraseListItemWidget::OnOrCheckStateChanged(ECheckBoxState NewState)
+{
+	// Обработка изменения состояния чекбокса "Or?"
+}
+
+FReply SPhraseListItemWidget::OnSettingsButtonClicked()
+{
+	// Обработка нажатия на кнопку настроек
+	return FReply::Handled();
+}
+
+FReply SPhraseListItemWidget::OnHandButtonClicked()
+{
+	// Обработка нажатия на кнопку с иконкой руки
+	return FReply::Handled();
+}
+
+FReply SPhraseListItemWidget::OnDeleteButtonClicked()
+{
+	// Обработка нажатия на кнопку удаления
+	return FReply::Handled();
+}
+
+void SPhraseListItemWidget::OnMultiLineTextChanged(const FText& InText)
+{
+	// Обработка изменения текста в поле ввода с автоматическим расширением вниз
 }

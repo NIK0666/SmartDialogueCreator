@@ -15,12 +15,14 @@
 static const FName SmartDialogue_BranchesListTabId(TEXT("SmartDialogue_BranchesListTab"));
 static const FName SmartDialogue_SelectedBranchPropertiesTabId(TEXT("SmartDialogue_SelectedBranchPropertiesTab"));
 static const FName SmartDialogue_SelectedBranchPhrasesTabId(TEXT("SmartDialogue_SelectedBranchPhrasesTab"));
+static const FName SmartDialogue_ConfigTabId(TEXT("SmartDialogue_Config"));
+static const FName SmartDialogue_PlayerTabId(TEXT("SmartDialogue_Player"));
 
 
 void FSmartDialogueEditor::InitSmartDialogueEditor(EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, USmartDialogue* SmartDialogue)
 {
-	SetDialogue(SmartDialogue);
-
+	SetDialogue(SmartDialogue);	
+	
 	FSmartDialogueEditorCommands::Register();
 	ToolkitCommands = MakeShareable(new FUICommandList);
 
@@ -31,7 +33,9 @@ void FSmartDialogueEditor::InitSmartDialogueEditor(EToolkitMode::Type Mode, cons
 
 	TSharedPtr<FExtender> ToolbarExtender = GetToolbarExtender();
 	FAssetEditorToolkit::AddToolbarExtender(ToolbarExtender);
-
+	
+	
+	
 	RegenerateMenusAndToolbars();
 }
 
@@ -185,6 +189,14 @@ void FSmartDialogueEditor::RegisterTabSpawners(const TSharedRef<FTabManager>& In
 	InTabManager->RegisterTabSpawner(SmartDialogue_SelectedBranchPhrasesTabId, FOnSpawnTab::CreateSP(this, &FSmartDialogueEditor::SpawnTab_SelectedBranchPhrases))
 		.SetDisplayName(FText::FromString("Phrases"))
 		.SetGroup(WorkspaceMenuCategory.ToSharedRef());
+
+	InTabManager->RegisterTabSpawner(SmartDialogue_ConfigTabId, FOnSpawnTab::CreateSP(this, &FSmartDialogueEditor::SpawnTab_Config))
+		.SetDisplayName(FText::FromString("Config"))
+		.SetGroup(WorkspaceMenuCategory.ToSharedRef());
+
+	InTabManager->RegisterTabSpawner(SmartDialogue_PlayerTabId, FOnSpawnTab::CreateSP(this, &FSmartDialogueEditor::SpawnTab_Player))
+		.SetDisplayName(FText::FromString("Player"))
+		.SetGroup(WorkspaceMenuCategory.ToSharedRef());
 }
 
 void FSmartDialogueEditor::UnregisterTabSpawners(const TSharedRef<FTabManager>& InTabManager)
@@ -194,6 +206,9 @@ void FSmartDialogueEditor::UnregisterTabSpawners(const TSharedRef<FTabManager>& 
 	InTabManager->UnregisterTabSpawner(SmartDialogue_BranchesListTabId);
 	InTabManager->UnregisterTabSpawner(SmartDialogue_SelectedBranchPropertiesTabId);
 	InTabManager->UnregisterTabSpawner(SmartDialogue_SelectedBranchPhrasesTabId);
+	InTabManager->UnregisterTabSpawner(SmartDialogue_ConfigTabId);
+	InTabManager->UnregisterTabSpawner(SmartDialogue_PlayerTabId);
+
 }
 
 TSharedRef<SDockTab> FSmartDialogueEditor::SpawnTab_BranchesList(const FSpawnTabArgs& Args)
@@ -227,6 +242,32 @@ TSharedRef<SDockTab> FSmartDialogueEditor::SpawnTab_SelectedBranchPhrases(const 
 		[
 			CreateSelectedBranchPhrasesWidget()
 		];
+}
+
+TSharedRef<SDockTab> FSmartDialogueEditor::SpawnTab_Config(const FSpawnTabArgs& Args)
+{
+	check(Args.GetTabId() == SmartDialogue_ConfigTabId);
+
+	return SNew(SDockTab)
+		.Label(FText::FromString("Config"))
+		[
+			SNullWidget::NullWidget
+			// Создайте виджет для содержимого вкладки Config
+		];
+
+}
+
+TSharedRef<SDockTab> FSmartDialogueEditor::SpawnTab_Player(const FSpawnTabArgs& Args)
+{
+	check(Args.GetTabId() == SmartDialogue_PlayerTabId);
+
+	return SNew(SDockTab)
+		.Label(FText::FromString("Player"))
+		[
+			SNullWidget::NullWidget
+			// Создайте виджет для содержимого вкладки Player
+		];
+
 }
 
 TSharedRef<SWidget> FSmartDialogueEditor::CreateBranchesListWidget()
@@ -267,6 +308,8 @@ TSharedRef<FTabManager::FLayout> FSmartDialogueEditor::GetDefaultTabContents()
 				(
 					FTabManager::NewStack()
 					->AddTab(SmartDialogue_BranchesListTabId, ETabState::OpenedTab)
+					->AddTab(SmartDialogue_ConfigTabId, ETabState::ClosedTab)
+					->AddTab(SmartDialogue_PlayerTabId, ETabState::ClosedTab)
 				)
 			)
 			->Split
@@ -303,14 +346,19 @@ void FSmartDialogueEditor::AddNewBranch()
 	}
 }
 
-void FSmartDialogueEditor::PlayDialogue()
-{
-	// код для воспроизведения диалога
-}
-
 void FSmartDialogueEditor::ShowConfig()
 {
-	// код для отображения настроек конфигурации
+	// Переключение на вкладку Config
+	TabManager->TryInvokeTab(SmartDialogue_ConfigTabId);
+}
+
+void FSmartDialogueEditor::PlayDialogue()
+{
+	// Переключение на вкладку Player
+	TabManager->TryInvokeTab(SmartDialogue_PlayerTabId);
 }
 
 #undef LOCTEXT_NAMESPACE
+
+
+// Фантазер с деменцией, который постоянно забывает о чм мы разговаривали и придумывает несуществующие вещи. Не может сказать "я не знаю", или "я забыл"
