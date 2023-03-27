@@ -26,6 +26,8 @@ protected:
 
 	void OnOperationSelected(TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo);
 
+	virtual FReply RemoveItem() override;
+
 private:
 	TSharedPtr<SEditableTextBox> InputTextBox;
 

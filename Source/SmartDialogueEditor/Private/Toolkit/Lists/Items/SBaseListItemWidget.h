@@ -26,5 +26,5 @@ protected:
 	FListItemData Item;
 	TWeakPtr<FSmartDialogueEditor> Editor;
 
-	FReply RemoveItem();
+	virtual FReply RemoveItem();
 };

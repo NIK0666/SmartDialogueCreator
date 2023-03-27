@@ -19,7 +19,7 @@ public:
 
 protected:
 	virtual TSharedRef<SWidget> GetContent() override;
-
+	virtual FReply RemoveItem() override;
 private:	
 	FReply OnChangeButtonClicked();
 	FOnClicked OnChangeClicked;

@@ -42,6 +42,12 @@ TSharedRef<SWidget> SBranchListItemWidget::GetContent()
 		];
 }
 
+FReply SBranchListItemWidget::RemoveItem()
+{
+	UE_LOG(LogTemp, Log, TEXT("SBranchListItemWidget::RemoveItem"));
+	return SBaseListItemWidget::RemoveItem();
+}
+
 FReply SBranchListItemWidget::OnChangeButtonClicked()
 {
 	if (OnChangeClicked.IsBound())
