@@ -29,7 +29,9 @@ public:
 	
 protected:
 	virtual TSharedRef<SWidget> GetItemContent(const FListItemData& Item);
-	virtual TArray< TSharedPtr<FString>> GetAllStrings();
+	virtual TArray<FString> GetAllStrings();
+	TSharedRef<SWidget> CreateMenuContent();
+	FReply OnMenuItemClicked(const FString& Item);
 	virtual void OnSelected(const FListItemData& SelectedItem);
 	
 	FText Title;
@@ -37,5 +39,6 @@ protected:
 
 private:
 	TSharedPtr<SVerticalBox> ListContainer;
+	TSharedPtr<SMenuAnchor> ContextMenuAnchor;
 	TArray<FListItemData> Data;
 };

@@ -7,10 +7,10 @@
 
 void SOperationsListWidget::Construct(const FArguments& InArgs)
 {
+	bIsExecution = InArgs._bIsExecution;
 	SBaseListWidget::Construct(SBaseListWidget::FArguments()
 		.Title(InArgs._Title)
 		.Editor(InArgs._Editor));
-	bIsExecution = InArgs._bIsExecution;
 }
 
 TSharedRef<SWidget> SOperationsListWidget::GetItemContent(const FListItemData& Item)

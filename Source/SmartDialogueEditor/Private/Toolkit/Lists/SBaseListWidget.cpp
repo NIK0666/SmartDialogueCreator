@@ -32,13 +32,17 @@ void SBaseListWidget::Construct(const FArguments& InArgs)
 			+ SHorizontalBox::Slot()
 			.AutoWidth()
 			[
-				SNew(SButton)
-				.ButtonStyle(FEditorStyle::Get(), "FlatButton.Success")
-				.ContentPadding(FMargin(0.5, 1, 0.5, 1))
-				.OnClicked(this, &SBaseListWidget::OnAddButtonClicked)
+				SAssignNew(ContextMenuAnchor, SMenuAnchor)
+				.OnGetMenuContent(this, &SBaseListWidget::CreateMenuContent)
 				[
-					SNew(SImage)
-					.Image(FEditorStyle::GetBrush("Plus"))
+					SNew(SButton)
+					.ButtonStyle(FEditorStyle::Get(), "FlatButton.Success")
+					.ContentPadding(FMargin(0.5, 1, 0.5, 1))
+					.OnClicked(this, &SBaseListWidget::OnAddButtonClicked)
+					[
+						SNew(SImage)
+						.Image(FEditorStyle::GetBrush("Plus"))
+					]
 				]
 			]
 			+ SHorizontalBox::Slot()
@@ -71,10 +75,13 @@ void SBaseListWidget::UpdateData(const TArray<FListItemData>& NewData)
 	}
 }
 
-TArray< TSharedPtr< FString > > SBaseListWidget::GetAllStrings()
+TArray<FString> SBaseListWidget::GetAllStrings()
 {
-	TArray< TSharedPtr< FString > > AllStrings;
-	// Fill the AllStrings array with the desired values.
+	TArray<FString> AllStrings;
+	AllStrings.Add(TEXT("test1"));
+	AllStrings.Add(TEXT("test2"));
+	AllStrings.Add(TEXT("test___3"));
+
 	return AllStrings;
 }
 
@@ -94,26 +101,14 @@ void SBaseListWidget::OnRemoveButtonClicked(const int32 IndexToRemove)
 
 FReply SBaseListWidget::OnAddButtonClicked()
 {
-	TArray<TSharedPtr<FString>> AllStrings = GetAllStrings();
-	TSharedPtr<SComboBox<TSharedPtr<FString>>> ComboBox;
-	SAssignNew(ComboBox, SComboBox<TSharedPtr<FString>>)
-	.OptionsSource(&AllStrings)
-	.OnGenerateWidget(this, &SBaseListWidget::GenerateStringItemWidget)
-	.OnSelectionChanged(this, &SBaseListWidget::OnComboBoxSelectionChanged)
-	.Content()
-	[
-		SNew(STextBlock)
-		.Text(NSLOCTEXT("Temp", "SelectItem", "Select an item"))
-	];
-
-	// Создаем контекстное меню для выпадающего списка.
-	FSlateApplication::Get().PushMenu(
-		SharedThis(this),
-		FWidgetPath(),
-		ComboBox.ToSharedRef(),
-		FSlateApplication::Get().GetCursorPos(),
-		FPopupTransitionEffect(FPopupTransitionEffect::ContextMenu)
-	);
+	if (ContextMenuAnchor->IsOpen())
+	{
+		ContextMenuAnchor->SetIsOpen(false);
+	}
+	else
+	{
+		ContextMenuAnchor->SetIsOpen(true);
+	}
 
 	return FReply::Handled();
 }
@@ -138,4 +133,33 @@ TSharedRef<SWidget> SBaseListWidget::GetItemContent(const FListItemData& Item)
 	return SNew(SBaseListItemWidget)
 		.Item(Item)
 		.Editor(Editor);
+}
+
+TSharedRef<SWidget> SBaseListWidget::CreateMenuContent()
+{
+	TArray<FString> AllStrings = GetAllStrings();
+
+	TSharedRef<SVerticalBox> MenuContent = SNew(SVerticalBox);
+	for (const FString& String : AllStrings)
+	{
+		MenuContent->AddSlot()
+		[
+			SNew(SButton)
+			.Text(FText::FromString(String))
+			.OnClicked(this, FOnClicked::TMethodPtr<SBaseListWidget, FString>(&SBaseListWidget::OnMenuItemClicked), String)
+		];
+	}
+
+	return MenuContent;
+}
+
+FReply SBaseListWidget::OnMenuItemClicked(const FString& Item)
+{
+	// Обработка выбора элемента меню
+	UE_LOG(LogTemp, Log, TEXT("Выбран элемент меню: %s"), *Item);
+
+	// Закройте контекстное меню после выбора элемента
+	ContextMenuAnchor->SetIsOpen(false);
+
+	return FReply::Handled();
 }
