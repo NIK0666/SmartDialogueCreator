@@ -96,7 +96,7 @@ TArray<TSharedPtr<FString>> SOperationsListItemWidget::GetOperations()
 
 	if (EnumPtr)
 	{
-		for (int32 i = 0; i < EnumPtr->NumEnums() - 1; ++i)
+		for (int32 i = 0; i < EnumPtr->NumEnums(); i++)
 		{
 			FString DisplayName = EnumPtr->GetDisplayNameTextByIndex(i).ToString();
 			Result.Add(MakeShareable(new FString(DisplayName)));

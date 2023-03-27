@@ -10,13 +10,15 @@ class FSmartDialogueEditor;
 
 class SBaseListItemWidget : public SCompoundWidget
 {
-public:
+public:	
 	SLATE_BEGIN_ARGS(SBaseListItemWidget) {}
-		SLATE_ARGUMENT(FListItemData, Item)
-		SLATE_ARGUMENT(TWeakPtr<FSmartDialogueEditor>, Editor)
+	SLATE_ARGUMENT(FListItemData, Item)
+	SLATE_ARGUMENT(TWeakPtr<FSmartDialogueEditor>, Editor)
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs);
+
+	FListItemData& GetItemData() {return Item;}
 	
 protected:
 	virtual TSharedRef<SWidget> GetContent();
@@ -24,5 +26,5 @@ protected:
 	FListItemData Item;
 	TWeakPtr<FSmartDialogueEditor> Editor;
 
-	virtual FReply RemoveItem();
+	FReply RemoveItem();
 };

@@ -3,7 +3,7 @@
 
 #include "SOperationsListWidget.h"
 
-#include "SOperationsListItemWidget.h"
+#include "Items/SOperationsListItemWidget.h"
 
 void SOperationsListWidget::Construct(const FArguments& InArgs)
 {

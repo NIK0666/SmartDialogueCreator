@@ -2,14 +2,16 @@
 
 #include "SBranchesListWidget.h"
 
-#include "SBranchListItemWidget.h"
+#include "Items/SBranchListItemWidget.h"
+#include "Toolkit/FSmartDialogueEditor.h"
 
 void SBranchesListWidget::Construct(const FArguments& InArgs)
 {
+	bIsShowed = InArgs._bIsShowed;
+	
 	SBaseListWidget::Construct(SBaseListWidget::FArguments()
 		.Title(InArgs._Title)
 		.Editor(InArgs._Editor));
-	bIsShowed = InArgs._bIsShowed;
 }
 
 TSharedRef<SWidget> SBranchesListWidget::GetItemContent(const FListItemData& Item)

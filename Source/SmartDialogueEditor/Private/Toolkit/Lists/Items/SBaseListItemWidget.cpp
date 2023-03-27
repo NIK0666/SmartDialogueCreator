@@ -35,7 +35,7 @@ void SBaseListItemWidget::Construct(const FArguments& InArgs)
 }
 
 FReply SBaseListItemWidget::RemoveItem()
-{	
+{
 	return FReply::Handled();
 }
 

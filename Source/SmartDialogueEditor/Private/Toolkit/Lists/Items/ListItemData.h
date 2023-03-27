@@ -12,4 +12,14 @@ struct FListItemData
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	FString Name;
+
+	bool operator==(const FListItemData& Other) const
+	{
+		return Name == Other.Name;
+	}
+
+	bool operator!=(const FListItemData& Other) const
+	{
+		return !(*this == Other);
+	}
 };

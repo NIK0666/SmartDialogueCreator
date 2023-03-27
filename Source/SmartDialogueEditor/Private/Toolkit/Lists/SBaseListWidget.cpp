@@ -4,7 +4,7 @@
 #include "SBaseListWidget.h"
 
 #include "EditorStyleSet.h"
-#include "SBaseListItemWidget.h"
+#include "Items/SBaseListItemWidget.h"
 #include "Widgets/Input/SButton.h"
 #include "Widgets/Input/SComboBox.h"
 #include "Widgets/Text/STextBlock.h"
@@ -64,7 +64,7 @@ void SBaseListWidget::UpdateData(const TArray<FListItemData>& NewData)
 	Data = NewData;
 	ListContainer->ClearChildren();
 
-	for (int32 Index = 0; Index < Data.Num(); ++Index)
+	for (int32 Index = 0; Index < Data.Num(); Index++)
 	{
 		const FListItemData& Item = Data[Index];
 
@@ -83,15 +83,6 @@ TArray<FString> SBaseListWidget::GetAllStrings()
 void SBaseListWidget::OnSelected(const FListItemData& SelectedItem)
 {
 	// Handle the selection of an item from the combo box.
-}
-
-void SBaseListWidget::OnRemoveButtonClicked(const int32 IndexToRemove)
-{
-	if (IndexToRemove != INDEX_NONE)
-	{
-		Data.RemoveAt(IndexToRemove);
-		UpdateData(Data);
-	}
 }
 
 FReply SBaseListWidget::OnAddButtonClicked()

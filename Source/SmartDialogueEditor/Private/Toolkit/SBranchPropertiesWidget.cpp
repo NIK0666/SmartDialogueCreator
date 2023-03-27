@@ -5,9 +5,8 @@
 
 #include "EditorStyleSet.h"
 #include "Lists/SBranchesListWidget.h"
-#include "Lists/SBaseListWidget.h"
 #include "Lists/SOperationsListWidget.h"
-#include "Lists/SPhraseListItemWidget.h"
+#include "Lists/Items/SPhraseListItemWidget.h"
 #include "Widgets/Layout/SScrollBox.h"
 
 #define LOCTEXT_NAMESPACE "SmartDialogueEditor"

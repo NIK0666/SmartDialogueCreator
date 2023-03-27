@@ -20,5 +20,6 @@ protected:
 	TSharedRef<SWidget> GetItemContent(const FListItemData& Item) override;
 	void ShowSelectionMenu();
 	FReply OnChangeButtonClicked();
+
 	bool bIsShowed;
 };

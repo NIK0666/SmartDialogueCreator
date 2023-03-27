@@ -42,12 +42,6 @@ TSharedRef<SWidget> SBranchListItemWidget::GetContent()
 		];
 }
 
-FReply SBranchListItemWidget::RemoveItem()
-{
-	Editor.Pin()->GetDialogue()->RemoveBranchInList(bIsShowed, Item.Name);
-	return SBaseListItemWidget::RemoveItem();
-}
-
 FReply SBranchListItemWidget::OnChangeButtonClicked()
 {
 	if (OnChangeClicked.IsBound())

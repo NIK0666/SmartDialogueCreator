@@ -3,10 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ListItemData.h"
+#include "Items/ListItemData.h"
 #include "Widgets/SCompoundWidget.h"
 
 class FSmartDialogueEditor;
+class SBaseListItemWidget;
 
 class SBaseListWidget : public SCompoundWidget
 {
@@ -22,7 +23,6 @@ public:
 	void Construct(const FArguments& InArgs);
 	void UpdateData(const TArray<FListItemData>& NewData);
 	
-	void OnRemoveButtonClicked(const int32 IndexToRemove);
 	FReply OnAddButtonClicked();
 	TSharedRef<SWidget> GenerateStringItemWidget(TSharedPtr<FString> InItem);
 	void OnComboBoxSelectionChanged(TSharedPtr<FString> NewSelection, ESelectInfo::Type SelectInfo);
@@ -33,12 +33,12 @@ protected:
 	TSharedRef<SWidget> CreateMenuContent();
 	FReply OnMenuItemClicked(const FString& Item);
 	virtual void OnSelected(const FListItemData& SelectedItem);
-	
+
 	FText Title;
 	TWeakPtr<FSmartDialogueEditor> Editor;
+	TArray<FListItemData> Data;
 
 private:
 	TSharedPtr<SVerticalBox> ListContainer;
 	TSharedPtr<SMenuAnchor> ContextMenuAnchor;
-	TArray<FListItemData> Data;
 };
