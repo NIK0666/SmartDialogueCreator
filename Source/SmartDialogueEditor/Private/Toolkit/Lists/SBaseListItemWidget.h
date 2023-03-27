@@ -14,7 +14,6 @@ public:
 	SLATE_BEGIN_ARGS(SBaseListItemWidget) {}
 		SLATE_ARGUMENT(FListItemData, Item)
 		SLATE_ARGUMENT(TWeakPtr<FSmartDialogueEditor>, Editor)
-
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs);

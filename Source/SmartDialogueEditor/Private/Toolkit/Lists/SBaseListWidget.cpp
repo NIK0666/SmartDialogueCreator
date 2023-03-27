@@ -5,7 +5,6 @@
 
 #include "EditorStyleSet.h"
 #include "SBaseListItemWidget.h"
-#include "SBranchListItemWidget.h"
 #include "Widgets/Input/SButton.h"
 #include "Widgets/Input/SComboBox.h"
 #include "Widgets/Text/STextBlock.h"

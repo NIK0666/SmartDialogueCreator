@@ -6,6 +6,7 @@
 #include "EditorStyleSet.h"
 #include "Lists/SBranchesListWidget.h"
 #include "Lists/SBaseListWidget.h"
+#include "Lists/SOperationsListWidget.h"
 
 #define LOCTEXT_NAMESPACE "SmartDialogueEditor"
 
@@ -158,8 +159,9 @@ void SBranchPropertiesWidget::Construct(const FArguments& InArgs)
 			  .Padding(4.f, 0.f)
 			  .VAlign(VAlign_Center)
 			[
-				SNew(SBaseListWidget)
+				SNew(SOperationsListWidget)
 				.Editor(SmartDialogueEditor)
+				.bIsExecution(true)
 				.Title(LOCTEXT("ModifyVariablesLabel", "Modify Variables:"))
 			]
 
@@ -168,8 +170,9 @@ void SBranchPropertiesWidget::Construct(const FArguments& InArgs)
 			  .Padding(4.f, 0.f)
 			  .VAlign(VAlign_Center)
 			[
-				SNew(SBaseListWidget)
+				SNew(SOperationsListWidget)
 				.Editor(SmartDialogueEditor)
+				.bIsExecution(false)
 				.Title(LOCTEXT("CheckEntryConditionsLabel", "Check Entry Conditions:"))
 			]
 		]
