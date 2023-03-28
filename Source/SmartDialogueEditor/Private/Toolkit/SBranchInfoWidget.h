@@ -6,8 +6,8 @@
 #include "Widgets/DeclarativeSyntaxSupport.h"
 #include "Widgets/SCompoundWidget.h"
 
-class FSmartDialogueEditor;
 class SEditableTextBox;
+class FSmartDialogueEditor;
 class USmartDialogue;
 
 class SBranchInfoWidget : public SCompoundWidget
@@ -17,16 +17,21 @@ public:
 	SLATE_ARGUMENT(FName, BranchName) 
 	SLATE_ARGUMENT(TWeakPtr<FSmartDialogueEditor>, Editor)
 	SLATE_END_ARGS()
+
+	
 	void Construct(const FArguments& InArgs);
 
 private:
-
-	FText GetBranchText() const;
+	virtual void Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime) override;
 	
+	FText GetBranchText() const;
+	FSlateColor GetBackgroundColor() const;
+
 	void OnBranchNameTextCommitted(const FText& NewText, ETextCommit::Type CommitType);
 	void OnBranchTextTextCommitted(const FText& NewText, ETextCommit::Type CommitType);
 	void OnGrabButtonPressed();
 	void OnGrabButtonReleased();
+	void SetIsFocused(bool bCond);
 
 	FName BranchName;
 	TWeakPtr<FSmartDialogueEditor> Editor;
@@ -35,4 +40,5 @@ private:
 	TSharedPtr<SButton> GrabButton;
 	
 	USmartDialogue* DialoguePtr = nullptr;
+	bool bIsFocused = false;
 };

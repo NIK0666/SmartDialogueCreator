@@ -75,7 +75,7 @@ void SBranchesWidget::UpdateBranchesList()
 	}
 }
 
-void SBranchesWidget::BranchItemAdded(FSmartDialogueBranch& AddedBranch)
+void SBranchesWidget::BranchItemAdded(FSmartDialogueBranch& AddedBranch) 
 {
 	TSharedPtr<SBranchInfoWidget> NewBranchInfoWidget = SNew(SBranchInfoWidget)
 			.BranchName(AddedBranch.Name)
@@ -87,6 +87,7 @@ void SBranchesWidget::BranchItemAdded(FSmartDialogueBranch& AddedBranch)
 	{
 		BranchesList->RequestListRefresh();
 	}
+	
 }
 
 void SBranchesWidget::BranchItemDeleted(FSmartDialogueBranch& DeletedBranch)

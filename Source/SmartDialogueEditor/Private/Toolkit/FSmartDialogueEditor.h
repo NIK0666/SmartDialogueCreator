@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SmartDialConfig.h"
 #include "SmartDialogueData.h"
 #include "Toolkits/AssetEditorToolkit.h"
 
@@ -27,12 +28,21 @@ public:
 	FOnBranchItemAdded OnBranchItemAdded;
 	FOnBranchItemDeleted OnBranchItemDeleted;
 
-	
+	USmartDialConfig* GetDialogueConfig();
+	TArray<FCharacterData> GetAllCharacters();
+	TArray<FVariableData> GetAllVariables();
+	TArray<FName> GetBranchIDs();
+
+
 	virtual FName GetToolkitFName() const override;
 	virtual FText GetToolkitName() const override;
 	virtual FText GetBaseToolkitName() const override;
 	virtual FString GetWorldCentricTabPrefix() const override;
 	virtual FLinearColor GetWorldCentricTabColorScale() const override;
+
+	void SetSelectedBranchName(FName NewValue);
+	FName GetSelectedBranchName();
+	FSmartDialogueBranch* GetSelectedBranch();
 
 	virtual void RegisterTabSpawners(const TSharedRef<FTabManager>& TabManager) override;
 	virtual void UnregisterTabSpawners(const TSharedRef<FTabManager>& TabManager) override;
@@ -58,13 +68,14 @@ private:
 	void PlayDialogue();
 	void ShowConfig();
 
-	
-
 	TSharedPtr<SDockTab> BranchesListTab;
 	TSharedPtr<SDockTab> SelectedBranchPropertiesTab;
 	TSharedPtr<SDockTab> SelectedBranchPhrasesTab;
 	
 	USmartDialogue* Dialogue;
+	USmartDialConfig* DialConfig;
+	FSmartDialogueBranch* SelectedBranchPtr;
+	FName SelectedBranchName;
 	
 	TSharedPtr<STreeView<TSharedPtr<FSmartDialogueBranch>>> DialogueBranchesList;
 	TSharedPtr<IDetailsView> DialogueBranchDetailsView;

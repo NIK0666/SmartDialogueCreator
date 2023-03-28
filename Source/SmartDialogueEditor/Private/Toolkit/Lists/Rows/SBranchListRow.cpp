@@ -3,8 +3,6 @@
 
 #include "SBranchListRow.h"
 #include "EditorStyleSet.h"
-#include "SmartDialogue.h"
-#include "Toolkit/FSmartDialogueEditor.h"
 #include "Widgets/Input/SButton.h"
 #include "Widgets/Images/SImage.h"
 #include "Widgets/Text/STextBlock.h"

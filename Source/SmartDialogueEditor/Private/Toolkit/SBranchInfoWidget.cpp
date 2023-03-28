@@ -11,59 +11,88 @@
 
 #define LOCTEXT_NAMESPACE "SmartDialogueEditor"
 
+FSlateColor SBranchInfoWidget::GetBackgroundColor() const
+{
+	if (Editor.Pin()->GetSelectedBranchName() == BranchName)
+	{
+		return FLinearColor(0.25f, 0.88f, 0.82f, 0.5f);
+	}
+
+	return FLinearColor::Transparent;
+}
+
 void SBranchInfoWidget::Construct(const FArguments& InArgs)
 {
 	BranchName = InArgs._BranchName;
-	Editor = InArgs._Editor;
+	Editor = InArgs._Editor;	
 
 	DialoguePtr = Editor.Pin()->GetDialogue();
 	
 	ChildSlot
 	[
-		SNew(SHorizontalBox)
-		+ SHorizontalBox::Slot()
-		.AutoWidth()
+		SNew(SBorder)
+		// .Visibility(EVisibility::HitTestInvisible)
+		.Padding(2.f)
+		.BorderImage(FCoreStyle::Get().GetBrush("WhiteTexture"))
+		.BorderBackgroundColor(this, &SBranchInfoWidget::GetBackgroundColor)
 		[
-			SNew(SBox)
-			.WidthOverride(150)
+			SNew(SHorizontalBox)
+			+ SHorizontalBox::Slot()
+			.AutoWidth()
 			[
-				SAssignNew(BranchNameTextBox, SEditableTextBox)
-				.Text(FText::FromName(BranchName))
-				.OnTextCommitted(this, &SBranchInfoWidget::OnBranchNameTextCommitted)
+				SNew(SBox)
+				.WidthOverride(150)
+				[
+					SAssignNew(BranchNameTextBox, SEditableTextBox)
+					.Text(FText::FromName(BranchName))
+					.OnTextCommitted(this, &SBranchInfoWidget::OnBranchNameTextCommitted)
+				]
 			]
-		]
-		+ SHorizontalBox::Slot()
-		.FillWidth(1.0f)
-		[
-			SAssignNew(BranchTextTextBox, SEditableTextBox)
-			.Text_Raw(this, &SBranchInfoWidget::GetBranchText)
-			.OnTextCommitted(this, &SBranchInfoWidget::OnBranchTextTextCommitted)
-		]
-		+ SHorizontalBox::Slot()
-		.AutoWidth()
-		[
-			SAssignNew(GrabButton, SButton)
-			.ButtonStyle(FEditorStyle::Get(), "FlatButton")
-			.ContentPadding(FMargin(1.0f, 1.0f, 1.0f, 1.0f))
-			.OnPressed(this, &SBranchInfoWidget::OnGrabButtonPressed)
-			.OnReleased(this, &SBranchInfoWidget::OnGrabButtonReleased)
+			+ SHorizontalBox::Slot()
+			.FillWidth(1.0f)
 			[
-				SNew(SImage)
-				.Image(FAppStyle::GetBrush("SoftwareCursor_Grab"))
+				SAssignNew(BranchTextTextBox, SEditableTextBox)
+				.Text_Raw(this, &SBranchInfoWidget::GetBranchText)
+				.OnTextCommitted(this, &SBranchInfoWidget::OnBranchTextTextCommitted)
 			]
-		]
-		+ SHorizontalBox::Slot()
-		.AutoWidth()
-		[
-			SNew(SButton)
-			.ButtonStyle(FEditorStyle::Get(), "FlatButton")
-			.ContentPadding(FMargin(1.0f, 1.0f, 1.0f, 1.0f))
+			+ SHorizontalBox::Slot()
+			.AutoWidth()
 			[
-				SNew(SImage)
-				.Image(FAppStyle::GetBrush("Icons.Delete")) 
+				SAssignNew(GrabButton, SButton)
+				.ButtonStyle(FEditorStyle::Get(), "FlatButton")
+				.ContentPadding(FMargin(1.0f, 1.0f, 1.0f, 1.0f))
+				.OnPressed(this, &SBranchInfoWidget::OnGrabButtonPressed)
+				.OnReleased(this, &SBranchInfoWidget::OnGrabButtonReleased)
+				[
+					SNew(SImage)
+					.Image(FAppStyle::GetBrush("SoftwareCursor_Grab"))
+				]
 			]
-		]
+			+ SHorizontalBox::Slot()
+			.AutoWidth()
+			[
+				SNew(SButton)
+				.ButtonStyle(FEditorStyle::Get(), "FlatButton")
+				.ContentPadding(FMargin(1.0f, 1.0f, 1.0f, 1.0f))
+				[
+					SNew(SImage)
+					.Image(FAppStyle::GetBrush("Icons.Delete")) 
+				]
+			]
+		]		
 	];
+}
+
+void SBranchInfoWidget::Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime)
+{
+	SCompoundWidget::Tick(AllottedGeometry, InCurrentTime, InDeltaTime);
+	
+	// TSharedPtr<SWidget> FocusedWidget = FSlateApplication::Get().GetKeyboardFocusedWidget();
+	const bool bNewFocus = BranchNameTextBox->HasKeyboardFocus() || BranchTextTextBox->HasKeyboardFocus();
+	if (bNewFocus != bIsFocused)
+	{
+		SetIsFocused(bNewFocus);
+	}
 }
 
 FText SBranchInfoWidget::GetBranchText() const
@@ -127,5 +156,14 @@ void SBranchInfoWidget::OnGrabButtonReleased()
 	TSharedPtr<SImage> ButtonImage = StaticCastSharedPtr<SImage>(ButtonContent);
 
 	ButtonImage->SetImage(FAppStyle::GetBrush("SoftwareCursor_Grab"));
+}
+
+void SBranchInfoWidget::SetIsFocused(bool bNewValue)
+{
+	bIsFocused = bNewValue;
+	if (bNewValue)
+	{
+		Editor.Pin()->SetSelectedBranchName(BranchName);
+	}	
 }
 #undef LOCTEXT_NAMESPACE

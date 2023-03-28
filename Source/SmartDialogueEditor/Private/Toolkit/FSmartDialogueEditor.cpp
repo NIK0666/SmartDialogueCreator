@@ -7,9 +7,9 @@
 #include "Lists/SBranchesWidget.h"
 #include "Widgets/Docking/SDockTab.h"
 #include "SmartDialogue.h"
-#include "SBranchInfoWidget.h"
 #include "SBranchPropertiesWidget.h"
 #include "SDialConfigWidget.h"
+#include "SmartDialogueCore/Private/SmartDialogueSettings.h"
 
 #define LOCTEXT_NAMESPACE "SmartDialogueEditor"
 
@@ -114,6 +114,28 @@ FString FSmartDialogueEditor::GetWorldCentricTabPrefix() const
 FLinearColor FSmartDialogueEditor::GetWorldCentricTabColorScale() const
 {
 	return FLinearColor::White;
+}
+
+void FSmartDialogueEditor::SetSelectedBranchName(FName NewValue)
+{
+	SelectedBranchName = NewValue;
+	if (GetDialogue())
+	{
+		if (auto Obj = GetDialogue()->GetBranchPtr(NewValue))
+		{
+			SelectedBranchPtr = Obj;
+		}
+	}	
+}
+
+FName FSmartDialogueEditor::GetSelectedBranchName()
+{
+	return SelectedBranchName;
+}
+
+FSmartDialogueBranch* FSmartDialogueEditor::GetSelectedBranch()
+{
+	return SelectedBranchPtr;
 }
 
 TSharedRef<SDockTab> FSmartDialogueEditor::HandleTabManagerSpawnTabDialogueBranches(const FSpawnTabArgs& Args)
@@ -336,12 +358,12 @@ TSharedRef<FTabManager::FLayout> FSmartDialogueEditor::GetDefaultTabContents()
 
 void FSmartDialogueEditor::AddNewBranch()
 {
-	if (Dialogue)
+	if (GetDialogue())
 	{
 		FSmartDialogueBranch NewBranch;
-		NewBranch.Name = Dialogue->GenerateBranchName();
+		NewBranch.Name = GetDialogue()->GenerateBranchName();
 		NewBranch.Text = FText::GetEmpty();
-		Dialogue->AddNewBranch(NewBranch);
+		GetDialogue()->AddNewBranch(NewBranch);
 
 		OnBranchItemAdded.ExecuteIfBound(NewBranch);
 	}
@@ -359,7 +381,62 @@ void FSmartDialogueEditor::PlayDialogue()
 	TabManager->TryInvokeTab(SmartDialogue_PlayerTabId);
 }
 
+USmartDialConfig* FSmartDialogueEditor::GetDialogueConfig()
+{
+	if (DialConfig)
+	{
+		return DialConfig;
+	}
+	
+	const USmartDialogueSettings* Settings = GetDefault<USmartDialogueSettings>();
+	FSoftObjectPath DialoguesConfigAssetPath = Settings->DialoguesConfigAsset;
+	if (DialoguesConfigAssetPath.IsValid())
+	{
+		FStringAssetReference AssetRef(DialoguesConfigAssetPath);
+		UObject* LoadedAsset = AssetRef.TryLoad();
+
+		DialConfig =  Cast<USmartDialConfig>(LoadedAsset);
+	}
+	return nullptr;
+}
+
+TArray<FCharacterData> FSmartDialogueEditor::GetAllCharacters()
+{
+	if (GetDialogueConfig())
+	{
+		return GetDialogueConfig()->GetCharacters();
+	}
+	return {};
+}
+
+TArray<FVariableData> FSmartDialogueEditor::GetAllVariables()
+{
+	TArray<FVariableData> Result;
+	//
+	// if (GetDialogue())
+	// {
+	// 	Result = Dialogue->GetVariables(); //TODO Получить все локальные переменные
+	// }
+	if (GetDialogueConfig())
+	{
+		Result.Append(GetDialogueConfig()->GetVariables());
+	}
+	
+	return Result;
+}
+
+TArray<FName> FSmartDialogueEditor::GetBranchIDs()
+{
+	TArray<FName> BranchIDs;
+	
+	if (GetDialogue())
+	{
+		for (const auto& Branch : GetDialogue()->GetBranches())
+		{
+			BranchIDs.Add(Branch.Key);
+		}
+	}
+	return BranchIDs;
+}
+
 #undef LOCTEXT_NAMESPACE
-
-
-// Фантазер с деменцией, который постоянно забывает о чм мы разговаривали и придумывает несуществующие вещи. Не может сказать "я не знаю", или "я забыл"
