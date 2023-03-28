@@ -13,18 +13,18 @@
 		{
 			"Name": "SmartDialogueCore",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"Config": {
+				"DialoguesConfigAsset": {
+					"Type": "AssetReference",
+					"DefaultValue": ""
+				}
+			}
 		},
 		{
 			"Name": "SmartDialogueEditor",
 			"Type": "Editor",
 			"LoadingPhase": "Default"
 		}
-	],
-	"Config": {
-		"DialoguesConfigAsset": {
-			"Type": "AssetReference",
-			"DefaultValue": ""
-		}
-	}
+	]
 }

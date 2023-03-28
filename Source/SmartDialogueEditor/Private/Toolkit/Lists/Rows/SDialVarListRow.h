@@ -13,16 +13,21 @@ public:
 
 	
 	SLATE_BEGIN_ARGS(SDialVarListRow) {}
-	SLATE_ARGUMENT(TSharedPtr<FString>, VarId)
+	SLATE_ARGUMENT(FString, VarKey)
+	SLATE_ARGUMENT(FString, VarValue)
+	SLATE_ARGUMENT(FString, VarDesc)
+	SLATE_EVENT(FSimpleDelegate, OnDeleteButtonClicked)
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs);
 
-	TSharedPtr<FString> GetVarId();
+	FString GetVarKey();
 
 private:
-	FReply OnDeleteButtonClicked();
+	TAttribute<FString> VarKey;
+	TAttribute<FString> VarValue;
+	TAttribute<FString> VarDesc;
+	FSimpleDelegate OnDeleteButtonClicked;
 
-	TSharedPtr<FString> VarId;
 };
 

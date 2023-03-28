@@ -39,7 +39,7 @@ void SCharacterListRow::Construct(const FArguments& InArgs)
 			})
 			[
 				SNew(SImage)
-				.Image(FEditorStyle::Get().GetBrush("Icons.Cross"))
+				.Image(FEditorStyle::Get().GetBrush("Cross"))
 			]
 		]
 	];

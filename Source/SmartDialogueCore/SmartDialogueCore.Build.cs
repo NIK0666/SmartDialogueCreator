@@ -20,6 +20,7 @@ public class SmartDialogueCore : ModuleRules
                 "Engine",
                 "Slate",
                 "SlateCore", 
+                "DeveloperSettings", 
             }
         );
     }

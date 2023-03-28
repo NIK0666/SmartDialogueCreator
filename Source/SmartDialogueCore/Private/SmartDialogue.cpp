@@ -3,6 +3,9 @@
 
 #include "SmartDialogue.h"
 
+#include "SmartDialConfig.h"
+#include "SmartDialogueSettings.h"
+
 TMap<FName, FSmartDialogueBranch> USmartDialogue::GetBranches() const
 {
 	return Branches;

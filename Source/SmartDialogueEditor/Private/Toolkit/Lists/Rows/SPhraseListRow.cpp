@@ -127,7 +127,7 @@ void SPhraseListRow::Construct(const FArguments& InArgs)
 				.Content()
 				[
 					SNew(SImage)
-					.Image(FEditorStyle::GetBrush("Icons.Cross"))
+					.Image(FEditorStyle::GetBrush("Cross"))
 				]
 				.OnClicked(this, &SPhraseListRow::OnDeleteButtonClicked)
 			]

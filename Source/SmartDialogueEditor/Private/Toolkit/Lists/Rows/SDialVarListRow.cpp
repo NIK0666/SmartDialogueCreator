@@ -8,7 +8,10 @@
 
 void SDialVarListRow::Construct(const FArguments& InArgs)
 {
-	VarId = InArgs._VarId;
+	VarKey = InArgs._VarKey;
+	VarValue = InArgs._VarValue;
+	VarDesc = InArgs._VarDesc;
+	OnDeleteButtonClicked = InArgs._OnDeleteButtonClicked;
 
 	ChildSlot
 	[
@@ -19,6 +22,7 @@ void SDialVarListRow::Construct(const FArguments& InArgs)
 		[
 			SNew(SEditableTextBox)
 				.MinDesiredWidth(100.0f)
+                .Text(TAttribute<FText>::Create(TAttribute<FText>::FGetter::CreateLambda([this]() { return FText::FromString(VarKey.Get()); })))
 				.HintText(FText::FromString("variable"))
 		]
 		+ SHorizontalBox::Slot()
@@ -27,35 +31,36 @@ void SDialVarListRow::Construct(const FArguments& InArgs)
 		[
 			SNew(SEditableTextBox)
 				.MinDesiredWidth(80.0f)
+				.Text(TAttribute<FText>::Create(TAttribute<FText>::FGetter::CreateLambda([this]() { return FText::FromString(VarValue.Get()); })))
 				.HintText(FText::FromString("default"))
 		]
 		+ SHorizontalBox::Slot()
 		.FillWidth(1.0f)
 		[
 			SNew(SEditableTextBox)
+			.Text(TAttribute<FText>::Create(TAttribute<FText>::FGetter::CreateLambda([this]() { return FText::FromString(VarDesc.Get()); })))
 			.HintText(FText::FromString("description"))
 		]
 		+ SHorizontalBox::Slot()
 		.AutoWidth()
 		[
 			SNew(SButton)
-				.ButtonStyle(FEditorStyle::Get(), "FlatButton.Danger")
-				.ForegroundColor(FSlateColor::UseForeground())
-				.OnClicked(this, &SDialVarListRow::OnDeleteButtonClicked)
+			.ButtonStyle(FEditorStyle::Get(), "FlatButton.Danger")
+			.ForegroundColor(FSlateColor::UseForeground())
+			.OnClicked_Lambda([this]()
+			{
+				OnDeleteButtonClicked.ExecuteIfBound();
+				return FReply::Handled();
+			})
 			[
 				SNew(SImage)
-				.Image(FEditorStyle::Get().GetBrush("Icons.Cross"))
+				.Image(FEditorStyle::Get().GetBrush("Cross"))
 			]
 		]
 	];
 }
 
-TSharedPtr<FString> SDialVarListRow::GetVarId()
+FString SDialVarListRow::GetVarKey()
 {
-	return VarId;
-}
-
-FReply SDialVarListRow::OnDeleteButtonClicked()
-{
-	return FReply::Handled();
+	return VarKey.Get();
 }

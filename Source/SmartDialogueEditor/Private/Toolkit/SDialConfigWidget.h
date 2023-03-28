@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SmartDialConfig.h"
 #include "Widgets/SCompoundWidget.h"
 #include "Widgets/DeclarativeSyntaxSupport.h"
 
@@ -11,6 +12,7 @@ class SDialConfigWidget : public SCompoundWidget
 public:
 	SLATE_BEGIN_ARGS(SDialConfigWidget) {}
 	SLATE_END_ARGS()
+
 
 	void Construct(const FArguments& InArgs);
 
@@ -23,7 +25,8 @@ private:
 	FReply OnAddButtonClicked();
 	void OnDeleteButtonClicked(TSharedPtr<FString> CharacterId);	
 	void AddCharacterRow(FString Id = "", FString Name = "");
-
+	void AddGlobalVarRow(const FString& Key = "", const FString& Value = "", const FString& Desc = "");
+	
 	FReply OnAddPublicVarClicked();
 
 	FReply OnAddLocalVarClicked();
@@ -32,6 +35,8 @@ private:
 	FReply OnTabButtonClicked(int32 TabIndex);
 	void UpdateButtonStyles();
 	void AddTabButton(const FString& ButtonText);
+	
+	void UpdateData();
 
 	TSharedPtr<SVerticalBox> ScrollBoxGlobalVarsContent;
 	TArray<TSharedPtr<FString>> PublicVarIds;
@@ -48,4 +53,6 @@ private:
 	TSharedPtr<SWidgetSwitcher> WidgetSwitcher;
 	int32 ActiveTabIndex = 0;
 	TArray<TSharedPtr<SButton>> TabButtons;
+	
+	USmartDialConfig* DialConfig = nullptr;
 };
