@@ -14,18 +14,33 @@ public:
 
 	void Construct(const FArguments& InArgs);
 
+	void OnPublicVarDeleted(TSharedPtr<FString> VarId);
+
 private:
+	
+	void OnCharacterSelected(TSharedPtr<FString> NewSelection, ESelectInfo::Type SelectInfo);
+	FReply OnAddButtonClicked();
+	void OnDeleteButtonClicked(TSharedPtr<FString> CharacterId);	
+	void AddCharacterRow(FString Id = "", FString Name = "");
+
+	FReply OnAddPublicVarClicked();
+
+
+
+	FReply OnTabButtonClicked(int32 TabIndex);
+	void UpdateButtonStyles();
+	void AddTabButton(const FString& ButtonText);
+
+	TSharedPtr<SVerticalBox> ScrollBoxGlobalVarsContent;
+	TArray<TSharedPtr<FString>> PublicVarIds;
+	int32 PublicVarCounter = 0;
+
+	
 	TSharedPtr<SComboBox<TSharedPtr<FString>>> CharacterComboBox;
 	TSharedPtr<SVerticalBox> ScrollBoxContent;
 
 	TArray<TSharedPtr<FString>> CharacterList;
-	TSharedPtr<SWidgetSwitcher> TabSwitcher;
-
-
-	void OnCharacterSelected(TSharedPtr<FString> NewSelection, ESelectInfo::Type SelectInfo);
-
-	FReply OnAddButtonClicked();
-	void OnDeleteButtonClicked(TSharedPtr<FString> CharacterId);
-	
-	void AddCharacterRow(FString Id = "", FString Name = "");
+	TSharedPtr<SWidgetSwitcher> WidgetSwitcher;
+	int32 ActiveTabIndex = 0;
+	TArray<TSharedPtr<SButton>> TabButtons;
 };
