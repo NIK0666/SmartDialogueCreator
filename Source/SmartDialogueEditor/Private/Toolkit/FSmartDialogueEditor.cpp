@@ -9,6 +9,7 @@
 #include "SmartDialogue.h"
 #include "SBranchInfoWidget.h"
 #include "SBranchPropertiesWidget.h"
+#include "SDialConfigWidget.h"
 
 #define LOCTEXT_NAMESPACE "SmartDialogueEditor"
 
@@ -247,11 +248,11 @@ TSharedRef<SDockTab> FSmartDialogueEditor::SpawnTab_SelectedBranchPhrases(const 
 TSharedRef<SDockTab> FSmartDialogueEditor::SpawnTab_Config(const FSpawnTabArgs& Args)
 {
 	check(Args.GetTabId() == SmartDialogue_ConfigTabId);
-
+	
 	return SNew(SDockTab)
 		.Label(FText::FromString("Config"))
 		[
-			SNullWidget::NullWidget
+			SNew(SDialConfigWidget)
 			// Создайте виджет для содержимого вкладки Config
 		];
 
