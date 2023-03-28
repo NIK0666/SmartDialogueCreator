@@ -6,13 +6,13 @@
 
 class SDialConfigWidget;
 
-class SDialVarRow : public SCompoundWidget
+class SDialVarListRow : public SCompoundWidget
 {
 public:
 	DECLARE_DELEGATE_OneParam(FOnVarDeleted, TSharedPtr<FString>)
 
 	
-	SLATE_BEGIN_ARGS(SDialVarRow) {}
+	SLATE_BEGIN_ARGS(SDialVarListRow) {}
 	SLATE_ARGUMENT(TSharedPtr<FString>, VarId)
 	SLATE_END_ARGS()
 

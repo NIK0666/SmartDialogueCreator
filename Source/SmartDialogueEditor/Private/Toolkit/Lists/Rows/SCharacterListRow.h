@@ -1,4 +1,4 @@
-// SCharacterRowWidget.h
+// SCharacterListRow.h
 
 #pragma once
 
@@ -6,10 +6,10 @@
 #include "Widgets/SCompoundWidget.h"
 #include "Widgets/DeclarativeSyntaxSupport.h"
 
-class SCharacterRowWidget : public SCompoundWidget
+class SCharacterListRow : public SCompoundWidget
 {
 public:
-	SLATE_BEGIN_ARGS(SCharacterRowWidget) {}
+	SLATE_BEGIN_ARGS(SCharacterListRow) {}
 	SLATE_ATTRIBUTE(FString, Id)
 	SLATE_ATTRIBUTE(FString, Name)
 	SLATE_EVENT(FSimpleDelegate, OnDeleteButtonClicked)

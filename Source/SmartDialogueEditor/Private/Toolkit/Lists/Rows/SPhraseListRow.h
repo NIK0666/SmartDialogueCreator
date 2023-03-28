@@ -3,12 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-// #include "SPhraseListItemWidget.generated.h"
+// #include "SPhraseListRow.generated.h"
 
-class SPhraseListItemWidget : public SCompoundWidget
+class SPhraseListRow : public SCompoundWidget
 {
 public:
-	SLATE_BEGIN_ARGS(SPhraseListItemWidget) {}
+	SLATE_BEGIN_ARGS(SPhraseListRow) {}
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs);

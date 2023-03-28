@@ -3,7 +3,7 @@
 
 #include "SOperationsListWidget.h"
 
-#include "Items/SOperationsListItemWidget.h"
+#include "Rows/SOperationsListRow.h"
 
 void SOperationsListWidget::Construct(const FArguments& InArgs)
 {
@@ -15,7 +15,7 @@ void SOperationsListWidget::Construct(const FArguments& InArgs)
 
 TSharedRef<SWidget> SOperationsListWidget::GetItemContent(const FListItemData& Item)
 {
-	return SNew(SOperationsListItemWidget)
+	return SNew(SOperationsListRow)
 		.Item(Item)
 		.Editor(Editor)
 		.bIsExecution(bIsExecution);

@@ -1,12 +1,12 @@
 // 
 
 
-#include "SDialVarRow.h"
+#include "SDialVarListRow.h"
 
 #include "EditorStyleSet.h"
 #include "Toolkit/SDialConfigWidget.h"
 
-void SDialVarRow::Construct(const FArguments& InArgs)
+void SDialVarListRow::Construct(const FArguments& InArgs)
 {
 	VarId = InArgs._VarId;
 
@@ -41,7 +41,7 @@ void SDialVarRow::Construct(const FArguments& InArgs)
 			SNew(SButton)
 				.ButtonStyle(FEditorStyle::Get(), "FlatButton.Danger")
 				.ForegroundColor(FSlateColor::UseForeground())
-				.OnClicked(this, &SDialVarRow::OnDeleteButtonClicked)
+				.OnClicked(this, &SDialVarListRow::OnDeleteButtonClicked)
 			[
 				SNew(SImage)
 				.Image(FEditorStyle::Get().GetBrush("Icons.Cross"))
@@ -50,12 +50,12 @@ void SDialVarRow::Construct(const FArguments& InArgs)
 	];
 }
 
-TSharedPtr<FString> SDialVarRow::GetVarId()
+TSharedPtr<FString> SDialVarListRow::GetVarId()
 {
 	return VarId;
 }
 
-FReply SDialVarRow::OnDeleteButtonClicked()
+FReply SDialVarListRow::OnDeleteButtonClicked()
 {
 	return FReply::Handled();
 }

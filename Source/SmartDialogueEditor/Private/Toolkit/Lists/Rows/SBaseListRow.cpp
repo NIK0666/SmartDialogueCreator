@@ -1,12 +1,12 @@
-// SBaseListItemWidget.cpp
+// SBaseListRow.cpp
 
-#include "SBaseListItemWidget.h"
+#include "SBaseListRow.h"
 #include "EditorStyleSet.h"
 #include "Widgets/Input/SButton.h"
 #include "Widgets/Images/SImage.h"
 #include "Widgets/Text/STextBlock.h"
 
-void SBaseListItemWidget::Construct(const FArguments& InArgs)
+void SBaseListRow::Construct(const FArguments& InArgs)
 {
 	Item = InArgs._Item;
 	Editor = InArgs._Editor;
@@ -25,7 +25,7 @@ void SBaseListItemWidget::Construct(const FArguments& InArgs)
 			SNew(SButton)
 			.ButtonStyle(FEditorStyle::Get(), "FlatButton.Danger")
 			.ContentPadding(FMargin(0.5f, 1, 0.5f, 1))
-			.OnClicked(this, &SBaseListItemWidget::RemoveItem)
+			.OnClicked(this, &SBaseListRow::RemoveItem)
 			[
 				SNew(SImage)
 				.Image(FEditorStyle::GetBrush("Cross"))
@@ -34,12 +34,12 @@ void SBaseListItemWidget::Construct(const FArguments& InArgs)
 	];
 }
 
-FReply SBaseListItemWidget::RemoveItem()
+FReply SBaseListRow::RemoveItem()
 {
 	return FReply::Handled();
 }
 
-TSharedRef<SWidget> SBaseListItemWidget::GetContent()
+TSharedRef<SWidget> SBaseListRow::GetContent()
 {
 	return SNew(STextBlock)
 		.Text(FText::FromString(Item.Name));

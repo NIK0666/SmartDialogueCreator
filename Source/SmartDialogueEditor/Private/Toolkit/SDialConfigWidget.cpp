@@ -4,8 +4,8 @@
 #include "Widgets/Layout/SScrollBox.h"
 #include "Widgets/Text/STextBlock.h"
 #include "EditorStyleSet.h"
-#include "Lists/Items/SCharacterRowWidget.h"
-#include "Lists/Items/SDialVarRow.h"
+#include "Lists/Rows/SCharacterListRow.h"
+#include "Lists/Rows/SDialVarListRow.h"
 #include "Widgets/Layout/SWidgetSwitcher.h"
 
 void SDialConfigWidget::Construct(const FArguments& InArgs)
@@ -224,7 +224,7 @@ void SDialConfigWidget::AddCharacterRow(FString Id, FString Name)
 	                .AutoHeight()
 	                .Padding(2.0f)
 	[
-		SNew(SCharacterRowWidget)
+		SNew(SCharacterListRow)
 		.Id(Id)
 		.Name(Name)
 		.OnDeleteButtonClicked(FSimpleDelegate::CreateLambda([this, SharedId]()
@@ -243,7 +243,7 @@ FReply SDialConfigWidget::OnAddPublicVarClicked()
 	// Добавьте новую строку в список глобальных переменных
 	ScrollBoxGlobalVarsContent->AddSlot()
 	[
-		SNew(SDialVarRow)
+		SNew(SDialVarListRow)
 			.VarId(NewVarId)
 	];
 
@@ -259,7 +259,7 @@ FReply SDialConfigWidget::OnAddLocalVarClicked()
 	// Добавьте новую строку в список локальных переменных
 	ScrollBoxLocalVarsContent->AddSlot()
 	[
-		SNew(SDialVarRow)
+		SNew(SDialVarListRow)
 			.VarId(NewVarId)
 	];
 

@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "SmartDialogueData.h"
-#include "Lists/Items/SBranchListItemWidget.h"
 #include "Toolkits/AssetEditorToolkit.h"
 
 class SBranchInfoWidget;

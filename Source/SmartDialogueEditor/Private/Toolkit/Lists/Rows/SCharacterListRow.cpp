@@ -1,9 +1,9 @@
-// SCharacterRowWidget.cpp
+// SCharacterListRow.cpp
 
-#include "SCharacterRowWidget.h"
+#include "SCharacterListRow.h"
 #include "EditorStyleSet.h"
 
-void SCharacterRowWidget::Construct(const FArguments& InArgs)
+void SCharacterListRow::Construct(const FArguments& InArgs)
 {
 	Id = InArgs._Id;
 	Name = InArgs._Name;

@@ -1,14 +1,14 @@
-// SBranchListItemWidget.h
+// SBranchListRow.h
 
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SBaseListItemWidget.h"
+#include "SBaseListRow.h"
 
-class SBranchListItemWidget : public SBaseListItemWidget
+class SBranchListRow : public SBaseListRow
 {
 public:
-	SLATE_BEGIN_ARGS(SBranchListItemWidget) {}
+	SLATE_BEGIN_ARGS(SBranchListRow) {}
 		SLATE_ARGUMENT(FListItemData, Item)
 		SLATE_EVENT(FOnClicked, OnChangeClicked)
 		SLATE_ARGUMENT(bool, bIsShowed)

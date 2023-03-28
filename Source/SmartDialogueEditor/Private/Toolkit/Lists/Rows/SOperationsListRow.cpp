@@ -1,18 +1,18 @@
-// SOperationsListItemWidget.cpp
+// SOperationsListRow.cpp
 
 
-#include "SOperationsListItemWidget.h"
+#include "SOperationsListRow.h"
 #include "Widgets/Input/SComboBox.h"
 #include "Widgets/Input/SEditableText.h"
 
-void SOperationsListItemWidget::Construct(const FArguments& InArgs)
+void SOperationsListRow::Construct(const FArguments& InArgs)
 {
 	bIsExecution = InArgs._bIsExecution;
-	SBaseListItemWidget::Construct(SBaseListItemWidget::FArguments());
+	SBaseListRow::Construct(SBaseListRow::FArguments());
 	
 }
 
-TSharedRef<SWidget> SOperationsListItemWidget::GetContent()
+TSharedRef<SWidget> SOperationsListRow::GetContent()
 {
 	// Initialize the VariableOptions array
 	VariableOptions = TArray<TSharedPtr<FString>>();
@@ -43,7 +43,7 @@ TSharedRef<SWidget> SOperationsListItemWidget::GetContent()
 				{
 					return SNew(STextBlock).Text(FText::FromString(*InItem));
 				})
-				.OnSelectionChanged(this, &SOperationsListItemWidget::OnVariableSelected)
+				.OnSelectionChanged(this, &SOperationsListRow::OnVariableSelected)
 				.Content()
 				[
 					SAssignNew(VariableButtonText, STextBlock).Text(FText::FromString(TEXT("[empty]")))
@@ -61,7 +61,7 @@ TSharedRef<SWidget> SOperationsListItemWidget::GetContent()
 				{
 					return SNew(STextBlock).Text(FText::FromString(*InItem));
 				})
-				.OnSelectionChanged(this, &SOperationsListItemWidget::OnOperationSelected)
+				.OnSelectionChanged(this, &SOperationsListRow::OnOperationSelected)
 				.Content()
 				[
 					SAssignNew(OperationButtonText, STextBlock).Text(OperationOptions.Num() > 0 ? FText::FromString(*OperationOptions[0]) : FText::FromString(TEXT("")))
@@ -75,12 +75,12 @@ TSharedRef<SWidget> SOperationsListItemWidget::GetContent()
 		];
 }
 
-TArray<FString> SOperationsListItemWidget::GetValueNames()
+TArray<FString> SOperationsListRow::GetValueNames()
 {
 	return TArray<FString>({ "var1", "variable2", "test_var_3" });
 }
 
-TArray<TSharedPtr<FString>> SOperationsListItemWidget::GetOperations()
+TArray<TSharedPtr<FString>> SOperationsListRow::GetOperations()
 {
 	TArray<TSharedPtr<FString>> Result;
 
@@ -106,7 +106,7 @@ TArray<TSharedPtr<FString>> SOperationsListItemWidget::GetOperations()
 	return Result;
 }
 
-void SOperationsListItemWidget::OnVariableSelected(TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo)
+void SOperationsListRow::OnVariableSelected(TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo)
 {
 	if (SelectedItem.IsValid())
 	{
@@ -116,7 +116,7 @@ void SOperationsListItemWidget::OnVariableSelected(TSharedPtr<FString> SelectedI
 	}
 }
 
-void SOperationsListItemWidget::OnOperationSelected(TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo)
+void SOperationsListRow::OnOperationSelected(TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo)
 {
 	if (SelectedItem.IsValid())
 	{
@@ -140,8 +140,8 @@ void SOperationsListItemWidget::OnOperationSelected(TSharedPtr<FString> Selected
 	}
 }
 
-FReply SOperationsListItemWidget::RemoveItem()
+FReply SOperationsListRow::RemoveItem()
 {
-	UE_LOG(LogTemp, Log, TEXT("SOperationsListItemWidget::RemoveItem"));
-	return SBaseListItemWidget::RemoveItem();
+	UE_LOG(LogTemp, Log, TEXT("SOperationsListRow::RemoveItem"));
+	return SBaseListRow::RemoveItem();
 }

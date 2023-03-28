@@ -4,7 +4,7 @@
 #include "SBaseListWidget.h"
 
 #include "EditorStyleSet.h"
-#include "Items/SBaseListItemWidget.h"
+#include "Rows/SBaseListRow.h"
 #include "Widgets/Input/SButton.h"
 #include "Widgets/Input/SComboBox.h"
 #include "Widgets/Text/STextBlock.h"
@@ -116,7 +116,7 @@ void SBaseListWidget::OnComboBoxSelectionChanged(TSharedPtr<FString> NewSelectio
 
 TSharedRef<SWidget> SBaseListWidget::GetItemContent(const FListItemData& Item)
 {
-	return SNew(SBaseListItemWidget)
+	return SNew(SBaseListRow)
 		.Item(Item)
 		.Editor(Editor);
 }

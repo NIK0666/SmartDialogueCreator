@@ -1,13 +1,13 @@
-// SOperationsListItemWidget.h
+// SOperationsListRow.h
 #pragma once
 
-#include "SBaseListItemWidget.h"
+#include "SBaseListRow.h"
 #include "SmartDialogueData.h"
 
-class SOperationsListItemWidget : public SBaseListItemWidget
+class SOperationsListRow : public SBaseListRow
 {
 public:
-	SLATE_BEGIN_ARGS(SOperationsListItemWidget) {}
+	SLATE_BEGIN_ARGS(SOperationsListRow) {}
 	SLATE_ARGUMENT(FListItemData, Item)
 	SLATE_ARGUMENT(TWeakPtr<FSmartDialogueEditor>, Editor)
 	SLATE_ARGUMENT(bool, bIsExecution)

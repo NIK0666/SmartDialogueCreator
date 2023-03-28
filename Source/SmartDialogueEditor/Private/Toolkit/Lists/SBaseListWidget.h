@@ -3,11 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Items/ListItemData.h"
+#include "Rows/ListItemData.h"
 #include "Widgets/SCompoundWidget.h"
 
 class FSmartDialogueEditor;
-class SBaseListItemWidget;
+class SBaseListRow;
 
 class SBaseListWidget : public SCompoundWidget
 {

@@ -2,8 +2,7 @@
 
 #include "SBranchesListWidget.h"
 
-#include "Items/SBranchListItemWidget.h"
-#include "Toolkit/FSmartDialogueEditor.h"
+#include "Rows/SBranchListRow.h"
 
 void SBranchesListWidget::Construct(const FArguments& InArgs)
 {
@@ -16,7 +15,7 @@ void SBranchesListWidget::Construct(const FArguments& InArgs)
 
 TSharedRef<SWidget> SBranchesListWidget::GetItemContent(const FListItemData& Item)
 {
-	return SNew(SBranchListItemWidget)
+	return SNew(SBranchListRow)
 		.Item(Item)
 		.bIsShowed(bIsShowed)
 		.Editor(Editor)

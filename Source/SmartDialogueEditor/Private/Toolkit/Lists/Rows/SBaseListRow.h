@@ -1,4 +1,4 @@
-// SBaseListItemWidget.h
+// SBaseListRow.h
 
 #pragma once
 
@@ -8,10 +8,10 @@
 
 class FSmartDialogueEditor;
 
-class SBaseListItemWidget : public SCompoundWidget
+class SBaseListRow : public SCompoundWidget
 {
 public:	
-	SLATE_BEGIN_ARGS(SBaseListItemWidget) {}
+	SLATE_BEGIN_ARGS(SBaseListRow) {}
 	SLATE_ARGUMENT(FListItemData, Item)
 	SLATE_ARGUMENT(TWeakPtr<FSmartDialogueEditor>, Editor)
 	SLATE_END_ARGS()

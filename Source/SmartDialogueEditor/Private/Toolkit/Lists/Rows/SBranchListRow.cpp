@@ -1,7 +1,7 @@
-// SBranchListItemWidget.cpp
+// SBranchListRow.cpp
 
 
-#include "SBranchListItemWidget.h"
+#include "SBranchListRow.h"
 #include "EditorStyleSet.h"
 #include "SmartDialogue.h"
 #include "Toolkit/FSmartDialogueEditor.h"
@@ -9,9 +9,9 @@
 #include "Widgets/Images/SImage.h"
 #include "Widgets/Text/STextBlock.h"
 
-void SBranchListItemWidget::Construct(const FArguments& InArgs)
+void SBranchListRow::Construct(const FArguments& InArgs)
 {
-	SBaseListItemWidget::Construct(SBaseListItemWidget::FArguments()
+	SBaseListRow::Construct(SBaseListRow::FArguments()
 		.Item(InArgs._Item)
 		.Editor(InArgs._Editor));
 	
@@ -19,7 +19,7 @@ void SBranchListItemWidget::Construct(const FArguments& InArgs)
 	OnChangeClicked = InArgs._OnChangeClicked;
 }
 
-TSharedRef<SWidget> SBranchListItemWidget::GetContent()
+TSharedRef<SWidget> SBranchListRow::GetContent()
 {
 	return SNew(SHorizontalBox)
 		+ SHorizontalBox::Slot()
@@ -34,7 +34,7 @@ TSharedRef<SWidget> SBranchListItemWidget::GetContent()
 			SNew(SButton)
 			.ButtonStyle(FEditorStyle::Get(), "FlatButton.Primary")
 			.ContentPadding(FMargin(0.5f, 1, 0.5f, 1))
-			.OnClicked(this, &SBranchListItemWidget::OnChangeButtonClicked)
+			.OnClicked(this, &SBranchListRow::OnChangeButtonClicked)
 			[
 				SNew(SImage)
 				.Image(FEditorStyle::GetBrush("Icons.Edit"))
@@ -42,13 +42,13 @@ TSharedRef<SWidget> SBranchListItemWidget::GetContent()
 		];
 }
 
-FReply SBranchListItemWidget::RemoveItem()
+FReply SBranchListRow::RemoveItem()
 {
-	UE_LOG(LogTemp, Log, TEXT("SBranchListItemWidget::RemoveItem"));
-	return SBaseListItemWidget::RemoveItem();
+	UE_LOG(LogTemp, Log, TEXT("SBranchListRow::RemoveItem"));
+	return SBaseListRow::RemoveItem();
 }
 
-FReply SBranchListItemWidget::OnChangeButtonClicked()
+FReply SBranchListRow::OnChangeButtonClicked()
 {
 	if (OnChangeClicked.IsBound())
 	{

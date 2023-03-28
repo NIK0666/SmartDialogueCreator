@@ -6,7 +6,7 @@
 #include "EditorStyleSet.h"
 #include "Lists/SBranchesListWidget.h"
 #include "Lists/SOperationsListWidget.h"
-#include "Lists/Items/SPhraseListItemWidget.h"
+#include "Lists/Rows/SPhraseListRow.h"
 #include "Widgets/Layout/SScrollBox.h"
 
 #define LOCTEXT_NAMESPACE "SmartDialogueEditor"
@@ -21,7 +21,7 @@ void SBranchPropertiesWidget::Construct(const FArguments& InArgs)
 	{
 		MyList->AddSlot()
 		[
-			SNew(SPhraseListItemWidget)
+			SNew(SPhraseListRow)
 		];
 	}
 	
