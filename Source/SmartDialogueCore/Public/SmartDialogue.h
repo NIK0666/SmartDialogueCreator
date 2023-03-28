@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "SmartDialogueData.h"
-#include "SmartDialogueEditor/Private/Toolkit/SBranchInfoWidget.h"
 #include "SmartDialogue.generated.h"
 
 DECLARE_EVENT(USmartDialogue, FOnBranchesChanged);

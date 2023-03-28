@@ -2,8 +2,6 @@
 
 
 #include "SmartDialogueFactory.h"
-
-#include "SmartDialogueFactory.h"
 #include "SmartDialogue.h"
 
 USmartDialogueFactory::USmartDialogueFactory()

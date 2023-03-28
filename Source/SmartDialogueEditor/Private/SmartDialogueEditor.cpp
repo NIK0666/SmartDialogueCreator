@@ -1,6 +1,7 @@
 ﻿#include "SmartDialogueEditor.h"
 
 #include "AssetToolsModule.h"
+#include "AssetTypeActions_SmartDialConfig.h"
 #include "IAssetTools.h"
 #include "AssetTypeActions_SmartDialogue.h"
 
@@ -15,9 +16,13 @@ void FSmartDialogueEditorModule::StartupModule()
 
 	SmartDialogueCategoryBit = AssetTools.RegisterAdvancedAssetCategory(FName(TEXT("SmartDialogueAsset")), LOCTEXT("SmartDialogueAssetCategory", "SmartDialogue"));
 
-	TSharedRef<IAssetTypeActions> Action = MakeShareable(new FAssetTypeActions_SmartDialogue(SmartDialogueCategoryBit));
-	AssetTools.RegisterAssetTypeActions(Action);
-	RegisteredAssetTypeActions.Add(Action);
+	TSharedRef<IAssetTypeActions> SmartDialogueAction = MakeShareable(new FAssetTypeActions_SmartDialogue(SmartDialogueCategoryBit));
+	AssetTools.RegisterAssetTypeActions(SmartDialogueAction);
+	RegisteredAssetTypeActions.Add(SmartDialogueAction);
+
+	TSharedRef<IAssetTypeActions> SmartDialConfigAction = MakeShareable(new FAssetTypeActions_SmartDialConfig(SmartDialogueCategoryBit));
+	AssetTools.RegisterAssetTypeActions(SmartDialConfigAction);
+	RegisteredAssetTypeActions.Add(SmartDialConfigAction);
 }
 
 void FSmartDialogueEditorModule::ShutdownModule()

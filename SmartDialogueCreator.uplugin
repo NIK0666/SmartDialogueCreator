@@ -20,5 +20,11 @@
 			"Type": "Editor",
 			"LoadingPhase": "Default"
 		}
-	]
+	],
+	"Config": {
+		"DialoguesConfigAsset": {
+			"Type": "AssetReference",
+			"DefaultValue": ""
+		}
+	}
 }
