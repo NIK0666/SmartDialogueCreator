@@ -15,6 +15,7 @@ public:
 	void Construct(const FArguments& InArgs);
 
 	void OnPublicVarDeleted(TSharedPtr<FString> VarId);
+	void OnLocalVarDeleted(TSharedPtr<FString> VarId);
 
 private:
 	
@@ -25,6 +26,7 @@ private:
 
 	FReply OnAddPublicVarClicked();
 
+	FReply OnAddLocalVarClicked();
 
 
 	FReply OnTabButtonClicked(int32 TabIndex);
@@ -35,6 +37,9 @@ private:
 	TArray<TSharedPtr<FString>> PublicVarIds;
 	int32 PublicVarCounter = 0;
 
+	TSharedPtr<SVerticalBox> ScrollBoxLocalVarsContent;
+	TArray<TSharedPtr<FString>> LocalVarIds;
+	int32 LocalVarCounter = 0;
 	
 	TSharedPtr<SComboBox<TSharedPtr<FString>>> CharacterComboBox;
 	TSharedPtr<SVerticalBox> ScrollBoxContent;

@@ -5,7 +5,7 @@
 #include "Widgets/Text/STextBlock.h"
 #include "EditorStyleSet.h"
 #include "Lists/Items/SCharacterRowWidget.h"
-#include "Lists/Items/SGlobalVarRow.h"
+#include "Lists/Items/SDialVarRow.h"
 #include "Widgets/Layout/SWidgetSwitcher.h"
 
 void SDialConfigWidget::Construct(const FArguments& InArgs)
@@ -150,13 +150,34 @@ void SDialConfigWidget::Construct(const FArguments& InArgs)
 
 				+ SWidgetSwitcher::Slot()
 				[
-					// Fourth tab (Parameters) content
-					SNew(SBox)
-					.VAlign(VAlign_Center)
-					.HAlign(HAlign_Center)
+					// Third tab (Local Vars) content
+					SNew(SVerticalBox)
+					+ SVerticalBox::Slot()
+					.AutoHeight()
 					[
-						SNew(STextBlock)
-						.Text(FText::FromString("Local Vars content will be here."))
+						SNew(SHorizontalBox)
+						+ SHorizontalBox::Slot()
+						.AutoWidth()
+						[
+							SNew(SButton)
+							.ButtonStyle(FEditorStyle::Get(), "FlatButton.Success")
+							.ForegroundColor(FSlateColor::UseForeground())
+							.OnClicked(this, &SDialConfigWidget::OnAddLocalVarClicked)
+							.ToolTipText(FText::FromString("Add local var"))
+							[
+								SNew(SImage)
+								.Image(FEditorStyle::Get().GetBrush("Icons.Plus"))
+							]
+						]
+					]
+					+ SVerticalBox::Slot()
+					.FillHeight(1.0f)
+					[
+						SNew(SScrollBox)
+						+ SScrollBox::Slot()
+						[
+							SAssignNew(ScrollBoxLocalVarsContent, SVerticalBox)
+						]
 					]
 				]
 				+ SWidgetSwitcher::Slot()
@@ -222,40 +243,37 @@ FReply SDialConfigWidget::OnAddPublicVarClicked()
 	// Добавьте новую строку в список глобальных переменных
 	ScrollBoxGlobalVarsContent->AddSlot()
 	[
-		SNew(SGlobalVarRow)
+		SNew(SDialVarRow)
 			.VarId(NewVarId)
-			.ParentWidget(SharedThis(this))
 	];
 
 	return FReply::Handled();
 }
 
+FReply SDialConfigWidget::OnAddLocalVarClicked()
+{
+	// Создайте новый идентификатор переменной и добавьте его в список
+	TSharedPtr<FString> NewVarId = MakeShareable(new FString(FString::Printf(TEXT("LocalVar%d"), LocalVarCounter++)));
+	LocalVarIds.Add(NewVarId);
+
+	// Добавьте новую строку в список локальных переменных
+	ScrollBoxLocalVarsContent->AddSlot()
+	[
+		SNew(SDialVarRow)
+			.VarId(NewVarId)
+	];
+
+	return FReply::Handled();
+}
+
+void SDialConfigWidget::OnLocalVarDeleted(TSharedPtr<FString> VarId)
+{
+	
+}
+
 void SDialConfigWidget::OnPublicVarDeleted(TSharedPtr<FString> VarId)
 {
-	if (!VarId.IsValid())
-	{
-		return;
-	}
-
-	// // Удалите переменную из списка
-	// PublicVarIds.Remove(VarId);
-	//
-	// // Удалите соответствующую строку из контента скроллбокса
-	// TSharedPtr<SWidget> RowToRemove;
-	// for (const TSharedRef<SWidget>& Child : ScrollBoxGlobalVarsContent->GetChildren())
-	// {
-	// 	TSharedPtr<SGlobalVarRow> GlobalVarRow = StaticCastSharedRef<SGlobalVarRow>(Child);
-	// 	if (GlobalVarRow->GetVarId() == VarId)
-	// 	{
-	// 		RowToRemove = GlobalVarRow;
-	// 		break;
-	// 	}
-	// }
-	//
-	// if (RowToRemove.IsValid())
-	// {
-	// 	ScrollBoxGlobalVarsContent->RemoveSlot(RowToRemove.ToSharedRef());
-	// }
+	
 }
 
 FReply SDialConfigWidget::OnTabButtonClicked(int32 TabIndex)

@@ -1,15 +1,14 @@
 // 
 
 
-#include "SGlobalVarRow.h"
+#include "SDialVarRow.h"
 
 #include "EditorStyleSet.h"
 #include "Toolkit/SDialConfigWidget.h"
 
-void SGlobalVarRow::Construct(const FArguments& InArgs)
+void SDialVarRow::Construct(const FArguments& InArgs)
 {
 	VarId = InArgs._VarId;
-	ParentWidget = InArgs._ParentWidget;
 
 	ChildSlot
 	[
@@ -42,7 +41,7 @@ void SGlobalVarRow::Construct(const FArguments& InArgs)
 			SNew(SButton)
 				.ButtonStyle(FEditorStyle::Get(), "FlatButton.Danger")
 				.ForegroundColor(FSlateColor::UseForeground())
-				.OnClicked(this, &SGlobalVarRow::OnDeleteButtonClicked)
+				.OnClicked(this, &SDialVarRow::OnDeleteButtonClicked)
 			[
 				SNew(SImage)
 				.Image(FEditorStyle::Get().GetBrush("Icons.Cross"))
@@ -51,17 +50,12 @@ void SGlobalVarRow::Construct(const FArguments& InArgs)
 	];
 }
 
-TSharedPtr<FString> SGlobalVarRow::GetVarId()
+TSharedPtr<FString> SDialVarRow::GetVarId()
 {
 	return VarId;
 }
 
-FReply SGlobalVarRow::OnDeleteButtonClicked()
+FReply SDialVarRow::OnDeleteButtonClicked()
 {
-	if (ParentWidget.IsValid())
-	{
-		ParentWidget.Pin()->OnPublicVarDeleted(VarId);
-	}
-
 	return FReply::Handled();
 }

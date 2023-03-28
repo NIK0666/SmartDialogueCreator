@@ -6,12 +6,14 @@
 
 class SDialConfigWidget;
 
-class SGlobalVarRow : public SCompoundWidget
+class SDialVarRow : public SCompoundWidget
 {
 public:
-	SLATE_BEGIN_ARGS(SGlobalVarRow) {}
+	DECLARE_DELEGATE_OneParam(FOnVarDeleted, TSharedPtr<FString>)
+
+	
+	SLATE_BEGIN_ARGS(SDialVarRow) {}
 	SLATE_ARGUMENT(TSharedPtr<FString>, VarId)
-	SLATE_ARGUMENT(TWeakPtr<SDialConfigWidget>, ParentWidget)
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs);
@@ -22,6 +24,5 @@ private:
 	FReply OnDeleteButtonClicked();
 
 	TSharedPtr<FString> VarId;
-	TWeakPtr<SDialConfigWidget> ParentWidget;
 };
 
