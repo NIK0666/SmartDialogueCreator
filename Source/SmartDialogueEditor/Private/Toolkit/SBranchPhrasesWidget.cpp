@@ -36,7 +36,7 @@ void SBranchPhrasesWidget::Construct(const FArguments& InArgs)
 				.OnClicked_Lambda([this]() {
 					if (SmartDialogueEditor->GetSelectedBranch())
 					{
-						FSmartDialoguePhrases NpcPhrase;
+						FSmartDialoguePhrase NpcPhrase;
 						NpcPhrase.NPC = SmartDialogueEditor->GetDialogue()->GetCharacter();
 						SmartDialogueEditor->GetSelectedBranch()->Phrases.Add(NpcPhrase);
 
@@ -57,7 +57,7 @@ void SBranchPhrasesWidget::Construct(const FArguments& InArgs)
 				.OnClicked_Lambda([this]() {
 					if (SmartDialogueEditor->GetSelectedBranch())
 					{
-						FSmartDialoguePhrases HeroPhrase;
+						FSmartDialoguePhrase HeroPhrase;
 						HeroPhrase.NPC = SmartDialogueEditor->GetDialogueConfig()->GetHero();
 						HeroPhrase.Text = SmartDialogueEditor->GetSelectedBranch()->Text;
 						
@@ -106,14 +106,14 @@ void SBranchPhrasesWidget::UpdatePhrases()
 		AddFirstHeroPhraseButton->SetVisibility(SmartDialogueEditor.Get()->GetSelectedBranch()->Phrases.IsEmpty() ? EVisibility::Visible : EVisibility::Collapsed);
 	}
 
-	for (const auto& Phrase : SmartDialogueEditor.Get()->GetSelectedBranch()->Phrases)
+	for (auto& Phrase : SmartDialogueEditor.Get()->GetSelectedBranch()->Phrases)
 	{
 		PhrasesVBox->AddSlot()
 		           .AutoHeight()
 		           .Padding(FMargin(0.0f, 2.0f))
 			[
 				SNew(SPhraseListRow)
-				.SmartDialoguePhrase(Phrase)
+				.SmartDialoguePhrasePtr(&Phrase)
 				.SmartDialogueEditor(SmartDialogueEditor)
 			];
 	}

@@ -37,6 +37,7 @@ public:
 	TArray<TSharedPtr<FString>> GetAllBranchesList(bool bFirstEmpty = false);
 	TArray<TSharedPtr<FString>> GetAllVariablesList(bool bFirstEmpty = false);
 	TArray<TSharedPtr<FString>> GetAllCharactersList(bool bFirstEmpty = false);
+	TArray<TSharedPtr<FString>> GetOperations(bool bIsExecution);
 
 
 	virtual FName GetToolkitFName() const override;

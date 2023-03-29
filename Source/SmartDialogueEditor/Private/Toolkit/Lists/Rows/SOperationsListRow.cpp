@@ -22,7 +22,7 @@ TSharedRef<SWidget> SOperationsListRow::GetContent()
 
 	// Initialize the OperationOptions array
 	OperationOptions = TArray<TSharedPtr<FString>>();
-	TArray<TSharedPtr<FString>> Operations = GetOperations();
+	TArray<TSharedPtr<FString>> Operations = Editor.Get()->GetOperations(bIsExecution);
 	for (TSharedPtr<FString> Op : Operations)
 	{
 		OperationOptions.Add(Op);
@@ -71,32 +71,6 @@ TSharedRef<SWidget> SOperationsListRow::GetContent()
 				.HintText(FText::FromString(TEXT("value")))
 			]
 		];
-}
-
-TArray<TSharedPtr<FString>> SOperationsListRow::GetOperations()
-{
-	TArray<TSharedPtr<FString>> Result;
-
-	const UEnum* EnumPtr = nullptr;
-	if (bIsExecution)
-	{
-		EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("ESmartDialogueOperation"), true);
-	}
-	else
-	{
-		EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("ESmartDialogueEqualOperation"), true);
-	}
-
-	if (EnumPtr)
-	{
-		for (int32 i = 0; i < EnumPtr->NumEnums() - 1; i++)
-		{
-			FString DisplayName = EnumPtr->GetDisplayNameTextByIndex(i).ToString();
-			Result.Add(MakeShareable(new FString(DisplayName)));
-		}
-	}
-
-	return Result;
 }
 
 void SOperationsListRow::OnVariableSelected(TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo)

@@ -90,19 +90,8 @@ void SDialConfigWidget::Construct(const FArguments& InArgs)
 								.OnSelectionChanged(this, &SDialConfigWidget::OnCharacterSelected)
 								.Content()
 								[
-									SNew(STextBlock)
-									.Text_Lambda([this]()
-									{
-										TSharedPtr<FString> SelectedItem = CharacterComboBox->GetSelectedItem();
-										if (SelectedItem.IsValid())
-										{
-											return FText::FromString(*SelectedItem);
-										}
-										else
-										{
-											return FText::FromString(TEXT("[character]"));
-										}
-									})
+									SAssignNew(CharacterTextBlock, STextBlock)
+									.Text(FText::GetEmpty())
 								]
 							]
 						]
@@ -222,6 +211,16 @@ void SDialConfigWidget::UpdateData()
 			{
 				AddGlobalVarRow(L_Var.Key, L_Var.Value, L_Var.Desc);
 			}
+
+			for (auto Element : CharacterList)
+			{
+				if (Element.Get()->Equals(DialConfig->GetHero()))
+				{
+					CharacterComboBox->SetSelectedItem(Element);
+					break;
+				}		
+			}
+			
 		}
 	}
 }

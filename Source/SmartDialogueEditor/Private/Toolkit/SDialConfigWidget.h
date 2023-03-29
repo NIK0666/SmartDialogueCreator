@@ -46,13 +46,15 @@ private:
 	TArray<TSharedPtr<FString>> LocalVarIds;
 	int32 LocalVarCounter = 0;
 	
-	TSharedPtr<SComboBox<TSharedPtr<FString>>> CharacterComboBox;
 	TSharedPtr<SVerticalBox> ScrollBoxContent;
 
-	TArray<TSharedPtr<FString>> CharacterList;
 	TSharedPtr<SWidgetSwitcher> WidgetSwitcher;
 	int32 ActiveTabIndex = 0;
 	TArray<TSharedPtr<SButton>> TabButtons;
 	
 	USmartDialConfig* DialConfig = nullptr;
+
+	TSharedPtr<SComboBox<TSharedPtr<FString>>> CharacterComboBox;
+	TSharedPtr<STextBlock> CharacterTextBlock;
+	TArray<TSharedPtr<FString>> CharacterList;
 };

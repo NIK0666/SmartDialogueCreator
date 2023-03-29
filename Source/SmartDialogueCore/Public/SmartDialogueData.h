@@ -86,7 +86,7 @@ struct FIf
 };
 
 USTRUCT(BlueprintType)
-struct FSmartDialoguePhrases
+struct FSmartDialoguePhrase
 {
 	GENERATED_BODY()
 
@@ -153,7 +153,7 @@ struct FSmartDialogueBranch
 	FText Text;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Branch")
-	TArray<FSmartDialoguePhrases> Phrases;
+	TArray<FSmartDialoguePhrase> Phrases;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Branch")
 	bool Choice;

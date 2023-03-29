@@ -409,6 +409,33 @@ TArray<FCharacterData> FSmartDialogueEditor::GetAllCharacters()
 	return {};
 }
 
+TArray<TSharedPtr<FString>> FSmartDialogueEditor::GetOperations(bool bIsExecution)
+{
+	TArray<TSharedPtr<FString>> Result;
+
+	const UEnum* EnumPtr = nullptr;
+	if (bIsExecution)
+	{
+		EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("ESmartDialogueOperation"), true);
+	}
+	else
+	{
+		EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("ESmartDialogueEqualOperation"), true);
+	}
+
+	if (EnumPtr)
+	{
+		for (int32 i = 0; i < EnumPtr->NumEnums() - 1; i++)
+		{
+			FString DisplayName = EnumPtr->GetDisplayNameTextByIndex(i).ToString();
+			Result.Add(MakeShareable(new FString(DisplayName)));
+		}
+	}
+
+	return Result;
+}
+
+
 TArray<FVariableData> FSmartDialogueEditor::GetAllVariables()
 {
 	TArray<FVariableData> Result;

@@ -13,7 +13,7 @@ class SPhraseListRow : public SCompoundWidget
 public:
 	SLATE_BEGIN_ARGS(SPhraseListRow) {}
 	SLATE_ARGUMENT(TSharedPtr<FSmartDialogueEditor>, SmartDialogueEditor)
-	SLATE_ARGUMENT(FSmartDialoguePhrases, SmartDialoguePhrase)
+	SLATE_ARGUMENT(FSmartDialoguePhrase*, SmartDialoguePhrasePtr)
 	SLATE_END_ARGS() 
 
 
@@ -27,6 +27,7 @@ private:
 	TSharedPtr<SComboBox<TSharedPtr<FString>>> CharacterComboBox;
 	TSharedPtr<SComboBox<TSharedPtr<FString>>> VarComboBox;
 	TSharedPtr<SComboBox<TSharedPtr<FString>>> ComparisonComboBox;
+	TSharedPtr<STextBlock> ComparisonTextBlock;
 
 	TSharedRef<SWidget> GenerateCharacterOption(TSharedPtr<FString> Option);
 	TSharedRef<SWidget> GenerateVarOption(TSharedPtr<FString> Option);
@@ -41,7 +42,11 @@ private:
 	FReply OnDeleteButtonClicked();
 	void OnMultiLineTextChanged(const FText& InText);
 	
-	
+	FText GetCurrentCharacterText() const;
+	FText GetCurrentVarText() const;
+	FText GetCurrentComparisonText() const;
+
+
 	TSharedPtr<FSmartDialogueEditor> SmartDialogueEditor;
-	FSmartDialoguePhrases SmartDialoguePhrase;
+	FSmartDialoguePhrase* SmartDialoguePhrasePtr = nullptr;
 };

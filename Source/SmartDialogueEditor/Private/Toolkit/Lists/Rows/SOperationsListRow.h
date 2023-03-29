@@ -18,8 +18,6 @@ public:
 protected:
 	virtual TSharedRef<SWidget> GetContent() override;
 
-	TArray<TSharedPtr<FString>> GetOperations();
-
 	void OnVariableSelected(TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo);
 
 	void OnOperationSelected(TSharedPtr<FString> SelectedItem, ESelectInfo::Type SelectInfo);

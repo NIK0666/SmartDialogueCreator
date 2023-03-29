@@ -11,13 +11,12 @@
 void SPhraseListRow::Construct(const FArguments& InArgs)
 {
 	SmartDialogueEditor = InArgs._SmartDialogueEditor;
-	SmartDialoguePhrase = InArgs._SmartDialoguePhrase;
+	SmartDialoguePhrasePtr = InArgs._SmartDialoguePhrasePtr;
 	
 	CharacterOptions = SmartDialogueEditor.Get()->GetAllCharactersList(true);
 	VarOptions = SmartDialogueEditor.Get()->GetAllVariablesList(true);
 
-	ComparisonOptions.Add(MakeShareable(new FString(TEXT("=="))));
-	ComparisonOptions.Add(MakeShareable(new FString(TEXT("!="))));
+	ComparisonOptions = SmartDialogueEditor.Get()->GetOperations(false);
 	
 	ChildSlot
 	[
@@ -37,7 +36,9 @@ void SPhraseListRow::Construct(const FArguments& InArgs)
 				.InitiallySelectedItem(CharacterOptions[0])
 				[
 					SNew(STextBlock)
-					.Text(NSLOCTEXT("SPhraseListRow", "Character", "[character]"))
+					.MinDesiredWidth(32.f)
+					.ToolTipText(NSLOCTEXT("SPhraseListRow", "CharacterComboBoxTooltip", "Character"))
+					.Text(this, &SPhraseListRow::GetCurrentCharacterText)
 				]
 			]
 			+ SHorizontalBox::Slot()
@@ -57,7 +58,9 @@ void SPhraseListRow::Construct(const FArguments& InArgs)
 				.InitiallySelectedItem(VarOptions[0])
 				[
 					SNew(STextBlock)
-					.Text(NSLOCTEXT("SPhraseListRow", "Var", "[Var]"))
+					.MinDesiredWidth(32.f)
+					.ToolTipText(NSLOCTEXT("SPhraseListRow", "VarComboBoxTooltip", "Viriable"))
+					.Text(this, &SPhraseListRow::GetCurrentVarText)
 				]
 			]
 			+ SHorizontalBox::Slot()
@@ -70,8 +73,8 @@ void SPhraseListRow::Construct(const FArguments& InArgs)
 				.OnSelectionChanged(this, &SPhraseListRow::OnComparisonSelected)
 				.InitiallySelectedItem(ComparisonOptions[0])
 				[
-					SNew(STextBlock)
-					.Text(NSLOCTEXT("SPhraseListRow", "Comparison", "=="))
+					SAssignNew(ComparisonTextBlock, STextBlock)
+					.Text(this, &SPhraseListRow::GetCurrentComparisonText)
 				]
 			]
 			+ SHorizontalBox::Slot()
@@ -163,17 +166,17 @@ TSharedRef<SWidget> SPhraseListRow::GenerateComparisonOption(TSharedPtr<FString>
 
 void SPhraseListRow::OnCharacterSelected(TSharedPtr<FString> NewSelection, ESelectInfo::Type SelectInfo)
 {
-	// Обработка выбора элемента из списка Character
+    SmartDialoguePhrasePtr->NPC = *NewSelection;
 }
 
 void SPhraseListRow::OnVarSelected(TSharedPtr<FString> NewSelection, ESelectInfo::Type SelectInfo)
 {
-	// Обработка выбора элемента из списка Var
+    SmartDialoguePhrasePtr->If.Key = *NewSelection;
 }
 
 void SPhraseListRow::OnComparisonSelected(TSharedPtr<FString> NewSelection, ESelectInfo::Type SelectInfo)
 {
-	// из списка Comparison
+    ComparisonTextBlock->SetText(FText::FromString(*NewSelection));
 }
 
 void SPhraseListRow::OnOrCheckStateChanged(ECheckBoxState NewState)
@@ -202,4 +205,19 @@ FReply SPhraseListRow::OnDeleteButtonClicked()
 void SPhraseListRow::OnMultiLineTextChanged(const FText& InText)
 {
 	// Обработка изменения текста в поле ввода с автоматическим расширением вниз
+}
+
+FText SPhraseListRow::GetCurrentCharacterText() const
+{
+	return FText::FromString(SmartDialoguePhrasePtr->NPC);
+}
+
+FText SPhraseListRow::GetCurrentVarText() const
+{
+	return FText::FromString(SmartDialoguePhrasePtr->If.Key);
+}
+
+FText SPhraseListRow::GetCurrentComparisonText() const
+{
+	return FText::FromString(*ComparisonComboBox->GetSelectedItem());
 }
