@@ -85,9 +85,11 @@ TSharedPtr<FExtender> FSmartDialogueEditor::GetToolbarExtender()
 		FToolBarExtensionDelegate::CreateLambda([this](FToolBarBuilder& ToolbarBuilder)
 		{
 			ToolbarBuilder.AddToolBarButton(FSmartDialogueEditorCommands::Get().AddNewBranch, NAME_None, FText::GetEmpty(), TAttribute<FText>(), FSlateIcon(FEditorStyle::GetStyleSetName(), "Icons.Plus"));
+			ToolbarBuilder.AddSeparator();
 			ToolbarBuilder.AddToolBarButton(FSmartDialogueEditorCommands::Get().ShowBranches, NAME_None, FText::GetEmpty(), TAttribute<FText>(), FSlateIcon(FUMGStyle::Get().GetStyleSetName(), "ClassIcon.MultiLineEditableText"));
 			ToolbarBuilder.AddToolBarButton(FSmartDialogueEditorCommands::Get().PlayDialogue, NAME_None, FText::GetEmpty(), TAttribute<FText>(), FSlateIcon(FAppStyle::GetAppStyleSetName(), "Icons.Toolbar.Play"));
 			ToolbarBuilder.AddToolBarButton(FSmartDialogueEditorCommands::Get().ShowConfig, NAME_None, FText::GetEmpty(), TAttribute<FText>(), FSlateIcon(FAppStyle::Get().GetStyleSetName(), "Icons.Settings"));
+			ToolbarBuilder.AddSeparator();
 		})
 	);
 
@@ -215,7 +217,7 @@ void FSmartDialogueEditor::RegisterTabSpawners(const TSharedRef<FTabManager>& In
 		.SetGroup(WorkspaceMenuCategory.ToSharedRef());
 
 	InTabManager->RegisterTabSpawner(SmartDialogue_SelectedBranchPropertiesTabId, FOnSpawnTab::CreateSP(this, &FSmartDialogueEditor::SpawnTab_SelectedBranchProperties))
-		.SetDisplayName(FText::FromString("Properties"))
+		.SetDisplayName(FText::FromString("Branch Properties"))
 		.SetGroup(WorkspaceMenuCategory.ToSharedRef());
 
 	InTabManager->RegisterTabSpawner(SmartDialogue_SelectedBranchPhrasesTabId, FOnSpawnTab::CreateSP(this, &FSmartDialogueEditor::SpawnTab_SelectedBranchPhrases))
@@ -259,7 +261,7 @@ TSharedRef<SDockTab> FSmartDialogueEditor::SpawnTab_SelectedBranchProperties(con
 	check(Args.GetTabId() == SmartDialogue_SelectedBranchPropertiesTabId);
 
 	return SNew(SDockTab) 
-		.Label(FText::FromString("Properties"))
+		.Label(FText::FromString("Branch Properties"))
 		[
 			CreateSelectedBranchPropertiesWidget()
 		];
