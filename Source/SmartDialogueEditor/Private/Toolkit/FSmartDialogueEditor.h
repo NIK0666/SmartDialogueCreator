@@ -71,6 +71,7 @@ private:
 	TSharedRef<FTabManager::FLayout> GetDefaultTabContents();
 
 	void AddNewBranch();
+	void ShowBranches();
 	void PlayDialogue();
 	void ShowConfig();
 

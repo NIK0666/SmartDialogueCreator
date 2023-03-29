@@ -16,6 +16,7 @@ public:
 	virtual void RegisterCommands() override;
 
 	TSharedPtr<FUICommandInfo> AddNewBranch;
+	TSharedPtr<FUICommandInfo> ShowBranches;
 	TSharedPtr<FUICommandInfo> PlayDialogue;
 	TSharedPtr<FUICommandInfo> ShowConfig;
 };

@@ -10,6 +10,7 @@
 #include "SmartDialogue.h"
 #include "SBranchPropertiesWidget.h"
 #include "SDialConfigWidget.h"
+#include "UMGStyle.h"
 #include "SmartDialogueCore/Private/SmartDialogueSettings.h"
 
 #define LOCTEXT_NAMESPACE "SmartDialogueEditor"
@@ -59,6 +60,11 @@ void FSmartDialogueEditor::BindCommands()
 		FCanExecuteAction());
 	
 	ToolkitCommands->MapAction(
+	FSmartDialogueEditorCommands::Get().ShowBranches,
+	FExecuteAction::CreateSP(this, &FSmartDialogueEditor::ShowBranches),
+	FCanExecuteAction());
+	
+	ToolkitCommands->MapAction(
 	FSmartDialogueEditorCommands::Get().PlayDialogue,
 	FExecuteAction::CreateSP(this, &FSmartDialogueEditor::PlayDialogue),
 	FCanExecuteAction());
@@ -79,6 +85,7 @@ TSharedPtr<FExtender> FSmartDialogueEditor::GetToolbarExtender()
 		FToolBarExtensionDelegate::CreateLambda([this](FToolBarBuilder& ToolbarBuilder)
 		{
 			ToolbarBuilder.AddToolBarButton(FSmartDialogueEditorCommands::Get().AddNewBranch, NAME_None, FText::GetEmpty(), TAttribute<FText>(), FSlateIcon(FEditorStyle::GetStyleSetName(), "Icons.Plus"));
+			ToolbarBuilder.AddToolBarButton(FSmartDialogueEditorCommands::Get().ShowBranches, NAME_None, FText::GetEmpty(), TAttribute<FText>(), FSlateIcon(FUMGStyle::Get().GetStyleSetName(), "ClassIcon.MultiLineEditableText"));
 			ToolbarBuilder.AddToolBarButton(FSmartDialogueEditorCommands::Get().PlayDialogue, NAME_None, FText::GetEmpty(), TAttribute<FText>(), FSlateIcon(FAppStyle::GetAppStyleSetName(), "Icons.Toolbar.Play"));
 			ToolbarBuilder.AddToolBarButton(FSmartDialogueEditorCommands::Get().ShowConfig, NAME_None, FText::GetEmpty(), TAttribute<FText>(), FSlateIcon(FAppStyle::Get().GetStyleSetName(), "Icons.Settings"));
 		})
@@ -372,6 +379,11 @@ void FSmartDialogueEditor::ShowConfig()
 {
 	// Переключение на вкладку Config
 	TabManager->TryInvokeTab(SmartDialogue_ConfigTabId);
+}
+
+void FSmartDialogueEditor::ShowBranches()
+{
+	TabManager->TryInvokeTab(SmartDialogue_BranchesListTabId);
 }
 
 void FSmartDialogueEditor::PlayDialogue()
