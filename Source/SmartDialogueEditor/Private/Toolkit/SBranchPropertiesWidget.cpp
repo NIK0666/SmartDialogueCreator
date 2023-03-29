@@ -4,6 +4,7 @@
 #include "SBranchPropertiesWidget.h"
 
 #include "EditorStyleSet.h"
+#include "FSmartDialogueEditor.h"
 #include "Lists/SBranchesListWidget.h"
 #include "Lists/SOperationsListWidget.h"
 #include "Lists/Rows/SPhraseListRow.h"
@@ -15,15 +16,11 @@ void SBranchPropertiesWidget::Construct(const FArguments& InArgs)
 {
 	SmartDialogueEditor = InArgs._SmartDialogueEditor;
 	DialogueBranchData = InArgs._DialogueBranchData;
-	
-	TSharedRef<SVerticalBox> MyList = SNew(SVerticalBox);
-	for (int32 i = 0; i < 5; ++i) // Пример добавления 5 элементов
-	{
-		MyList->AddSlot()
-		[
-			SNew(SPhraseListRow)
-		];
-	}
+
+	SmartDialogueEditor.Get()->OnBranchSelected.AddSP(this, &SBranchPropertiesWidget::OnBranchSelected);
+
+	PhrasesVBox = SNew(SVerticalBox);
+	UpdatePhrases();
 	
 	ChildSlot
 	[
@@ -192,10 +189,42 @@ void SBranchPropertiesWidget::Construct(const FArguments& InArgs)
 			SNew(SScrollBox)
 			+ SScrollBox::Slot()
 			[
-				MyList
+				PhrasesVBox.ToSharedRef()
 			]
 		]
 	];
 }
+
+void SBranchPropertiesWidget::OnBranchSelected(FSmartDialogueBranch& SmartDialogueBranch)
+{
+	DialogueBranchData = SmartDialogueBranch;
+	UpdateWidgets();
+}
+
+void SBranchPropertiesWidget::UpdateWidgets()
+{
+	// Обновление состояния CheckBox-ов
+	HiddenCheckBox->SetIsChecked(DialogueBranchData.Hidden.IsEmpty() ? ECheckBoxState::Unchecked : ECheckBoxState::Checked);
+	HideSelfCheckBox->SetIsChecked(DialogueBranchData.HideSelf.IsEmpty() ? ECheckBoxState::Unchecked : ECheckBoxState::Checked);
+	ClosedCheckBox->SetIsChecked(DialogueBranchData.Closed ? ECheckBoxState::Checked : ECheckBoxState::Unchecked);
+
+	UpdatePhrases();
+}
+
+void SBranchPropertiesWidget::UpdatePhrases()
+{
+	PhrasesVBox->ClearChildren();
+
+	for (int32 i = 0; i < DialogueBranchData.Phrases.Num(); ++i)
+	{
+		PhrasesVBox->AddSlot()
+		[
+			SNew(SPhraseListRow)
+			.SmartDialogueEditor(SmartDialogueEditor)
+			.SmartDialoguePhrase(DialogueBranchData.Phrases[i])
+		];
+	}
+}
+
 
 #undef LOCTEXT_NAMESPACE

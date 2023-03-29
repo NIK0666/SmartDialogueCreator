@@ -124,6 +124,7 @@ void FSmartDialogueEditor::SetSelectedBranchName(FName NewValue)
 		if (auto Obj = GetDialogue()->GetBranchPtr(NewValue))
 		{
 			SelectedBranchPtr = Obj;
+			OnBranchSelected.Broadcast(*Obj);
 		}
 	}	
 }

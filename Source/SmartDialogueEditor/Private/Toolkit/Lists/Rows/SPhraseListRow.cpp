@@ -4,22 +4,22 @@
 #include "SPhraseListRow.h"
 
 #include "EditorStyleSet.h"
+#include "Toolkit/FSmartDialogueEditor.h"
 #include "Widgets/Input/SMultiLineEditableTextBox.h"
 
 
 void SPhraseListRow::Construct(const FArguments& InArgs)
 {
-
-	// Заполните массивы с опциями для комбо-боксов по вашим данным
-	CharacterOptions.Add(MakeShareable(new FString(TEXT("Option1"))));
-	CharacterOptions.Add(MakeShareable(new FString(TEXT("Option2"))));
-
-	VarOptions.Add(MakeShareable(new FString(TEXT("Var1"))));
-	VarOptions.Add(MakeShareable(new FString(TEXT("Var2"))));
+	SmartDialogueEditor = InArgs._SmartDialogueEditor;
+	SmartDialoguePhrase = InArgs._SmartDialoguePhrase;
+	
+	UpdateCharacterOptions();
+	UpdateVarOptions();
 
 	ComparisonOptions.Add(MakeShareable(new FString(TEXT("=="))));
 	ComparisonOptions.Add(MakeShareable(new FString(TEXT("!="))));
 
+	
 	
 	ChildSlot
 	[
@@ -145,6 +145,40 @@ void SPhraseListRow::Construct(const FArguments& InArgs)
 			]
 		]
 	];
+}
+
+void SPhraseListRow::UpdateCharacterOptions()
+{
+	// Получаем данные персонажей
+	TArray<FCharacterData> AllCharacters = SmartDialogueEditor.Get()->GetAllCharacters();
+
+	// Очищаем список опций персонажей
+	CharacterOptions.Empty();	
+	CharacterOptions.Add(MakeShareable(new FString(TEXT(""))));
+	
+	// Заполняем список опций персонажей
+	for (const FCharacterData& CharacterData : AllCharacters)
+	{
+		TSharedPtr<FString> CharacterOption = MakeShareable(new FString(CharacterData.Name));
+		CharacterOptions.Add(CharacterOption);
+	}
+}
+
+void SPhraseListRow::UpdateVarOptions()
+{
+	// Получаем данные переменных
+	TArray<FVariableData> AllVariables = SmartDialogueEditor.Get()->GetAllVariables();
+
+	// Очищаем список опций переменных
+	VarOptions.Empty();
+	VarOptions.Add(MakeShareable(new FString(TEXT("")))); //Нуливой элемент
+	
+	// Заполняем список опций переменных
+	for (const FVariableData& VariableData : AllVariables)
+	{
+		TSharedPtr<FString> VarOption = MakeShareable(new FString(VariableData.Key));
+		VarOptions.Add(VarOption);
+	}
 }
 
 TSharedRef<SWidget> SPhraseListRow::GenerateCharacterOption(TSharedPtr<FString> Option)

@@ -16,15 +16,21 @@ public:
 	SLATE_ARGUMENT(FSmartDialogueBranch, DialogueBranchData)
 	SLATE_END_ARGS()
 
+
 	void Construct(const FArguments& InArgs);
 
 private:
 	TSharedPtr<FSmartDialogueEditor> SmartDialogueEditor;
 	FSmartDialogueBranch DialogueBranchData;
+	void OnBranchSelected(FSmartDialogueBranch& SmartDialogueBranch);
+	void UpdateWidgets();
+	void UpdatePhrases();
 
 	// Добавляем указатели на виджеты интерфейса
 	TSharedPtr<SCheckBox> HiddenCheckBox;
 	TSharedPtr<SCheckBox> HideSelfCheckBox;
 	TSharedPtr<SCheckBox> ClosedCheckBox;
 	TSharedPtr<SBox> EventBox;
+	TSharedPtr<SVerticalBox> PhrasesVBox;
+
 };

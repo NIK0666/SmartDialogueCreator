@@ -3,13 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SmartDialogueData.h"
 // #include "SPhraseListRow.generated.h"
+
+class FSmartDialogueEditor;
 
 class SPhraseListRow : public SCompoundWidget
 {
 public:
 	SLATE_BEGIN_ARGS(SPhraseListRow) {}
-	SLATE_END_ARGS()
+	SLATE_ARGUMENT(TSharedPtr<FSmartDialogueEditor>, SmartDialogueEditor)
+	SLATE_ARGUMENT(FSmartDialoguePhrases, SmartDialoguePhrase)
+	SLATE_END_ARGS() 
+
 
 	void Construct(const FArguments& InArgs);
 
@@ -34,4 +40,11 @@ private:
 	FReply OnHandButtonClicked();
 	FReply OnDeleteButtonClicked();
 	void OnMultiLineTextChanged(const FText& InText);
+
+	
+	void UpdateCharacterOptions();
+	void UpdateVarOptions();
+	
+	TSharedPtr<FSmartDialogueEditor> SmartDialogueEditor;
+	FSmartDialoguePhrases SmartDialoguePhrase;
 };

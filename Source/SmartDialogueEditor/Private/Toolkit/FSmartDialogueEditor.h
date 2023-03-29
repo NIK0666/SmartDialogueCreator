@@ -13,6 +13,7 @@ class USmartDialogue;
 
 DECLARE_DELEGATE_OneParam(FOnBranchItemAdded, FSmartDialogueBranch&);
 DECLARE_DELEGATE_OneParam(FOnBranchItemDeleted, FSmartDialogueBranch&);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnBranchSelected, FSmartDialogueBranch&);
 
 
 class SMARTDIALOGUEEDITOR_API FSmartDialogueEditor final : public FAssetEditorToolkit, public FNotifyHook
@@ -27,7 +28,8 @@ public:
 
 	FOnBranchItemAdded OnBranchItemAdded;
 	FOnBranchItemDeleted OnBranchItemDeleted;
-
+	FOnBranchSelected OnBranchSelected;
+	
 	USmartDialConfig* GetDialogueConfig();
 	TArray<FCharacterData> GetAllCharacters();
 	TArray<FVariableData> GetAllVariables();
