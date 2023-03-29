@@ -25,7 +25,47 @@ enum class ESmartDialogueEqualOperation : uint8
 	EEO_Less UMETA(DisplayName = "<"),
 };
 
+USTRUCT(BlueprintType)
+struct FCharacterData
+{
+	GENERATED_BODY()
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FString Id;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FString Name;
+};
+
+USTRUCT(BlueprintType)
+struct FCustomParameterData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FString Desc;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FString Key;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FString Value;
+};
+
+USTRUCT(BlueprintType)
+struct FVariableData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FString Desc;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FString Key;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FString Value;
+};
 
 USTRUCT(BlueprintType)
 struct FIf
@@ -128,10 +168,10 @@ struct FSmartDialogueBranch
 	FString If;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Branch")
-	FString Hidden;
+	bool Hidden;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Branch")
-	FString HideSelf;
+	bool HideSelf;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Branch")
 	TArray<FString> Show;

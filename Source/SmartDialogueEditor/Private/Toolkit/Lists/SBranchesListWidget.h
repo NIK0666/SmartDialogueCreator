@@ -10,7 +10,7 @@ class SBranchesListWidget : public SBaseListWidget
 public:
 	SLATE_BEGIN_ARGS(SBranchesListWidget) {}
 	SLATE_ARGUMENT(FText, Title)
-	SLATE_ARGUMENT(TWeakPtr<FSmartDialogueEditor>, Editor)
+	SLATE_ARGUMENT(TSharedPtr<FSmartDialogueEditor>, Editor)
 	SLATE_ARGUMENT(bool, bIsShowed)
 	SLATE_END_ARGS()
 	
@@ -21,5 +21,7 @@ protected:
 	void ShowSelectionMenu();
 	FReply OnChangeButtonClicked();
 
-	bool bIsShowed;
+	virtual TArray<TSharedPtr<FString>> GetAllStrings() override;
+	virtual FReply OnContextMenuItemClicked(const FString& Item) override;
+	bool bIsShowed = false;
 };

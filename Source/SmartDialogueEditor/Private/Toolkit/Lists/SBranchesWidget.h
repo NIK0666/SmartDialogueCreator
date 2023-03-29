@@ -33,7 +33,7 @@ private:
 	TSharedRef<ITableRow> GenerateBranchInfoWidgetRow(TSharedPtr<SBranchInfoWidget> InItem, const TSharedRef<STableViewBase>& OwnerTable);
 
 	// Ссылка на редактор SmartDialogue
-	TWeakPtr<FSmartDialogueEditor> SmartDialogueEditor;
+	TSharedPtr<FSmartDialogueEditor> SmartDialogueEditor;
 
 	// Список виджетов SBranchInfoWidget
 	TArray<TSharedPtr<SBranchInfoWidget>> BranchesInfoWidgets;

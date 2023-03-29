@@ -9,7 +9,7 @@ class SOperationsListRow : public SBaseListRow
 public:
 	SLATE_BEGIN_ARGS(SOperationsListRow) {}
 	SLATE_ARGUMENT(FListItemData, Item)
-	SLATE_ARGUMENT(TWeakPtr<FSmartDialogueEditor>, Editor)
+	SLATE_ARGUMENT(TSharedPtr<FSmartDialogueEditor>, Editor)
 	SLATE_ARGUMENT(bool, bIsExecution)
 	SLATE_END_ARGS()
 
@@ -17,8 +17,6 @@ public:
 
 protected:
 	virtual TSharedRef<SWidget> GetContent() override;
-
-	TArray<FString> GetValueNames();
 
 	TArray<TSharedPtr<FString>> GetOperations();
 

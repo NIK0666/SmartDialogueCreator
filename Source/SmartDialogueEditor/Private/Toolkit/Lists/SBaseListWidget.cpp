@@ -55,8 +55,6 @@ void SBaseListWidget::Construct(const FArguments& InArgs)
 			SAssignNew(ListContainer, SVerticalBox)
 		]
 	];
-
-	UpdateData({{"Test"}}); // Initialize the list with an empty array.
 }
 
 void SBaseListWidget::UpdateData(const TArray<FListItemData>& NewData)
@@ -70,12 +68,12 @@ void SBaseListWidget::UpdateData(const TArray<FListItemData>& NewData)
 
 		ListContainer->AddSlot()
 		[
-			GetItemContent(Item)
+			GetItemContent({Item})
 		];
 	}
 }
 
-TArray<FString> SBaseListWidget::GetAllStrings()
+TArray<TSharedPtr<FString>> SBaseListWidget::GetAllStrings()
 {
 	return {};
 }
@@ -123,23 +121,23 @@ TSharedRef<SWidget> SBaseListWidget::GetItemContent(const FListItemData& Item)
 
 TSharedRef<SWidget> SBaseListWidget::CreateMenuContent()
 {
-	TArray<FString> AllStrings = GetAllStrings();
+	TArray<TSharedPtr<FString>> AllStrings = GetAllStrings();
 
 	TSharedRef<SVerticalBox> MenuContent = SNew(SVerticalBox);
-	for (const FString& String : AllStrings)
+	for (const TSharedPtr<FString>& StringPtr : AllStrings)
 	{
 		MenuContent->AddSlot()
 		[
 			SNew(SButton)
-			.Text(FText::FromString(String))
-			.OnClicked(this, FOnClicked::TMethodPtr<SBaseListWidget, FString>(&SBaseListWidget::OnMenuItemClicked), String)
+			.Text(FText::FromString(*StringPtr))
+			.OnClicked(this, FOnClicked::TMethodPtr<SBaseListWidget, FString>(&SBaseListWidget::OnContextMenuItemClicked), *StringPtr)
 		];
 	}
 
 	return MenuContent;
 }
 
-FReply SBaseListWidget::OnMenuItemClicked(const FString& Item)
+FReply SBaseListWidget::OnContextMenuItemClicked(const FString& Item)
 {
 	// Обработка выбора элемента меню
 	UE_LOG(LogTemp, Log, TEXT("Выбран элемент меню: %s"), *Item);

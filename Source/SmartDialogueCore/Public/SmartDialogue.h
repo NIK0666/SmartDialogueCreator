@@ -26,6 +26,22 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SmartDialogue")
 	void SetAutoBranch(const FString& NewAutoBranch);
 
+	// Геттер для Character
+	UFUNCTION(BlueprintCallable, Category = "SmartDialogue")
+	FString GetCharacter() const;
+
+	// Сеттер для AutoBranch
+	UFUNCTION(BlueprintCallable, Category = "SmartDialogue")
+	void SetCharacter(const FString& NewCharacter);
+
+	// Геттер для Variables
+	UFUNCTION(BlueprintPure, Category = "Smart Dial")
+	TArray<FVariableData> GetVariables() const;
+	
+	// Сеттер для Variables
+	UFUNCTION(BlueprintCallable, Category = "Smart Dial")
+	void SetVariables(const TArray<FVariableData>& NewVariables);
+
 
 	UFUNCTION(BlueprintCallable, Category = "SmartDialogue")
 	void AddNewBranch(FSmartDialogueBranch& NewBranch);
@@ -52,6 +68,12 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SmartDialogue", meta = (AllowPrivateAccess = "true"))
 	FString AutoBranch;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SmartDialogue", meta = (AllowPrivateAccess = "true"))
+	FString Character;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SmartDialogue", meta = (AllowPrivateAccess = "true"))
+	TArray<FVariableData> Variables;
+	
 	UPROPERTY(BlueprintReadOnly, Category = "SmartDialogue", meta = (AllowPrivateAccess = "true"))
 	FName LastBranchName;
 };

@@ -12,7 +12,7 @@ public:
 		SLATE_ARGUMENT(FListItemData, Item)
 		SLATE_EVENT(FOnClicked, OnChangeClicked)
 		SLATE_ARGUMENT(bool, bIsShowed)
-		SLATE_ARGUMENT(TWeakPtr<FSmartDialogueEditor>, Editor)
+		SLATE_ARGUMENT(TSharedPtr<FSmartDialogueEditor>, Editor)
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs);

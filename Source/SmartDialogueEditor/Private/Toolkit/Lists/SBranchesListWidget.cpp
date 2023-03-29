@@ -1,8 +1,8 @@
 // SBranchesListWidget.h
 
 #include "SBranchesListWidget.h"
-
 #include "Rows/SBranchListRow.h"
+#include "Toolkit/FSmartDialogueEditor.h"
 
 void SBranchesListWidget::Construct(const FArguments& InArgs)
 {
@@ -24,25 +24,7 @@ TSharedRef<SWidget> SBranchesListWidget::GetItemContent(const FListItemData& Ite
 
 void SBranchesListWidget::ShowSelectionMenu()
 {
-	// TArray<TSharedPtr<FString>> AllStrings = GetAllStrings();
-	// TSharedPtr<SComboBox<TSharedPtr<FString>>> ComboBox;
-	// SAssignNew(ComboBox, SComboBox<TSharedPtr<FString>>)
-	// 	.OptionsSource(&AllStrings)
-	// 	.OnGenerateWidget(this, &SBranchesListWidget::GenerateStringItemWidget)
-	// 	.OnSelectionChanged(this, &SBranchesListWidget::OnComboBoxSelectionChanged)
-	// 	.Content()
-	// 	[
-	// 		SNew(STextBlock)
-	// 		.Text(NSLOCTEXT("Temp", "SelectItem", "Select an item"))
-	// 	];
-	//
-	// FSlateApplication::Get().PushMenu(
-	// 	SharedThis(this),
-	// 	FWidgetPath(),
-	// 	ComboBox.ToSharedRef(),
-	// 	FSlateApplication::Get().GetCursorPos(),
-	// 	FPopupTransitionEffect(FPopupTransitionEffect::ContextMenu)
-	// );
+	
 }
 
 FReply SBranchesListWidget::OnChangeButtonClicked()
@@ -50,3 +32,24 @@ FReply SBranchesListWidget::OnChangeButtonClicked()
 	ShowSelectionMenu();
 	return FReply::Handled();
 }
+
+TArray<TSharedPtr<FString>> SBranchesListWidget::GetAllStrings()
+{	
+	return Editor.Get()->GetAllBranchesList();
+}
+
+FReply SBranchesListWidget::OnContextMenuItemClicked(const FString& Item)
+{
+	for (auto Element : Data)
+	{
+		if (Element.Name == Item)
+		{
+			return FReply::Handled();
+		}
+	}
+	
+	Data.Add({Item});
+	UpdateData(Data);
+	return SBaseListWidget::OnContextMenuItemClicked(Item);
+}
+

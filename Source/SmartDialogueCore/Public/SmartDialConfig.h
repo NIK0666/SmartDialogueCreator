@@ -2,49 +2,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SmartDialogueData.h"
+
 #include "SmartDialConfig.generated.h"
-
-USTRUCT(BlueprintType)
-struct FCharacterData
-{
-    GENERATED_BODY()
-
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    FString Id;
-
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    FString Name;
-};
-
-USTRUCT(BlueprintType)
-struct FCustomParameterData
-{
-    GENERATED_BODY()
-
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    FString Desc;
-
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    FString Key;
-
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    FString Value;
-};
-
-USTRUCT(BlueprintType)
-struct FVariableData
-{
-    GENERATED_BODY()
-
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    FString Desc;
-
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    FString Key;
-
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    FString Value;
-};
 
 UCLASS(BlueprintType, Blueprintable)
 class SMARTDIALOGUECORE_API USmartDialConfig : public UObject

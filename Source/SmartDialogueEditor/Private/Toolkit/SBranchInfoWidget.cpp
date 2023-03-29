@@ -13,7 +13,7 @@
 
 FSlateColor SBranchInfoWidget::GetBackgroundColor() const
 {
-	if (Editor.Pin()->GetSelectedBranchName() == BranchName)
+	if (Editor.Get()->GetSelectedBranchName() == BranchName)
 	{
 		return FLinearColor(0.25f, 0.88f, 0.82f, 0.5f);
 	}
@@ -26,7 +26,7 @@ void SBranchInfoWidget::Construct(const FArguments& InArgs)
 	BranchName = InArgs._BranchName;
 	Editor = InArgs._Editor;	
 
-	DialoguePtr = Editor.Pin()->GetDialogue();
+	DialoguePtr = Editor.Get()->GetDialogue();
 	
 	ChildSlot
 	[
@@ -163,7 +163,7 @@ void SBranchInfoWidget::SetIsFocused(bool bNewValue)
 	bIsFocused = bNewValue;
 	if (bNewValue)
 	{
-		Editor.Pin()->SetSelectedBranchName(BranchName);
+		Editor.Get()->SetSelectedBranchName(BranchName);
 	}	
 }
 #undef LOCTEXT_NAMESPACE

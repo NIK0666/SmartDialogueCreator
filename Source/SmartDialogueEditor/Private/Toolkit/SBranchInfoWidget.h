@@ -15,7 +15,7 @@ class SBranchInfoWidget : public SCompoundWidget
 public:
 	SLATE_BEGIN_ARGS(SBranchInfoWidget) {}
 	SLATE_ARGUMENT(FName, BranchName) 
-	SLATE_ARGUMENT(TWeakPtr<FSmartDialogueEditor>, Editor)
+	SLATE_ARGUMENT(TSharedPtr<FSmartDialogueEditor>, Editor)
 	SLATE_END_ARGS()
 
 	
@@ -34,7 +34,7 @@ private:
 	void SetIsFocused(bool bCond);
 
 	FName BranchName;
-	TWeakPtr<FSmartDialogueEditor> Editor;
+	TSharedPtr<FSmartDialogueEditor> Editor;
 	TSharedPtr<SEditableTextBox> BranchNameTextBox;
 	TSharedPtr<SEditableTextBox> BranchTextTextBox;
 	TSharedPtr<SButton> GrabButton;

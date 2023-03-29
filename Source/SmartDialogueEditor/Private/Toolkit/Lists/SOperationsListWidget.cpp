@@ -2,8 +2,8 @@
 
 
 #include "SOperationsListWidget.h"
-
 #include "Rows/SOperationsListRow.h"
+#include "Toolkit/FSmartDialogueEditor.h"
 
 void SOperationsListWidget::Construct(const FArguments& InArgs)
 {
@@ -19,4 +19,18 @@ TSharedRef<SWidget> SOperationsListWidget::GetItemContent(const FListItemData& I
 		.Item(Item)
 		.Editor(Editor)
 		.bIsExecution(bIsExecution);
+}
+
+TArray<TSharedPtr<FString>> SOperationsListWidget::GetAllStrings()
+{	
+	return Editor.Get()->GetAllVariablesList();
+}
+
+FReply SOperationsListWidget::OnContextMenuItemClicked(const FString& Item)
+{
+	
+	Data.Add({Item});
+	UpdateData(Data);
+	
+	return SBaseListWidget::OnContextMenuItemClicked(Item);
 }

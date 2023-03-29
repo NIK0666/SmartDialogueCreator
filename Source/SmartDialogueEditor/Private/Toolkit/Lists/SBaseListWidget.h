@@ -16,7 +16,7 @@ public:
 		: _Title(FText::GetEmpty())
 	{}
 	SLATE_ARGUMENT(FText, Title)
-	SLATE_ARGUMENT(TWeakPtr<FSmartDialogueEditor>, Editor)
+	SLATE_ARGUMENT(TSharedPtr<FSmartDialogueEditor>, Editor)
 
 	SLATE_END_ARGS()
 
@@ -29,16 +29,15 @@ public:
 	
 protected:
 	virtual TSharedRef<SWidget> GetItemContent(const FListItemData& Item);
-	virtual TArray<FString> GetAllStrings();
+	virtual TArray<TSharedPtr<FString>> GetAllStrings();;
 	TSharedRef<SWidget> CreateMenuContent();
-	FReply OnMenuItemClicked(const FString& Item);
+	virtual FReply OnContextMenuItemClicked(const FString& Item);
 	virtual void OnSelected(const FListItemData& SelectedItem);
 
 	FText Title;
-	TWeakPtr<FSmartDialogueEditor> Editor;
+	TSharedPtr<FSmartDialogueEditor> Editor;
 	TArray<FListItemData> Data;
 
-private:
 	TSharedPtr<SVerticalBox> ListContainer;
 	TSharedPtr<SMenuAnchor> ContextMenuAnchor;
 };

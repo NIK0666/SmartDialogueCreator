@@ -4,6 +4,7 @@
 #include "FSmartDialogueEditor.h"
 
 #include "FSmartDialogueEditorCommands.h"
+#include "SBranchPhrasesWidget.h"
 #include "Lists/SBranchesWidget.h"
 #include "Widgets/Docking/SDockTab.h"
 #include "SmartDialogue.h"
@@ -303,16 +304,13 @@ TSharedRef<SWidget> FSmartDialogueEditor::CreateBranchesListWidget()
 TSharedRef<SWidget> FSmartDialogueEditor::CreateSelectedBranchPropertiesWidget()
 {
 	return SNew(SBranchPropertiesWidget)
-		.SmartDialogueEditor(SharedThis(this))
-		.DialogueBranchData({});
+		.SmartDialogueEditor(SharedThis(this));
 }
 
 TSharedRef<SWidget> FSmartDialogueEditor::CreateSelectedBranchPhrasesWidget()
 {
-	// Создайте виджет на основе SListView или другого подходящего виджета для представления фраз выбранной ветки диалога.
-	// Здесь вы также можете настроить отображение элементов списка и обработчики событий.
-	// ...
-	return SNullWidget::NullWidget;
+	return SNew(SBranchPhrasesWidget)
+		.SmartDialogueEditor(SharedThis(this));
 
 }
 
@@ -397,6 +395,7 @@ USmartDialConfig* FSmartDialogueEditor::GetDialogueConfig()
 		UObject* LoadedAsset = AssetRef.TryLoad();
 
 		DialConfig =  Cast<USmartDialConfig>(LoadedAsset);
+		return DialConfig;
 	}
 	return nullptr;
 }
@@ -438,6 +437,65 @@ TArray<FName> FSmartDialogueEditor::GetBranchIDs()
 		}
 	}
 	return BranchIDs;
+}
+
+TArray<TSharedPtr<FString>> FSmartDialogueEditor::GetAllBranchesList(bool bFirstEmpty)
+{
+	TArray<TSharedPtr<FString>> BranchesList;
+
+	if (bFirstEmpty)
+	{
+		BranchesList.Add(MakeShared<FString>(""));
+	}
+
+	if (GetDialogue())
+	{
+		for (const auto& Branch : GetDialogue()->GetBranches())
+		{
+			// Создаем новый объект FString и инициализируем его идентификатором ветки
+			TSharedPtr<FString> BranchIDString = MakeShared<FString>(Branch.Key.ToString());
+
+			// Добавляем указатель на объект FString в массив
+			BranchesList.Add(BranchIDString);
+		}
+	}
+
+	return BranchesList;
+}
+
+TArray<TSharedPtr<FString>> FSmartDialogueEditor::GetAllVariablesList(bool bFirstEmpty)
+{
+	TArray<TSharedPtr<FString>> VarsList;
+	if (bFirstEmpty)
+	{
+		VarsList.Add(MakeShared<FString>(""));
+	}
+	
+	TArray<FVariableData> Variables = GetAllVariables();
+
+	for (const FVariableData& Var : Variables)
+	{
+		VarsList.Add(MakeShared<FString>(Var.Key));
+	}
+
+	return VarsList;
+}
+
+TArray<TSharedPtr<FString>> FSmartDialogueEditor::GetAllCharactersList(bool bFirstEmpty)
+{
+	TArray<TSharedPtr<FString>> CharsList;
+	if (bFirstEmpty)
+	{
+		CharsList.Add(MakeShared<FString>(""));
+	}
+	
+	TArray<FCharacterData> Characters = GetAllCharacters();
+	for (const FCharacterData& Character : Characters)
+	{
+		CharsList.Add(MakeShared<FString>(Character.Id));
+	}
+
+	return CharsList;
 }
 
 #undef LOCTEXT_NAMESPACE

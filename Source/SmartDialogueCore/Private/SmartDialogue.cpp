@@ -21,6 +21,26 @@ void USmartDialogue::SetAutoBranch(const FString& NewAutoBranch)
 	AutoBranch = NewAutoBranch;
 }
 
+FString USmartDialogue::GetCharacter() const
+{
+	return Character;
+}
+
+void USmartDialogue::SetCharacter(const FString& NewCharacter)
+{
+	Character = NewCharacter;
+}
+
+TArray<FVariableData> USmartDialogue::GetVariables() const
+{
+	return Variables;
+}
+
+void USmartDialogue::SetVariables(const TArray<FVariableData>& NewVariables)
+{
+	Variables = NewVariables;
+}
+
 void USmartDialogue::AddNewBranch(FSmartDialogueBranch& NewBranch)
 {
 	Branches.Add(NewBranch.Name, NewBranch);

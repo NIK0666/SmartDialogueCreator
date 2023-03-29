@@ -40,10 +40,7 @@ private:
 	FReply OnHandButtonClicked();
 	FReply OnDeleteButtonClicked();
 	void OnMultiLineTextChanged(const FText& InText);
-
 	
-	void UpdateCharacterOptions();
-	void UpdateVarOptions();
 	
 	TSharedPtr<FSmartDialogueEditor> SmartDialogueEditor;
 	FSmartDialoguePhrases SmartDialoguePhrase;

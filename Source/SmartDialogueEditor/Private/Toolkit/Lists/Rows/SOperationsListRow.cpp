@@ -2,25 +2,23 @@
 
 
 #include "SOperationsListRow.h"
+
+#include "Toolkit/FSmartDialogueEditor.h"
 #include "Widgets/Input/SComboBox.h"
 #include "Widgets/Input/SEditableText.h"
 
 void SOperationsListRow::Construct(const FArguments& InArgs)
 {
 	bIsExecution = InArgs._bIsExecution;
-	SBaseListRow::Construct(SBaseListRow::FArguments());
-	
+	SBaseListRow::Construct(SBaseListRow::FArguments()
+		.Item(InArgs._Item)
+		.Editor(InArgs._Editor));	
 }
 
 TSharedRef<SWidget> SOperationsListRow::GetContent()
 {
 	// Initialize the VariableOptions array
-	VariableOptions = TArray<TSharedPtr<FString>>();
-	TArray<FString> ValueNames = GetValueNames();
-	for (FString Name : ValueNames)
-	{
-		VariableOptions.Add(MakeShareable(new FString(Name)));
-	}
+	VariableOptions = Editor.Get()->GetAllVariablesList();
 
 	// Initialize the OperationOptions array
 	OperationOptions = TArray<TSharedPtr<FString>>();
@@ -46,11 +44,11 @@ TSharedRef<SWidget> SOperationsListRow::GetContent()
 				.OnSelectionChanged(this, &SOperationsListRow::OnVariableSelected)
 				.Content()
 				[
-					SAssignNew(VariableButtonText, STextBlock).Text(FText::FromString(TEXT("[empty]")))
+					SAssignNew(VariableButtonText, STextBlock).Text(FText::FromString(Item.Name))
 				]
 				.ToolTipText_Lambda([this]()
 				{
-					return SelectedVariable.IsValid() ? FText::FromString(*SelectedVariable) : FText::FromString(TEXT("[empty]"));
+					return SelectedVariable.IsValid() ? FText::FromString(*SelectedVariable) : FText::FromString(TEXT("Variable"));
 				})
 			]
 			+ SHorizontalBox::Slot()
@@ -73,11 +71,6 @@ TSharedRef<SWidget> SOperationsListRow::GetContent()
 				.HintText(FText::FromString(TEXT("value")))
 			]
 		];
-}
-
-TArray<FString> SOperationsListRow::GetValueNames()
-{
-	return TArray<FString>({ "var1", "variable2", "test_var_3" });
 }
 
 TArray<TSharedPtr<FString>> SOperationsListRow::GetOperations()

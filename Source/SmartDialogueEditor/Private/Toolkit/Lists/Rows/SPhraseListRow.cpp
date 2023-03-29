@@ -13,13 +13,11 @@ void SPhraseListRow::Construct(const FArguments& InArgs)
 	SmartDialogueEditor = InArgs._SmartDialogueEditor;
 	SmartDialoguePhrase = InArgs._SmartDialoguePhrase;
 	
-	UpdateCharacterOptions();
-	UpdateVarOptions();
+	CharacterOptions = SmartDialogueEditor.Get()->GetAllCharactersList(true);
+	VarOptions = SmartDialogueEditor.Get()->GetAllVariablesList(true);
 
 	ComparisonOptions.Add(MakeShareable(new FString(TEXT("=="))));
 	ComparisonOptions.Add(MakeShareable(new FString(TEXT("!="))));
-
-	
 	
 	ChildSlot
 	[
@@ -147,39 +145,6 @@ void SPhraseListRow::Construct(const FArguments& InArgs)
 	];
 }
 
-void SPhraseListRow::UpdateCharacterOptions()
-{
-	// Получаем данные персонажей
-	TArray<FCharacterData> AllCharacters = SmartDialogueEditor.Get()->GetAllCharacters();
-
-	// Очищаем список опций персонажей
-	CharacterOptions.Empty();	
-	CharacterOptions.Add(MakeShareable(new FString(TEXT(""))));
-	
-	// Заполняем список опций персонажей
-	for (const FCharacterData& CharacterData : AllCharacters)
-	{
-		TSharedPtr<FString> CharacterOption = MakeShareable(new FString(CharacterData.Name));
-		CharacterOptions.Add(CharacterOption);
-	}
-}
-
-void SPhraseListRow::UpdateVarOptions()
-{
-	// Получаем данные переменных
-	TArray<FVariableData> AllVariables = SmartDialogueEditor.Get()->GetAllVariables();
-
-	// Очищаем список опций переменных
-	VarOptions.Empty();
-	VarOptions.Add(MakeShareable(new FString(TEXT("")))); //Нуливой элемент
-	
-	// Заполняем список опций переменных
-	for (const FVariableData& VariableData : AllVariables)
-	{
-		TSharedPtr<FString> VarOption = MakeShareable(new FString(VariableData.Key));
-		VarOptions.Add(VarOption);
-	}
-}
 
 TSharedRef<SWidget> SPhraseListRow::GenerateCharacterOption(TSharedPtr<FString> Option)
 {
