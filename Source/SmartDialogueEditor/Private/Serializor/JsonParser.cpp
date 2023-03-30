@@ -56,7 +56,6 @@ bool UJsonParser::ParseJson(const FString& FilePath, USmartDialogue* DialogueAss
             Branch.Choice = BranchObject->GetBoolField("Choice");
             Branch.Closed = BranchObject->GetBoolField("Closed");
             Branch.OrCond = BranchObject->GetBoolField("Or_cond");
-            Branch.If = BranchObject->GetStringField("If");
             Branch.Hidden = BranchObject->GetBoolField("Hidden");
             Branch.HideSelf = BranchObject->GetBoolField("Hide_self");
             Branch.ChangeStarted = BranchObject->GetStringField("Change_started");
@@ -110,6 +109,13 @@ bool UJsonParser::ParseJson(const FString& FilePath, USmartDialogue* DialogueAss
                 Branch.Show.Add(ShowValue->AsString());
             }
 
+            // Parse Hide
+            TArray<TSharedPtr<FJsonValue>> HideArray = BranchObject->GetArrayField("Hide");
+            for (TSharedPtr<FJsonValue> HideValue : HideArray)
+            {
+                Branch.Hide.Add(HideValue->AsString());
+            }
+
             // Parse Event
             TSharedPtr<FJsonObject> EventObject = BranchObject->GetObjectField("Event");
             if (EventObject.IsValid())
@@ -153,7 +159,44 @@ bool UJsonParser::ParseJson(const FString& FilePath, USmartDialogue* DialogueAss
                     Vars.Operation = ESmartDialogueOperation::EO_Divide;
                 }
 
-                Branch.Vars = Vars;
+                Branch.Vars.Add(Vars);
+            }
+
+            // Ifs
+            TArray<TSharedPtr<FJsonValue>> IfsArray = BranchObject->GetArrayField("If");
+            for (TSharedPtr<FJsonValue> IfValue : IfsArray)
+            {
+                TSharedPtr<FJsonObject> IfObject = IfValue->AsObject();
+
+                /// Parse and create FSmartDialogueVars
+                FIf If;
+
+                If.Key = IfObject->GetStringField("Key");
+                If.Value = IfObject->GetIntegerField("Value");
+                FString Operation = IfObject->GetStringField("Op");
+
+                if (Operation == "==")
+                {
+                    If.EqualOperation = ESmartDialogueEqualOperation::EEO_Equals;
+                }
+                else if (Operation == ">=")
+                {
+                    If.EqualOperation = ESmartDialogueEqualOperation::EEO_GreaterOrEquals;
+                }
+                else if (Operation == "<=")
+                {
+                    If.EqualOperation = ESmartDialogueEqualOperation::EEO_LessOrEquals;
+                }
+                else if (Operation == ">")
+                {
+                    If.EqualOperation = ESmartDialogueEqualOperation::EEO_Greater;
+                }
+                else if (Operation == "<")
+                {
+                    If.EqualOperation = ESmartDialogueEqualOperation::EEO_Less;
+                }
+
+                Branch.If.Add(If);
             }
 
             DialogueAsset->AddNewBranch(Branch);

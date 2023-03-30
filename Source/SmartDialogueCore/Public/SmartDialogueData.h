@@ -165,7 +165,7 @@ struct FSmartDialogueBranch
 	bool OrCond;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Branch")
-	FString If;
+	TArray<FIf> If;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Branch")
 	bool Hidden;
@@ -177,11 +177,14 @@ struct FSmartDialogueBranch
 	TArray<FString> Show;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Branch")
+	TArray<FString> Hide;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Branch")
 	FString ChangeStarted;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Branch")
 	FSmartDialogueEvent Event;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Branch")
-	FSmartDialogueVars Vars;
+	TArray<FSmartDialogueVars> Vars;
 };

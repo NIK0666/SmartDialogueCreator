@@ -44,5 +44,5 @@ private:
 	
 	int32 SelectedEnumIndex = INDEX_NONE;
 	
-
+	FOperationItemData OperationItem;
 };

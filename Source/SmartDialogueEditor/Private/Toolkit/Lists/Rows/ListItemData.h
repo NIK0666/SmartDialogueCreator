@@ -23,3 +23,16 @@ struct FListItemData
 		return !(*this == Other);
 	}
 };
+
+USTRUCT(BlueprintType)
+struct FOperationItemData : public FListItemData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+	ESmartDialogueEqualOperation EqualOperation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+	int32 Value;
+	
+};

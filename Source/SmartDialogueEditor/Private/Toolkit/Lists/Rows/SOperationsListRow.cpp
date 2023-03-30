@@ -28,6 +28,13 @@ TSharedRef<SWidget> SOperationsListRow::GetContent()
 		OperationOptions.Add(Op);
 	}
 
+	// FListItemData* pItem = &Item;
+	// if (FOperationItemData* pOperationItem = static_cast<FOperationItemData*>(pItem))
+	// {
+	// 	OperationItem = *pOperationItem;
+	// }
+
+
 	return SNew(SVerticalBox)
 		+ SVerticalBox::Slot()
 		.AutoHeight()
