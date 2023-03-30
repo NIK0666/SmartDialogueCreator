@@ -48,6 +48,12 @@ void USmartDialogue::AddNewBranch(FSmartDialogueBranch& NewBranch)
 	BranchesChanged();
 }
 
+void USmartDialogue::AddNewVariable(FVariableData& NewVariable)
+{
+	Variables.Add(NewVariable);
+	//TODO Vars changed!
+}
+
 FName USmartDialogue::GenerateBranchName() const
 {
 	FString BaseName;

@@ -26,6 +26,8 @@ public class SmartDialogueEditor : ModuleRules
             "UnrealEd", 
             "PropertyEditor", 
             "AssetTools",
+            "Json",
+            "DesktopPlatform",
             "SmartDialogueCore"
         });
 

@@ -5,6 +5,8 @@
 
 #include "EditorStyleSet.h"
 #include "Toolkit/FSmartDialogueEditor.h"
+#include "Toolkit/Components/SCharacterComboBox.h"
+#include "Toolkit/Components/SVarComboBox.h"
 #include "Widgets/Input/SMultiLineEditableTextBox.h"
 
 
@@ -28,18 +30,10 @@ void SPhraseListRow::Construct(const FArguments& InArgs)
 			+ SHorizontalBox::Slot()
 			.AutoWidth()
 			[
-				SAssignNew(CharacterComboBox, SComboBox<TSharedPtr<FString>>)
-				.ContentPadding(FMargin(2.0f))
-				.OptionsSource(&CharacterOptions)
-				.OnGenerateWidget(this, &SPhraseListRow::GenerateCharacterOption)
-				.OnSelectionChanged(this, &SPhraseListRow::OnCharacterSelected)
-				.InitiallySelectedItem(CharacterOptions[0])
-				[
-					SNew(STextBlock)
-					.MinDesiredWidth(32.f)
-					.ToolTipText(NSLOCTEXT("SPhraseListRow", "CharacterComboBoxTooltip", "Character"))
-					.Text(this, &SPhraseListRow::GetCurrentCharacterText)
-				]
+				SAssignNew(CharacterComboBox, SCharacterComboBox)
+				.SmartDialogueEditor(SmartDialogueEditor)
+				.OnCharacterSelected(this, &SPhraseListRow::OnCharacterSelected)
+				.DefaultText(SmartDialoguePhrasePtr->NPC)
 			]
 			+ SHorizontalBox::Slot()
 			.AutoWidth()
@@ -50,18 +44,10 @@ void SPhraseListRow::Construct(const FArguments& InArgs)
 			+ SHorizontalBox::Slot()
 			.AutoWidth()
 			[
-				SAssignNew(VarComboBox, SComboBox<TSharedPtr<FString>>)
-				.ContentPadding(FMargin(2.0f))
-				.OptionsSource(&VarOptions)
-				.OnGenerateWidget(this, &SPhraseListRow::GenerateVarOption)
-				.OnSelectionChanged(this, &SPhraseListRow::OnVarSelected)
-				.InitiallySelectedItem(VarOptions[0])
-				[
-					SNew(STextBlock)
-					.MinDesiredWidth(32.f)
-					.ToolTipText(NSLOCTEXT("SPhraseListRow", "VarComboBoxTooltip", "Viriable"))
-					.Text(this, &SPhraseListRow::GetCurrentVarText)
-				]
+				SAssignNew(VarComboBox, SVarComboBox)
+				.SmartDialogueEditor(SmartDialogueEditor)
+				.OnVarSelected(this, &SPhraseListRow::OnVarSelected)
+				.DefaultText(SmartDialoguePhrasePtr->If.Key)
 			]
 			+ SHorizontalBox::Slot()
 			.AutoWidth()
@@ -164,12 +150,12 @@ TSharedRef<SWidget> SPhraseListRow::GenerateComparisonOption(TSharedPtr<FString>
 	return SNew(STextBlock).Text(FText::FromString(*Option));
 }
 
-void SPhraseListRow::OnCharacterSelected(TSharedPtr<FString> NewSelection, ESelectInfo::Type SelectInfo)
+void SPhraseListRow::OnCharacterSelected(TSharedPtr<FString> NewSelection)
 {
     SmartDialoguePhrasePtr->NPC = *NewSelection;
 }
 
-void SPhraseListRow::OnVarSelected(TSharedPtr<FString> NewSelection, ESelectInfo::Type SelectInfo)
+void SPhraseListRow::OnVarSelected(TSharedPtr<FString> NewSelection)
 {
     SmartDialoguePhrasePtr->If.Key = *NewSelection;
 }

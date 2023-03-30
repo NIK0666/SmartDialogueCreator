@@ -3,6 +3,7 @@
 
 #include "FSmartDialogueEditor.h"
 
+#include "DesktopPlatformModule.h"
 #include "FSmartDialogueEditorCommands.h"
 #include "SBranchPhrasesWidget.h"
 #include "Lists/SBranchesWidget.h"
@@ -11,6 +12,8 @@
 #include "SBranchPropertiesWidget.h"
 #include "SDialConfigWidget.h"
 #include "UMGStyle.h"
+#include "Components/SCharacterComboBox.h"
+#include "Serializor/JsonParser.h"
 #include "SmartDialogueCore/Private/SmartDialogueSettings.h"
 
 #define LOCTEXT_NAMESPACE "SmartDialogueEditor"
@@ -73,6 +76,11 @@ void FSmartDialogueEditor::BindCommands()
 		FSmartDialogueEditorCommands::Get().ShowConfig,
 		FExecuteAction::CreateSP(this, &FSmartDialogueEditor::ShowConfig),
 		FCanExecuteAction());
+
+	ToolkitCommands->MapAction(
+		FSmartDialogueEditorCommands::Get().ImportJSON,
+		FExecuteAction::CreateSP(this, &FSmartDialogueEditor::ImportJson),
+		FCanExecuteAction());
 }
 
 TSharedPtr<FExtender> FSmartDialogueEditor::GetToolbarExtender()
@@ -90,9 +98,24 @@ TSharedPtr<FExtender> FSmartDialogueEditor::GetToolbarExtender()
 			ToolbarBuilder.AddToolBarButton(FSmartDialogueEditorCommands::Get().PlayDialogue, NAME_None, FText::GetEmpty(), TAttribute<FText>(), FSlateIcon(FAppStyle::GetAppStyleSetName(), "Icons.Toolbar.Play"));
 			ToolbarBuilder.AddToolBarButton(FSmartDialogueEditorCommands::Get().ShowConfig, NAME_None, FText::GetEmpty(), TAttribute<FText>(), FSlateIcon(FAppStyle::Get().GetStyleSetName(), "Icons.Settings"));
 			ToolbarBuilder.AddSeparator();
+			ToolbarBuilder.AddToolBarButton(FSmartDialogueEditorCommands::Get().ImportJSON, NAME_None, FText::GetEmpty(), TAttribute<FText>(), FSlateIcon(FAppStyle::GetAppStyleSetName(), "Icons.Import"));
+
+
+			// ToolbarBuilder.AddToolBarWidget(
+			// 	SNew(SHorizontalBox)
+			// 	+ SHorizontalBox::Slot()
+			// 	.AutoWidth()
+			// 	.VAlign(VAlign_Center)
+			// 	[
+			// 		SAssignNew(CharacterComboBox, SCharacterComboBox)
+			// 		.SmartDialogueEditor(SharedThis(this))
+			// 		.OnCharacterSelected(this, &FSmartDialogueEditor::OnHeroCharacterSelected)
+			// 		.DefaultText(GetDialogue()->GetCharacter())
+			// 	]
+			// );
 		})
 	);
-
+	
 	return Extender;
 }
 
@@ -364,6 +387,11 @@ TSharedRef<FTabManager::FLayout> FSmartDialogueEditor::GetDefaultTabContents()
 	// GetTabManager()->RestoreFrom(DefaultLayout, TSharedPtr<SWindow>());
 }
 
+void FSmartDialogueEditor::OnHeroCharacterSelected(TSharedPtr<FString> NewSelection)
+{
+	GetDialogue()->SetCharacter(*NewSelection.Get());
+}
+
 void FSmartDialogueEditor::AddNewBranch()
 {
 	if (GetDialogue())
@@ -381,6 +409,56 @@ void FSmartDialogueEditor::ShowConfig()
 {
 	// Переключение на вкладку Config
 	TabManager->TryInvokeTab(SmartDialogue_ConfigTabId);
+}
+
+void FSmartDialogueEditor::ImportJson()
+{
+	// Открываем диалог выбора файла
+	FString DefaultPath = FPaths::ProjectContentDir();
+	FString FileTypes = TEXT("JSON Files (*.json)|*.json");
+	TArray<FString> FileNames;
+
+	if (FDesktopPlatformModule::Get()->OpenFileDialog(
+			nullptr,
+			TEXT("Выберите JSON файл"),
+			DefaultPath,
+			TEXT(""),
+			FileTypes,
+			EFileDialogFlags::None,
+			FileNames))
+		{
+
+		if (FileNames.IsEmpty())
+		{
+			return;
+		}
+		
+		// Создаем объект парсера
+		UJsonParser* JsonParser = NewObject<UJsonParser>();
+
+		// Проверяем, был ли открыт ассет диалога в редакторе
+		if (GetDialogue())
+		{
+			// Запускаем парсинг JSON файла и передаем параметры
+			bool bParseSuccessful = JsonParser->ParseJson(FileNames[0], GetDialogue());
+
+			if (bParseSuccessful)
+			{
+				// Обрабатываем результаты парсинга (например, обновляем редактор)
+				// UpdateDialogueEditor();
+			}
+			else
+			{
+				// Выводим сообщение об ошибке
+				FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(TEXT("Ошибка при парсинге JSON файла.")));
+			}
+		}
+		else
+		{
+			// Выводим сообщение об ошибке
+			FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(TEXT("Ассет диалога не открыт в редакторе.")));
+		}
+	}
 }
 
 void FSmartDialogueEditor::ShowBranches()

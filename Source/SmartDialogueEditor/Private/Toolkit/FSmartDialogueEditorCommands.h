@@ -19,4 +19,5 @@ public:
 	TSharedPtr<FUICommandInfo> ShowBranches;
 	TSharedPtr<FUICommandInfo> PlayDialogue;
 	TSharedPtr<FUICommandInfo> ShowConfig;
+	TSharedPtr<FUICommandInfo> ImportJSON;
 };

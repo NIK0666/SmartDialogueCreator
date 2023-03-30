@@ -45,6 +45,10 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "SmartDialogue")
 	void AddNewBranch(FSmartDialogueBranch& NewBranch);
+	
+	UFUNCTION(BlueprintCallable, Category = "SmartDialogue")
+	void AddNewVariable(FVariableData& NewVariable);
+
 
 	FName GenerateBranchName() const;
 

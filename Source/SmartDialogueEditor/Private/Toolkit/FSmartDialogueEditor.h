@@ -7,6 +7,7 @@
 #include "SmartDialogueData.h"
 #include "Toolkits/AssetEditorToolkit.h"
 
+class SCharacterComboBox;
 class SBranchInfoWidget;
 class SBranchesWidget;
 class USmartDialogue;
@@ -70,10 +71,13 @@ private:
 	TSharedRef<SWidget> CreateSelectedBranchPhrasesWidget();
 	TSharedRef<FTabManager::FLayout> GetDefaultTabContents();
 
+	void OnHeroCharacterSelected(TSharedPtr<FString> NewSelection);
+
 	void AddNewBranch();
 	void ShowBranches();
 	void PlayDialogue();
 	void ShowConfig();
+	void ImportJson();
 
 	TSharedPtr<SDockTab> BranchesListTab;
 	TSharedPtr<SDockTab> SelectedBranchPropertiesTab;
@@ -83,8 +87,12 @@ private:
 	USmartDialConfig* DialConfig;
 	FSmartDialogueBranch* SelectedBranchPtr;
 	FName SelectedBranchName;
+
+	
 	
 	TSharedPtr<STreeView<TSharedPtr<FSmartDialogueBranch>>> DialogueBranchesList;
 	TSharedPtr<IDetailsView> DialogueBranchDetailsView;
 	TSharedPtr<IDetailsView> DialoguePhrasesDetailsView;
+
+	TSharedPtr<SCharacterComboBox> CharacterComboBox;
 };

@@ -6,6 +6,8 @@
 #include "SmartDialogueData.h"
 // #include "SPhraseListRow.generated.h"
 
+class SVarComboBox;
+class SCharacterComboBox;
 class FSmartDialogueEditor;
 
 class SPhraseListRow : public SCompoundWidget
@@ -24,8 +26,8 @@ private:
 	TArray<TSharedPtr<FString>> VarOptions;
 	TArray<TSharedPtr<FString>> ComparisonOptions;
 
-	TSharedPtr<SComboBox<TSharedPtr<FString>>> CharacterComboBox;
-	TSharedPtr<SComboBox<TSharedPtr<FString>>> VarComboBox;
+	TSharedPtr<SCharacterComboBox> CharacterComboBox;
+	TSharedPtr<SVarComboBox> VarComboBox;
 	TSharedPtr<SComboBox<TSharedPtr<FString>>> ComparisonComboBox;
 	TSharedPtr<STextBlock> ComparisonTextBlock;
 
@@ -33,8 +35,8 @@ private:
 	TSharedRef<SWidget> GenerateVarOption(TSharedPtr<FString> Option);
 	TSharedRef<SWidget> GenerateComparisonOption(TSharedPtr<FString> Option);
 
-	void OnCharacterSelected(TSharedPtr<FString> NewSelection, ESelectInfo::Type SelectInfo);
-	void OnVarSelected(TSharedPtr<FString> NewSelection, ESelectInfo::Type SelectInfo);
+	void OnCharacterSelected(TSharedPtr<FString> NewSelection);
+	void OnVarSelected(TSharedPtr<FString> NewSelection);
 	void OnComparisonSelected(TSharedPtr<FString> NewSelection, ESelectInfo::Type SelectInfo);
 	void OnOrCheckStateChanged(ECheckBoxState NewState);
 	FReply OnSettingsButtonClicked();
