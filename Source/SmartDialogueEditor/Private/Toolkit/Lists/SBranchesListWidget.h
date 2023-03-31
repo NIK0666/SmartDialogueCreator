@@ -18,8 +18,6 @@ public:
 
 protected:
 	TSharedRef<SWidget> GetItemContent(const FListItemData& Item) override;
-	void ShowSelectionMenu();
-	FReply OnChangeButtonClicked();
 
 	virtual TArray<TSharedPtr<FString>> GetAllStrings() override;
 	virtual FReply OnContextMenuItemClicked(const FString& Item) override;

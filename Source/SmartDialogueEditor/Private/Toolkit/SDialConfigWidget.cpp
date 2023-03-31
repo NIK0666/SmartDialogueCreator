@@ -71,12 +71,12 @@ void SDialConfigWidget::Construct(const FArguments& InArgs)
 							.AutoWidth()
 							[
 								SNew(SButton)
-						.ButtonStyle(FEditorStyle::Get(), "FlatButton.Success")
+						.ButtonStyle(FAppStyle::Get(), "FlatButton.Success")
 						.ForegroundColor(FSlateColor::UseForeground())
 						.OnClicked(this, &SDialConfigWidget::OnAddButtonClicked)
 								[
 									SNew(SImage)
-									.Image(FEditorStyle::Get().GetBrush("Icons.Plus"))
+									.Image(FAppStyle::Get().GetBrush("Icons.Plus"))
 								]
 							]
 							+ SHorizontalBox::Slot()
@@ -118,13 +118,13 @@ void SDialConfigWidget::Construct(const FArguments& InArgs)
 						.AutoWidth()
 						[
 							SNew(SButton)
-							.ButtonStyle(FEditorStyle::Get(), "FlatButton.Success")
+							.ButtonStyle(FAppStyle::Get(), "FlatButton.Success")
 							.ForegroundColor(FSlateColor::UseForeground())
 							.OnClicked(this, &SDialConfigWidget::OnAddPublicVarClicked)
 							.ToolTipText(FText::FromString("Add public var"))
 							[
 								SNew(SImage)
-								.Image(FEditorStyle::Get().GetBrush("Icons.Plus"))
+								.Image(FAppStyle::Get().GetBrush("Icons.Plus"))
 							]
 						]
 					]
@@ -151,13 +151,13 @@ void SDialConfigWidget::Construct(const FArguments& InArgs)
 						.AutoWidth()
 						[
 							SNew(SButton)
-							.ButtonStyle(FEditorStyle::Get(), "FlatButton.Success")
+							.ButtonStyle(FAppStyle::Get(), "FlatButton.Success")
 							.ForegroundColor(FSlateColor::UseForeground())
 							.OnClicked(this, &SDialConfigWidget::OnAddLocalVarClicked)
 							.ToolTipText(FText::FromString("Add local var"))
 							[
 								SNew(SImage)
-								.Image(FEditorStyle::Get().GetBrush("Icons.Plus"))
+								.Image(FAppStyle::Get().GetBrush("Icons.Plus"))
 							]
 						]
 					]

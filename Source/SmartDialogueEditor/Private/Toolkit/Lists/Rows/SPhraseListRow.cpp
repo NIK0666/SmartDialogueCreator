@@ -90,10 +90,13 @@ void SPhraseListRow::Construct(const FArguments& InArgs)
 			.AutoWidth()
 			[
 				SNew(SButton)
+				.ButtonStyle(FAppStyle::Get(), "FlatButton")
+				.HAlign(HAlign_Center)
+				.VAlign(VAlign_Center)
 				.Content()
 				[
 					SNew(SImage)
-					.Image(FEditorStyle::GetBrush("Icons.Settings"))
+					.Image(FAppStyle::GetBrush("Icons.Settings"))
 				]
 				.OnClicked(this, &SPhraseListRow::OnSettingsButtonClicked)
 			]
@@ -101,6 +104,9 @@ void SPhraseListRow::Construct(const FArguments& InArgs)
 			.AutoWidth()
 			[
 				SNew(SButton)
+				.ButtonStyle(FAppStyle::Get(), "FlatButton")
+				.HAlign(HAlign_Center)
+				.VAlign(VAlign_Center)
 				.Content()
 				[
 					SNew(SImage)
@@ -112,10 +118,13 @@ void SPhraseListRow::Construct(const FArguments& InArgs)
 			.AutoWidth()
 			[
 				SNew(SButton)
+				.ButtonStyle(FAppStyle::Get(), "FlatButton")
+				.HAlign(HAlign_Center)
+				.VAlign(VAlign_Center)
 				.Content()
 				[
 					SNew(SImage)
-					.Image(FEditorStyle::GetBrush("Cross"))
+					.Image(FAppStyle::GetBrush("Cross"))
 				]
 				.OnClicked(this, &SPhraseListRow::OnDeleteButtonClicked)
 			]

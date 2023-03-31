@@ -30,7 +30,6 @@ void SCharacterListRow::Construct(const FArguments& InArgs)
 		.AutoWidth()
 		[
 			SNew(SButton)
-			.ButtonStyle(FEditorStyle::Get(), "FlatButton.Danger")
 			.ForegroundColor(FSlateColor::UseForeground())
 			.OnClicked_Lambda([this]()
 			{
@@ -39,7 +38,7 @@ void SCharacterListRow::Construct(const FArguments& InArgs)
 			})
 			[
 				SNew(SImage)
-				.Image(FEditorStyle::Get().GetBrush("Cross"))
+				.Image(FAppStyle::Get().GetBrush("Cross"))
 			]
 		]
 	];

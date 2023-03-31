@@ -18,19 +18,7 @@ TSharedRef<SWidget> SBranchesListWidget::GetItemContent(const FListItemData& Ite
 	return SNew(SBranchListRow)
 		.Item(Item)
 		.bIsShowed(bIsShowed)
-		.Editor(Editor)
-		.OnChangeClicked(this, &SBranchesListWidget::OnChangeButtonClicked);
-}
-
-void SBranchesListWidget::ShowSelectionMenu()
-{
-	
-}
-
-FReply SBranchesListWidget::OnChangeButtonClicked()
-{
-	ShowSelectionMenu();
-	return FReply::Handled();
+		.Editor(Editor);
 }
 
 TArray<TSharedPtr<FString>> SBranchesListWidget::GetAllStrings()

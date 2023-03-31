@@ -210,7 +210,7 @@ TSharedRef<SWidget> SBranchPropertiesWidget::GetContentWidget()
 					.AutoWidth()
 					[
 						SNew(SButton)
-						.ButtonStyle(FEditorStyle::Get(), "HoverHintOnly")
+						.ButtonStyle(FAppStyle::Get(), "HoverHintOnly")
 						.OnClicked_Lambda([this]()
 						{
 							// SmartDialogueEditor->ShowEventSettings(GetBranchDataPtr()->Event);
@@ -224,7 +224,7 @@ TSharedRef<SWidget> SBranchPropertiesWidget::GetContentWidget()
 							.HAlign(HAlign_Center)
 							[
 								SNew(SImage)
-								.Image(FEditorStyle::GetBrush("Icons.Settings"))
+								.Image(FAppStyle::GetBrush("Icons.Settings"))
 							]
 						]
 					]
@@ -247,7 +247,18 @@ TSharedRef<SWidget> SBranchPropertiesWidget::GetContentWidget()
 				.Editor(SmartDialogueEditor)
 				.Title(LOCTEXT("HideBranchesLabel", "Hide Branches:"))
 			]
-
+			+ SHorizontalBox::Slot()
+			.AutoWidth()
+			[
+				SNew(SBox)
+				.WidthOverride(2.f)
+				.HeightOverride(100.f)
+				[
+					SNew(SBorder)
+					.BorderImage(FAppStyle::GetBrush("WhiteTexture"))
+					.BorderBackgroundColor(FLinearColor(1.f, 1.f, 1.f, 0.2f))
+				]
+			]
 			+ SHorizontalBox::Slot()
 			  .FillWidth(1.0f)
 			  .Padding(4.f, 0.f)
@@ -258,7 +269,18 @@ TSharedRef<SWidget> SBranchPropertiesWidget::GetContentWidget()
 				.Editor(SmartDialogueEditor)
 				.Title(LOCTEXT("ShowBranchesLabel", "Show Branches:"))
 			]
-
+			+ SHorizontalBox::Slot()
+			.AutoWidth()
+			[
+				SNew(SBox)
+				.WidthOverride(2.f)
+				.HeightOverride(100.f)
+				[
+					SNew(SBorder)
+					.BorderImage(FAppStyle::GetBrush("WhiteTexture"))
+					.BorderBackgroundColor(FLinearColor(1.f, 1.f, 1.f, 0.2f))
+				]
+			]
 			+ SHorizontalBox::Slot()
 				.FillWidth(1.0f)
 				.Padding(4.f, 0.f)
@@ -269,7 +291,18 @@ TSharedRef<SWidget> SBranchPropertiesWidget::GetContentWidget()
 				.bIsExecution(true)
 				.Title(LOCTEXT("ModifyVariablesLabel", "Modify Variables:"))
 			]
-
+			+ SHorizontalBox::Slot()
+			.AutoWidth()
+			[
+				SNew(SBox)
+				.WidthOverride(2.f)
+				.HeightOverride(100.f)
+				[
+					SNew(SBorder)
+					.BorderImage(FAppStyle::GetBrush("WhiteTexture"))
+					.BorderBackgroundColor(FLinearColor(1.f, 1.f, 1.f, 0.2f))
+				]
+			]
 			+ SHorizontalBox::Slot()
 				.FillWidth(1.0f)
 				.Padding(4.f, 0.f)

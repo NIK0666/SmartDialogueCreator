@@ -40,6 +40,7 @@ TSharedRef<SWidget> SOperationsListRow::GetContent()
 		[
 			SNew(SHorizontalBox)
 			+ SHorizontalBox::Slot()
+			.FillWidth(1.f)
 			[
 				SAssignNew(VariableComboBox, SComboBox<TSharedPtr<FString>>)
 				.OptionsSource(&VariableOptions)
@@ -58,6 +59,7 @@ TSharedRef<SWidget> SOperationsListRow::GetContent()
 				})
 			]
 			+ SHorizontalBox::Slot()
+			.AutoWidth()
 			[
 				SAssignNew(OperationComboBox, SComboBox<TSharedPtr<FString>>)
 				.OptionsSource(&OperationOptions)
@@ -72,6 +74,7 @@ TSharedRef<SWidget> SOperationsListRow::GetContent()
 				]
 			]
 			+ SHorizontalBox::Slot()
+			.AutoWidth()
 			[
 				SAssignNew(InputTextBox, SEditableTextBox)
 				.Text(FText::FromString(FString::FromInt(Item.Value)))

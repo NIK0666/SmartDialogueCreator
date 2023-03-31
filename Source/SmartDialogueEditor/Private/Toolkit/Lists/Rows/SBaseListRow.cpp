@@ -15,22 +15,23 @@ void SBaseListRow::Construct(const FArguments& InArgs)
 	[
 		SNew(SHorizontalBox)
 		+ SHorizontalBox::Slot()
-		.AutoWidth()
-		[
-			SNew(SButton)
-			.ButtonStyle(FEditorStyle::Get(), "FlatButton.Danger")
-			.ContentPadding(FMargin(0.5f, 1, 0.5f, 1))
-			.OnClicked(this, &SBaseListRow::RemoveItem)
-			[
-				SNew(SImage)
-				.Image(FEditorStyle::GetBrush("Cross"))
-			]
-		]
-		+ SHorizontalBox::Slot()
 		.FillWidth(1.0f)
 		[
 			GetContent()
-		]		
+		]	
+		+ SHorizontalBox::Slot()
+		.AutoWidth()
+		[
+			SNew(SButton)
+			.ButtonStyle(FAppStyle::Get(), "FlatButton")
+			.HAlign(HAlign_Center)
+			.VAlign(VAlign_Center)
+			.OnClicked(this, &SBaseListRow::RemoveItem)
+			[
+				SNew(SImage)
+				.Image(FAppStyle::GetBrush("Cross"))
+			]
+		]	
 	];
 }
 

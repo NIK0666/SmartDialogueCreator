@@ -22,29 +22,33 @@ void SBaseListWidget::Construct(const FArguments& InArgs)
 		.HAlign(HAlign_Fill)
 		.VAlign(VAlign_Top)
 		[
-			SNew(SHorizontalBox)
+			SNew(SHorizontalBox)			
 			+ SHorizontalBox::Slot()
 			.AutoWidth()
+			.VAlign(VAlign_Center)
+			.Padding(4.f, 2.f)
+			[
+				SNew(STextBlock)
+				.Text(Title)
+			]
+			+ SHorizontalBox::Slot()
+			.AutoWidth()
+			.Padding(4.f, 2.f)
 			[
 				SAssignNew(ContextMenuAnchor, SMenuAnchor)
 				.OnGetMenuContent(this, &SBaseListWidget::CreateMenuContent)
 				[
 					SNew(SButton)
-					.ButtonStyle(FEditorStyle::Get(), "FlatButton.Success")
-					.ContentPadding(FMargin(0.5, 1, 0.5, 1))
+					.HAlign(HAlign_Center)
+					.VAlign(VAlign_Center)
+					.ButtonStyle(FAppStyle::Get(), "FlatButton.Success")
 					.OnClicked(this, &SBaseListWidget::OnAddButtonClicked)
 					[
 						SNew(SImage)
-						.Image(FEditorStyle::GetBrush("Plus"))
+						.Image(FAppStyle::GetBrush("Plus"))
 					]
 				]
 			]
-			+ SHorizontalBox::Slot()
-			.AutoWidth()
-			[
-				SNew(STextBlock)
-				.Text(Title)
-			]			
 			+ SHorizontalBox::Slot()
 			.FillWidth(1.0f)
 		]
