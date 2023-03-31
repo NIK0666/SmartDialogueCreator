@@ -6,17 +6,21 @@
 #include "Widgets/Text/STextBlock.h"
 #include "EditorStyleSet.h"
 #include "SmartDialConfig.h"
+#include "Components/SCharacterComboBox.h"
 #include "Lists/Rows/SCharacterListRow.h"
 #include "Lists/Rows/SDialVarListRow.h"
 #include "Widgets/Layout/SWidgetSwitcher.h"
 
 void SDialConfigWidget::Construct(const FArguments& InArgs)
 {
+	SmartDialogueEditor = InArgs._SmartDialogueEditor;
+	DialConfig = SmartDialogueEditor->GetDialogueConfig();
+	
 	AddTabButton("Characters");
 	AddTabButton("Global Vars");
 	AddTabButton("Local Vars");
 	AddTabButton("Parameters");
-
+	
 	ChildSlot
 		.VAlign(VAlign_Fill)
 		.HAlign(HAlign_Fill)
@@ -85,14 +89,10 @@ void SDialConfigWidget::Construct(const FArguments& InArgs)
 							+ SHorizontalBox::Slot()
 							.AutoWidth()
 							[
-								SAssignNew(CharacterComboBox, SComboBox<TSharedPtr<FString>>)
-								.OptionsSource(&CharacterList)
-								.OnSelectionChanged(this, &SDialConfigWidget::OnCharacterSelected)
-								.Content()
-								[
-									SAssignNew(CharacterTextBlock, STextBlock)
-									.Text(FText::GetEmpty())
-								]
+								SAssignNew(CharacterComboBox, SCharacterComboBox)
+								.SmartDialogueEditor(SmartDialogueEditor)
+								.OnItemSelected(this, &SDialConfigWidget::OnCharacterSelected)
+								.DefaultText(DialConfig->GetHero())								
 							]
 						]
 						+ SVerticalBox::Slot()
@@ -192,36 +192,16 @@ void SDialConfigWidget::Construct(const FArguments& InArgs)
 
 void SDialConfigWidget::UpdateData()
 {
-	const USmartDialogueSettings* Settings = GetDefault<USmartDialogueSettings>();
-	FSoftObjectPath DialoguesConfigAssetPath = Settings->DialoguesConfigAsset;
-
-	if (DialoguesConfigAssetPath.IsValid())
+	if (DialConfig)
 	{
-		FStringAssetReference AssetRef(DialoguesConfigAssetPath);
-		UObject* LoadedAsset = AssetRef.TryLoad();
-
-		DialConfig = Cast<USmartDialConfig>(LoadedAsset);
-		if (DialConfig)
+		for (const auto L_Character : DialConfig->GetCharacters())
 		{
-			for (const auto L_Character : DialConfig->GetCharacters())
-			{
-				AddCharacterRow(L_Character.Id, L_Character.Name);
-			}
-			for (const auto L_Var : DialConfig->GetVariables())
-			{
-				AddGlobalVarRow(L_Var.Key, L_Var.Value, L_Var.Desc);
-			}
-
-			for (auto Element : CharacterList)
-			{
-				if (Element.Get()->Equals(DialConfig->GetHero()))
-				{
-					CharacterComboBox->SetSelectedItem(Element);
-					break;
-				}		
-			}
-			
+			AddCharacterRow(L_Character.Id, L_Character.Name);
 		}
+		for (const auto L_Var : DialConfig->GetVariables())
+		{
+			AddGlobalVarRow(L_Var.Key, L_Var.Value, L_Var.Desc);
+		}		
 	}
 }
 
@@ -233,9 +213,9 @@ FReply SDialConfigWidget::OnAddButtonClicked()
 	return FReply::Handled();
 }
 
-void SDialConfigWidget::OnCharacterSelected(TSharedPtr<FString> NewSelection, ESelectInfo::Type SelectInfo)
+void SDialConfigWidget::OnCharacterSelected(TSharedPtr<FString> NewSelection)
 {
-	// Handle character selection change
+	DialConfig->SetHero(*NewSelection);
 }
 
 void SDialConfigWidget::OnDeleteButtonClicked(TSharedPtr<FString> CharacterId)

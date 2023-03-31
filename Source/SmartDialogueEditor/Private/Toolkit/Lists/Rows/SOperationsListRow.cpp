@@ -18,11 +18,11 @@ void SOperationsListRow::Construct(const FArguments& InArgs)
 TSharedRef<SWidget> SOperationsListRow::GetContent()
 {
 	// Initialize the VariableOptions array
-	VariableOptions = Editor.Get()->GetAllVariablesList();
+	VariableOptions = Editor->GetAllVariablesList();
 
 	// Initialize the OperationOptions array
 	OperationOptions = TArray<TSharedPtr<FString>>();
-	TArray<TSharedPtr<FString>> Operations = Editor.Get()->GetOperations(bIsExecution);
+	TArray<TSharedPtr<FString>> Operations = Editor->GetOperations(bIsExecution);
 	for (TSharedPtr<FString> Op : Operations)
 	{
 		OperationOptions.Add(Op);

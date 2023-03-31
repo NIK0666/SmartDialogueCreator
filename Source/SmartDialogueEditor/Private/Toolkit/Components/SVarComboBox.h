@@ -9,7 +9,7 @@ class SVarComboBox : public SBaseComboBox
 {
 public:
 	SLATE_BEGIN_ARGS(SVarComboBox) {}
-	SLATE_ARGUMENT(TSharedPtr<FSmartDialogueEditor>, SmartDialogueEditor)
+	SLATE_ARGUMENT(FSmartDialogueEditor*, SmartDialogueEditor)
 	SLATE_EVENT(FOnItemSelectedDelegate, OnItemSelected)
 	SLATE_ARGUMENT(FString, DefaultText)
 	SLATE_END_ARGS()

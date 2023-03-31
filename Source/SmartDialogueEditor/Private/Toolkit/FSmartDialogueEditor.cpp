@@ -101,18 +101,18 @@ TSharedPtr<FExtender> FSmartDialogueEditor::GetToolbarExtender()
 			ToolbarBuilder.AddToolBarButton(FSmartDialogueEditorCommands::Get().ImportJSON, NAME_None, FText::GetEmpty(), TAttribute<FText>(), FSlateIcon(FAppStyle::GetAppStyleSetName(), "Icons.Import"));
 
 
-			// ToolbarBuilder.AddToolBarWidget(
-			// 	SNew(SHorizontalBox)
-			// 	+ SHorizontalBox::Slot()
-			// 	.AutoWidth()
-			// 	.VAlign(VAlign_Center)
-			// 	[
-			// 		SAssignNew(CharacterComboBox, SCharacterComboBox)
-			// 		.SmartDialogueEditor(SharedThis(this))
-			// 		.OnCharacterSelected(this, &FSmartDialogueEditor::OnHeroCharacterSelected)
-			// 		.DefaultText(GetDialogue()->GetCharacter())
-			// 	]
-			// );
+			ToolbarBuilder.AddToolBarWidget(
+				SNew(SHorizontalBox) 
+				+ SHorizontalBox::Slot()
+				.AutoWidth()
+				.VAlign(VAlign_Center)
+				[
+					SAssignNew(CharacterComboBox, SCharacterComboBox)
+					.SmartDialogueEditor(this)
+					.OnItemSelected(this, &FSmartDialogueEditor::OnHeroCharacterSelected)
+					.DefaultText(GetDialogue()->GetCharacter())
+				]
+			);
 		})
 	);
 	
@@ -309,7 +309,7 @@ TSharedRef<SDockTab> FSmartDialogueEditor::SpawnTab_Config(const FSpawnTabArgs& 
 		.Label(FText::FromString("Config"))
 		[
 			SNew(SDialConfigWidget)
-			// Создайте виджет для содержимого вкладки Config
+				.SmartDialogueEditor(this)
 		];
 
 }
@@ -330,19 +330,19 @@ TSharedRef<SDockTab> FSmartDialogueEditor::SpawnTab_Player(const FSpawnTabArgs& 
 TSharedRef<SWidget> FSmartDialogueEditor::CreateBranchesListWidget()
 {
 	return SNew(SBranchesWidget)
-		.SmartDialogueEditor(SharedThis(this));
+		.SmartDialogueEditor(this);
 }
 
 TSharedRef<SWidget> FSmartDialogueEditor::CreateSelectedBranchPropertiesWidget()
 {
 	return SNew(SBranchPropertiesWidget)
-		.SmartDialogueEditor(SharedThis(this));
+		.SmartDialogueEditor(this);
 }
 
 TSharedRef<SWidget> FSmartDialogueEditor::CreateSelectedBranchPhrasesWidget()
 {
 	return SNew(SBranchPhrasesWidget)
-		.SmartDialogueEditor(SharedThis(this));
+		.SmartDialogueEditor(this);
 
 }
 

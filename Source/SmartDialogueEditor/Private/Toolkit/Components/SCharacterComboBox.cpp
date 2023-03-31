@@ -15,5 +15,5 @@ void SCharacterComboBox::Construct(const FArguments& InArgs)
 
 TArray<TSharedPtr<FString>> SCharacterComboBox::GetOptionsList()
 {
-	return  SmartDialogueEditor.Get()->GetAllCharactersList();
+	return  SmartDialogueEditor->GetAllCharactersList();
 }

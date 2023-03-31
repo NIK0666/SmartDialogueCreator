@@ -15,7 +15,7 @@ class SPhraseListRow : public SCompoundWidget
 {
 public:
 	SLATE_BEGIN_ARGS(SPhraseListRow) {}
-	SLATE_ARGUMENT(TSharedPtr<FSmartDialogueEditor>, SmartDialogueEditor)
+	SLATE_ARGUMENT(FSmartDialogueEditor*, SmartDialogueEditor)
 	SLATE_ARGUMENT(FSmartDialoguePhrase*, SmartDialoguePhrasePtr)
 	SLATE_END_ARGS() 
 
@@ -53,6 +53,6 @@ private:
 	FText GetCurrentText() const;
 
 
-	TSharedPtr<FSmartDialogueEditor> SmartDialogueEditor;
+	FSmartDialogueEditor* SmartDialogueEditor = nullptr;
 	FSmartDialoguePhrase* SmartDialoguePhrasePtr = nullptr;
 };

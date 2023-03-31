@@ -23,7 +23,7 @@ TSharedRef<SWidget> SOperationsListWidget::GetItemContent(const FListItemData& I
 
 TArray<TSharedPtr<FString>> SOperationsListWidget::GetAllStrings()
 {	
-	return Editor.Get()->GetAllVariablesList();
+	return Editor->GetAllVariablesList();
 }
 
 FReply SOperationsListWidget::OnContextMenuItemClicked(const FString& Item)

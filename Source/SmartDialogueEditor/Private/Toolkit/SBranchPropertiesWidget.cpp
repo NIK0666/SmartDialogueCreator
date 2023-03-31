@@ -15,9 +15,9 @@ void SBranchPropertiesWidget::Construct(const FArguments& InArgs)
 {
 	SmartDialogueEditor = InArgs._SmartDialogueEditor;
 
-	SmartDialogueEditor.Get()->OnBranchSelected.AddSP(this, &SBranchPropertiesWidget::OnBranchSelected);
+	SmartDialogueEditor->OnBranchSelected.AddSP(this, &SBranchPropertiesWidget::OnBranchSelected);
 	
-	// AllBranchesList = SmartDialogueEditor.Get()->GetAllBranchesList();
+	// AllBranchesList = SmartDialogueEditor->GetAllBranchesList();
 	
 	if (GetBranchDataPtr() != nullptr)
 	{
@@ -288,7 +288,7 @@ TSharedRef<SWidget> SBranchPropertiesWidget::GetContentWidget()
 
 FSmartDialogueBranch* SBranchPropertiesWidget::GetBranchDataPtr()
 {
-	if (auto SelectedBranchPtr = SmartDialogueEditor.Get()->GetSelectedBranch())
+	if (auto SelectedBranchPtr = SmartDialogueEditor->GetSelectedBranch())
 	{
 		return SelectedBranchPtr;
 	}
@@ -323,7 +323,7 @@ void SBranchPropertiesWidget::UpdateWidgets()
 
 	EventNameTextBox->SetText(FText::FromString(GetBranchDataPtr()->Event.Name));
 	
-	// AllBranchesList = SmartDialogueEditor.Get()->GetAllBranchesList();
+	// AllBranchesList = SmartDialogueEditor->GetAllBranchesList();
 	// for (auto Element : AllBranchesList)
 	// {
 	// 	if (Element.Get()->Equals(GetBranchDataPtr()->ChangeStarted))

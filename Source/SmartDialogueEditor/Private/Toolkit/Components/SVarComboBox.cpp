@@ -15,5 +15,5 @@ void SVarComboBox::Construct(const FArguments& InArgs)
 }
 TArray<TSharedPtr<FString>> SVarComboBox::GetOptionsList()
 {
-	return SmartDialogueEditor.Get()->GetAllVariablesList();
+	return SmartDialogueEditor->GetAllVariablesList();
 }

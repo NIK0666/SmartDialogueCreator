@@ -16,7 +16,7 @@ public:
 		: _Title(FText::GetEmpty())
 	{}
 	SLATE_ARGUMENT(FText, Title)
-	SLATE_ARGUMENT(TSharedPtr<FSmartDialogueEditor>, Editor)
+	SLATE_ARGUMENT(FSmartDialogueEditor*, Editor)
 
 	SLATE_END_ARGS()
 
@@ -35,7 +35,7 @@ protected:
 	virtual void OnSelected(const FListItemData& SelectedItem);
 
 	FText Title;
-	TSharedPtr<FSmartDialogueEditor> Editor;
+	FSmartDialogueEditor* Editor = nullptr;
 	TArray<FListItemData> Data;
 
 	TSharedPtr<SVerticalBox> ListContainer;

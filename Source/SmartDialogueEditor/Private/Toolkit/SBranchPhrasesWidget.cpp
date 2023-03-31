@@ -14,7 +14,7 @@ void SBranchPhrasesWidget::Construct(const FArguments& InArgs)
 {
 	SmartDialogueEditor = InArgs._SmartDialogueEditor;
 
-	SmartDialogueEditor.Get()->OnBranchSelected.AddSP(this, &SBranchPhrasesWidget::OnBranchSelected);
+	SmartDialogueEditor->OnBranchSelected.AddSP(this, &SBranchPhrasesWidget::OnBranchSelected);
 
 	UpdatePhrases();
 
@@ -96,17 +96,17 @@ void SBranchPhrasesWidget::UpdatePhrases()
 		PhrasesVBox->ClearChildren();
 	}
 
-	if (SmartDialogueEditor.Get()->GetSelectedBranch() == nullptr)
+	if (SmartDialogueEditor->GetSelectedBranch() == nullptr)
 	{
 		return;
 	}
 
 	if (AddFirstHeroPhraseButton.IsValid())
 	{
-		AddFirstHeroPhraseButton->SetVisibility(SmartDialogueEditor.Get()->GetSelectedBranch()->Phrases.IsEmpty() ? EVisibility::Visible : EVisibility::Collapsed);
+		AddFirstHeroPhraseButton->SetVisibility(SmartDialogueEditor->GetSelectedBranch()->Phrases.IsEmpty() ? EVisibility::Visible : EVisibility::Collapsed);
 	}
 
-	for (auto& Phrase : SmartDialogueEditor.Get()->GetSelectedBranch()->Phrases)
+	for (auto& Phrase : SmartDialogueEditor->GetSelectedBranch()->Phrases)
 	{
 		PhrasesVBox->AddSlot()
 		           .AutoHeight()

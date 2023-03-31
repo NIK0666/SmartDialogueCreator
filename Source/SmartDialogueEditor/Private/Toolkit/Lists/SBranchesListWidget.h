@@ -10,7 +10,7 @@ class SBranchesListWidget : public SBaseListWidget
 public:
 	SLATE_BEGIN_ARGS(SBranchesListWidget) {}
 	SLATE_ARGUMENT(FText, Title)
-	SLATE_ARGUMENT(TSharedPtr<FSmartDialogueEditor>, Editor)
+	SLATE_ARGUMENT(FSmartDialogueEditor*, Editor)
 	SLATE_ARGUMENT(bool, bIsShowed)
 	SLATE_END_ARGS()
 	

@@ -16,10 +16,10 @@ void SPhraseListRow::Construct(const FArguments& InArgs)
 	SmartDialoguePhrasePtr = InArgs._SmartDialoguePhrasePtr;
 	
 	
-	CharacterOptions = SmartDialogueEditor.Get()->GetAllCharactersList();
-	VarOptions = SmartDialogueEditor.Get()->GetAllVariablesList();
+	CharacterOptions = SmartDialogueEditor->GetAllCharactersList();
+	VarOptions = SmartDialogueEditor->GetAllVariablesList();
 
-	ComparisonOptions = SmartDialogueEditor.Get()->GetOperations(false);
+	ComparisonOptions = SmartDialogueEditor->GetOperations(false);
 	
 	ChildSlot
 	[

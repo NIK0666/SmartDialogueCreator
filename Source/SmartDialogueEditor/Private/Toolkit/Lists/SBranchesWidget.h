@@ -15,7 +15,7 @@ class SBranchesWidget : public SCompoundWidget
 {
 public:
 	SLATE_BEGIN_ARGS(SBranchesWidget) {}
-	SLATE_ARGUMENT(TSharedPtr<FSmartDialogueEditor>, SmartDialogueEditor)
+	SLATE_ARGUMENT(FSmartDialogueEditor*, SmartDialogueEditor)
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs);
@@ -33,7 +33,7 @@ private:
 	TSharedRef<ITableRow> GenerateBranchInfoWidgetRow(TSharedPtr<SBranchInfoWidget> InItem, const TSharedRef<STableViewBase>& OwnerTable);
 
 	// Ссылка на редактор SmartDialogue
-	TSharedPtr<FSmartDialogueEditor> SmartDialogueEditor;
+	FSmartDialogueEditor* SmartDialogueEditor;
 
 	// Список виджетов SBranchInfoWidget
 	TArray<TSharedPtr<SBranchInfoWidget>> BranchesInfoWidgets;

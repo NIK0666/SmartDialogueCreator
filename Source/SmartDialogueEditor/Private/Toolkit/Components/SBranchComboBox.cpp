@@ -16,5 +16,5 @@ void SBranchComboBox::Construct(const FArguments& InArgs)
 
 TArray<TSharedPtr<FString>> SBranchComboBox::GetOptionsList()
 {
-	return SmartDialogueEditor.Get()->GetAllBranchesList();
+	return SmartDialogueEditor->GetAllBranchesList();
 }

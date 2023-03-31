@@ -15,7 +15,7 @@ class SBranchInfoWidget : public SCompoundWidget
 public:
 	SLATE_BEGIN_ARGS(SBranchInfoWidget) {}
 	SLATE_ARGUMENT(FName, BranchName) 
-	SLATE_ARGUMENT(TSharedPtr<FSmartDialogueEditor>, Editor)
+	SLATE_ARGUMENT(FSmartDialogueEditor*, Editor)
 	SLATE_END_ARGS()
 
 	
@@ -35,7 +35,7 @@ private:
 	FText GetPlaceholderText() const;
 
 	FName BranchName;
-	TSharedPtr<FSmartDialogueEditor> Editor;
+	FSmartDialogueEditor* Editor = nullptr;
 	TSharedPtr<SEditableTextBox> BranchNameTextBox;
 	TSharedPtr<SEditableTextBox> BranchTextTextBox;
 	TSharedPtr<SButton> GrabButton;

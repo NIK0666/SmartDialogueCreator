@@ -15,8 +15,8 @@ void SBranchesWidget::Construct(const FArguments& InArgs)
 
 	UpdateBranchesList();
 
-	SmartDialogueEditor.Get()->OnBranchItemAdded.BindSP(this, &SBranchesWidget::BranchItemAdded);
-	SmartDialogueEditor.Get()->OnBranchItemDeleted.BindSP(this, &SBranchesWidget::BranchItemDeleted);
+	SmartDialogueEditor->OnBranchItemAdded.BindSP(this, &SBranchesWidget::BranchItemAdded);
+	SmartDialogueEditor->OnBranchItemDeleted.BindSP(this, &SBranchesWidget::BranchItemDeleted);
 	
 	ChildSlot
 	[
@@ -49,13 +49,13 @@ TSharedRef<ITableRow> SBranchesWidget::GenerateBranchInfoWidgetRow(TSharedPtr<SB
 
 void SBranchesWidget::UpdateBranchesList()
 {
-	if (!SmartDialogueEditor.IsValid())
+	if (!SmartDialogueEditor)
 	{
 		return;
 	}
 
 	BranchesInfoWidgets.Empty();
-	USmartDialogue* Dialogue = SmartDialogueEditor.Get()->GetDialogue();
+	USmartDialogue* Dialogue = SmartDialogueEditor->GetDialogue();
 
 	if (Dialogue)
 	{

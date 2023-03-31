@@ -12,13 +12,13 @@ class SBranchPhrasesWidget : public SCompoundWidget
 {
 public:
 	SLATE_BEGIN_ARGS(SBranchPhrasesWidget) {}
-	SLATE_ARGUMENT(TSharedPtr<FSmartDialogueEditor>, SmartDialogueEditor)
+	SLATE_ARGUMENT(FSmartDialogueEditor*, SmartDialogueEditor)
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs);
 
 private:
-	TSharedPtr<FSmartDialogueEditor> SmartDialogueEditor;
+	FSmartDialogueEditor* SmartDialogueEditor = nullptr;
 	void OnBranchSelected(FSmartDialogueBranch& SmartDialogueBranch);
 	void UpdatePhrases();
 	

@@ -14,12 +14,12 @@
 FSlateColor SBranchInfoWidget::GetBackgroundColor() const
 {
 
-	if (Editor.Get()->GetSelectedBranchName() == BranchName)
+	if (Editor->GetSelectedBranchName() == BranchName)
 	{
 		return FLinearColor(0.25f, 0.88f, 0.82f, 0.5f);
 	}
 	
-	if (const auto SelectedBranch = Editor.Get()->GetSelectedBranch())
+	if (const auto SelectedBranch = Editor->GetSelectedBranch())
 	{
 		if (SelectedBranch->Hide.Contains(BranchName.ToString()))
 		{
@@ -39,7 +39,7 @@ void SBranchInfoWidget::Construct(const FArguments& InArgs)
 	BranchName = InArgs._BranchName;
 	Editor = InArgs._Editor;	
 
-	DialoguePtr = Editor.Get()->GetDialogue();
+	DialoguePtr = Editor->GetDialogue();
 	ChildSlot
 	[
 		SNew(SBorder)
@@ -124,7 +124,7 @@ void SBranchInfoWidget::OnBranchNameTextCommitted(const FText& NewText, ETextCom
 		FName OldName = BranchName;
 		FName NewName = FName(*NewText.ToString());
 
-		if (Editor.IsValid())
+		if (Editor)
 		{
 			if (DialoguePtr && DialoguePtr->RenameBranch(OldName, NewName))
 			{
@@ -176,7 +176,7 @@ void SBranchInfoWidget::SetIsFocused(bool bNewValue)
 	bIsFocused = bNewValue;
 	if (bNewValue)
 	{
-		Editor.Get()->SetSelectedBranchName(BranchName);
+		Editor->SetSelectedBranchName(BranchName);
 	}	
 }
 

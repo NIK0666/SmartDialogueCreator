@@ -7,10 +7,14 @@
 #include "Widgets/SCompoundWidget.h"
 #include "Widgets/DeclarativeSyntaxSupport.h"
 
+class SCharacterComboBox;
+class FSmartDialogueEditor;
+
 class SDialConfigWidget : public SCompoundWidget
 {
 public:
 	SLATE_BEGIN_ARGS(SDialConfigWidget) {}
+	SLATE_ARGUMENT(FSmartDialogueEditor*, SmartDialogueEditor)
 	SLATE_END_ARGS()
 
 
@@ -21,7 +25,7 @@ public:
 
 private:
 	
-	void OnCharacterSelected(TSharedPtr<FString> NewSelection, ESelectInfo::Type SelectInfo);
+	void OnCharacterSelected(TSharedPtr<FString> NewSelection);
 	FReply OnAddButtonClicked();
 	void OnDeleteButtonClicked(TSharedPtr<FString> CharacterId);	
 	void AddCharacterRow(FString Id = "", FString Name = "");
@@ -54,7 +58,9 @@ private:
 	
 	USmartDialConfig* DialConfig = nullptr;
 
-	TSharedPtr<SComboBox<TSharedPtr<FString>>> CharacterComboBox;
+	TSharedPtr<SCharacterComboBox> CharacterComboBox;
 	TSharedPtr<STextBlock> CharacterTextBlock;
 	TArray<TSharedPtr<FString>> CharacterList;
+	
+	FSmartDialogueEditor* SmartDialogueEditor = nullptr;
 };

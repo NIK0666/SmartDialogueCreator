@@ -35,7 +35,7 @@ FReply SBranchesListWidget::OnChangeButtonClicked()
 
 TArray<TSharedPtr<FString>> SBranchesListWidget::GetAllStrings()
 {	
-	return Editor.Get()->GetAllBranchesList();
+	return Editor->GetAllBranchesList();
 }
 
 FReply SBranchesListWidget::OnContextMenuItemClicked(const FString& Item)

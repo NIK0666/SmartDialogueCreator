@@ -9,7 +9,7 @@ class SOperationsListRow : public SBaseListRow
 public:
 	SLATE_BEGIN_ARGS(SOperationsListRow) {}
 	SLATE_ARGUMENT(FListItemData, Item)
-	SLATE_ARGUMENT(TSharedPtr<FSmartDialogueEditor>, Editor)
+	SLATE_ARGUMENT(FSmartDialogueEditor*, Editor)
 	SLATE_ARGUMENT(bool, bIsExecution)
 	SLATE_END_ARGS()
 

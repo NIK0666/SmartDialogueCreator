@@ -15,14 +15,14 @@ class SBranchPropertiesWidget : public SCompoundWidget
 {
 public:
 	SLATE_BEGIN_ARGS(SBranchPropertiesWidget) {}
-	SLATE_ARGUMENT(TSharedPtr<FSmartDialogueEditor>, SmartDialogueEditor)
+	SLATE_ARGUMENT(FSmartDialogueEditor*, SmartDialogueEditor)
 	SLATE_END_ARGS()
 
 
 	void Construct(const FArguments& InArgs);
 
 private:
-	TSharedPtr<FSmartDialogueEditor> SmartDialogueEditor;
+	FSmartDialogueEditor* SmartDialogueEditor;
 
 
 	FSmartDialogueBranch* GetBranchDataPtr();

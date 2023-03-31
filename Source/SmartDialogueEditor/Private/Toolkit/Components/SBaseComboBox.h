@@ -14,7 +14,7 @@ public:
 	SLATE_BEGIN_ARGS(SBaseComboBox)
 		: _SmartDialogueEditor(nullptr)
 	{}
-	SLATE_ARGUMENT(TSharedPtr<FSmartDialogueEditor>, SmartDialogueEditor)
+	SLATE_ARGUMENT(FSmartDialogueEditor*, SmartDialogueEditor)
 	SLATE_EVENT(FOnItemSelectedDelegate, OnItemSelected)
 	SLATE_ARGUMENT(FString, DefaultText)
 	SLATE_END_ARGS()
@@ -23,7 +23,7 @@ public:
 	void Construct(const FArguments& InArgs);
 	
 protected:
-	TSharedPtr<FSmartDialogueEditor> SmartDialogueEditor;
+	FSmartDialogueEditor* SmartDialogueEditor = nullptr;
 	TArray<TSharedPtr<FString>> Options;
 	TSharedPtr<SComboBox<TSharedPtr<FString>>> ComboBox;
 	TSharedPtr<STextBlock> TextBlock;

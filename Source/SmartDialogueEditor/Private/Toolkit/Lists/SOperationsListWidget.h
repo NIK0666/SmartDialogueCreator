@@ -9,7 +9,7 @@ class SOperationsListWidget : public SBaseListWidget
 public:
 	SLATE_BEGIN_ARGS(SOperationsListWidget) {}
 	SLATE_ARGUMENT(FText, Title)
-	SLATE_ARGUMENT(TSharedPtr<FSmartDialogueEditor>, Editor)
+	SLATE_ARGUMENT(FSmartDialogueEditor*, Editor)
 	SLATE_ARGUMENT(bool, bIsExecution)
 	SLATE_END_ARGS()
 
