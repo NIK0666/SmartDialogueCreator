@@ -35,9 +35,10 @@ public:
 	TArray<FCharacterData> GetAllCharacters();
 	TArray<FVariableData> GetAllVariables();
 	TArray<FName> GetBranchIDs();
-	TArray<TSharedPtr<FString>> GetAllBranchesList(bool bFirstEmpty = false);
-	TArray<TSharedPtr<FString>> GetAllVariablesList(bool bFirstEmpty = false);
-	TArray<TSharedPtr<FString>> GetAllCharactersList(bool bFirstEmpty = false);
+	
+	TArray<TSharedPtr<FString>> GetAllBranchesList();
+	TArray<TSharedPtr<FString>> GetAllVariablesList();
+	TArray<TSharedPtr<FString>> GetAllCharactersList();
 	TArray<TSharedPtr<FString>> GetOperations(bool bIsExecution);
 
 

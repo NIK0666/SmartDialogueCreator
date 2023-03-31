@@ -16,8 +16,8 @@ void SPhraseListRow::Construct(const FArguments& InArgs)
 	SmartDialoguePhrasePtr = InArgs._SmartDialoguePhrasePtr;
 	
 	
-	CharacterOptions = SmartDialogueEditor.Get()->GetAllCharactersList(true);
-	VarOptions = SmartDialogueEditor.Get()->GetAllVariablesList(true);
+	CharacterOptions = SmartDialogueEditor.Get()->GetAllCharactersList();
+	VarOptions = SmartDialogueEditor.Get()->GetAllVariablesList();
 
 	ComparisonOptions = SmartDialogueEditor.Get()->GetOperations(false);
 	

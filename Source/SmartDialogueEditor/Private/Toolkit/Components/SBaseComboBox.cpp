@@ -4,6 +4,7 @@
 #include "Widgets/Input/SComboBox.h"
 #include "Widgets/Text/STextBlock.h"
 
+
 void SBaseComboBox::Construct(const FArguments& InArgs)
 {
 	SmartDialogueEditor = InArgs._SmartDialogueEditor;
@@ -11,16 +12,7 @@ void SBaseComboBox::Construct(const FArguments& InArgs)
 	DefaultText = InArgs._DefaultText;
 
 	UpdateOptions();
-
-	TSharedPtr<FString> InitialSelectedItem = Options[0];
-	for (const TSharedPtr<FString>& Option : Options)
-	{
-		if (Option->Equals(DefaultText))
-		{
-			InitialSelectedItem = Option;
-			break;
-		}
-	}
+	const TSharedPtr<FString> InitialSelectedItem = SetItemValue(DefaultText);	
 
 	ChildSlot
 	[
@@ -37,6 +29,20 @@ void SBaseComboBox::Construct(const FArguments& InArgs)
 			.Text(this, &SBaseComboBox::GetCurrentItemText)
 		]
 	];
+}
+
+
+const TSharedPtr<FString>& SBaseComboBox::SetItemValue(const FString& NewStringValue)
+{
+	for (const TSharedPtr<FString>& Option : Options)
+	{
+		if (Option->Equals(NewStringValue))
+		{
+			return Option;
+		}
+	}
+
+	return Options[0];
 }
 
 TSharedRef<SWidget> SBaseComboBox::GenerateOption(TSharedPtr<FString> Option)

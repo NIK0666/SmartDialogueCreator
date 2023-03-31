@@ -5,7 +5,6 @@
 #include "Widgets/Input/SComboBox.h"
 #include "Widgets/Text/STextBlock.h"
 
-// Заменить существующий метод Construct на следующий:
 void SVarComboBox::Construct(const FArguments& InArgs)
 {
 	SBaseComboBox::Construct(SBaseComboBox::FArguments()
@@ -16,5 +15,5 @@ void SVarComboBox::Construct(const FArguments& InArgs)
 }
 TArray<TSharedPtr<FString>> SVarComboBox::GetOptionsList()
 {
-	return SmartDialogueEditor.Get()->GetAllVariablesList(true);
+	return SmartDialogueEditor.Get()->GetAllVariablesList();
 }

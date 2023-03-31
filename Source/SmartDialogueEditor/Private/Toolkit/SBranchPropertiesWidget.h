@@ -9,6 +9,7 @@
 class SBranchesListWidget;
 class SOperationsListWidget;
 class FSmartDialogueEditor;
+class SBranchComboBox;
 
 class SBranchPropertiesWidget : public SCompoundWidget
 {
@@ -25,7 +26,7 @@ private:
 
 
 	FSmartDialogueBranch* GetBranchDataPtr();
-	TArray<TSharedPtr<FString>> AllBranchesList;
+	// TArray<TSharedPtr<FString>> AllBranchesList;
 
 	TSharedRef<SWidget> GetContentWidget();
 
@@ -38,7 +39,7 @@ private:
 	TSharedPtr<SCheckBox> ClosedCheckBox;
 	TSharedPtr<SCheckBox> ShowChoiceCheckBox;
 	TSharedPtr<SCheckBox> CheckAsORCheckBox;
-	TSharedPtr<SComboBox<TSharedPtr<FString>>> StartBranchComboBox;
+	TSharedPtr<SBranchComboBox> StartBranchComboBox;
 	TSharedPtr<SEditableTextBox> EventNameTextBox;
 	TSharedPtr<SWidget> ContentWidget;
 	TSharedPtr<SVerticalBox> PropertiesContentWidget;

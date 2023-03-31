@@ -5,6 +5,7 @@
 
 #include "EditorStyleSet.h"
 #include "FSmartDialogueEditor.h"
+#include "Components/SBranchComboBox.h"
 #include "Lists/SBranchesListWidget.h"
 #include "Lists/SOperationsListWidget.h"
 
@@ -16,7 +17,7 @@ void SBranchPropertiesWidget::Construct(const FArguments& InArgs)
 
 	SmartDialogueEditor.Get()->OnBranchSelected.AddSP(this, &SBranchPropertiesWidget::OnBranchSelected);
 	
-	AllBranchesList = SmartDialogueEditor.Get()->GetAllBranchesList();
+	// AllBranchesList = SmartDialogueEditor.Get()->GetAllBranchesList();
 	
 	if (GetBranchDataPtr() != nullptr)
 	{
@@ -166,25 +167,15 @@ TSharedRef<SWidget> SBranchPropertiesWidget::GetContentWidget()
 			// Started Brahcn
 			+ SHorizontalBox::Slot()
 			.AutoWidth()
-			.Padding(4.f, 0.f)
-			.VAlign(VAlign_Center)
 			[
-				SAssignNew(StartBranchComboBox, SComboBox<TSharedPtr<FString>>)
-				.OptionsSource(&AllBranchesList)
-				.OnSelectionChanged_Lambda([this](TSharedPtr<FString> NewSelection, ESelectInfo::Type SelectInfo) { GetBranchDataPtr()->ChangeStarted = NewSelection.IsValid() ? *NewSelection : TEXT(""); })
-				.OnGenerateWidget_Lambda([](TSharedPtr<FString> InItem)
+				SAssignNew(StartBranchComboBox, SBranchComboBox)
+				.SmartDialogueEditor(SmartDialogueEditor)
+				.OnItemSelected_Lambda([this](TSharedPtr<FString> NewSelection)
 				{
-					return SNew(STextBlock)
-						.Text(FText::FromString(*InItem));
+					GetBranchDataPtr()->ChangeStarted = *NewSelection;
 				})
-				.Content()
-				[
-					SNew(STextBlock)
-					.Text_Lambda([this]() { return FText::FromString(GetBranchDataPtr()->ChangeStarted.IsEmpty() ? LOCTEXT("StartBranchEmpty", "Start Branch").ToString() : GetBranchDataPtr()->ChangeStarted); })
-					.ToolTipText(LOCTEXT("StartBranchHint", "Start Branch"))
-				]
-			]
-			
+				.DefaultText(SmartDialogueEditor->GetSelectedBranch()->ChangeStarted)
+			]			
 			+ SHorizontalBox::Slot()
 			.FillWidth(1.f)
 			
@@ -332,15 +323,15 @@ void SBranchPropertiesWidget::UpdateWidgets()
 
 	EventNameTextBox->SetText(FText::FromString(GetBranchDataPtr()->Event.Name));
 	
-	AllBranchesList = SmartDialogueEditor.Get()->GetAllBranchesList();
-	for (auto Element : AllBranchesList)
-	{
-		if (Element.Get()->Equals(GetBranchDataPtr()->ChangeStarted))
-		{
-			StartBranchComboBox->SetSelectedItem(Element);
-			break;
-		}		
-	}
+	// AllBranchesList = SmartDialogueEditor.Get()->GetAllBranchesList();
+	// for (auto Element : AllBranchesList)
+	// {
+	// 	if (Element.Get()->Equals(GetBranchDataPtr()->ChangeStarted))
+	// 	{
+	// 		StartBranchComboBox->SetSelectedItem(Element);
+	// 		break;
+	// 	}		
+	// }
 
 	// Получение данных
 	TArray<FString> ShowStrings = GetBranchDataPtr()->Show;
@@ -379,6 +370,8 @@ void SBranchPropertiesWidget::UpdateWidgets()
 		ItemData.Value = VarElement.Value;
 		ModifyVarItems.Add(ItemData);
 	}
+
+	StartBranchComboBox->SetItemValue(GetBranchDataPtr()->ChangeStarted);
 
 	// Обновление виджетов с новыми данными
 	ShowBranchesList->UpdateData(ShowListItems);

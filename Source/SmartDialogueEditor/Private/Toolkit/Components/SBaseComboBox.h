@@ -18,7 +18,8 @@ public:
 	SLATE_EVENT(FOnItemSelectedDelegate, OnItemSelected)
 	SLATE_ARGUMENT(FString, DefaultText)
 	SLATE_END_ARGS()
-	
+
+	const TSharedPtr<FString>& SetItemValue(const FString& NewStringValue);
 	void Construct(const FArguments& InArgs);
 	
 protected:

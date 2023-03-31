@@ -558,10 +558,10 @@ TArray<FName> FSmartDialogueEditor::GetBranchIDs()
 	return BranchIDs;
 }
 
-TArray<TSharedPtr<FString>> FSmartDialogueEditor::GetAllBranchesList(bool bFirstEmpty)
+
+TArray<TSharedPtr<FString>> FSmartDialogueEditor::GetAllBranchesList()
 {
-	// Используем массив CachedBranchesList для хранения кэшированных ветвей
-	if (bFirstEmpty && CachedBranchesList.Num() == 0)
+	if (CachedBranchesList.Num() == 0)
 	{
 		CachedBranchesList.Add(MakeShared<FString>(""));
 	}
@@ -576,7 +576,7 @@ TArray<TSharedPtr<FString>> FSmartDialogueEditor::GetAllBranchesList(bool bFirst
 		}
 
 		// Удаляем старые элементы из CachedBranchesList
-		for (int32 i = CachedBranchesList.Num() - 1; i >= 0; i--)
+		for (int32 i = CachedBranchesList.Num() - 1; i >= 1; i--)
 		{
 			if (!NewBranchesSet.Contains(*CachedBranchesList[i]))
 			{
@@ -607,8 +607,13 @@ TArray<TSharedPtr<FString>> FSmartDialogueEditor::GetAllBranchesList(bool bFirst
 	return CachedBranchesList;
 }
 
-TArray<TSharedPtr<FString>> FSmartDialogueEditor::GetAllVariablesList(bool bFirstEmpty)
+TArray<TSharedPtr<FString>> FSmartDialogueEditor::GetAllVariablesList()
 {
+	if (CachedVariablesList.Num() == 0)
+	{
+		CachedVariablesList.Add(MakeShared<FString>(""));
+	}
+	
 	TArray<FVariableData> Variables = GetAllVariables();
 	TSet<FString> NewVariablesSet;
 
@@ -618,7 +623,7 @@ TArray<TSharedPtr<FString>> FSmartDialogueEditor::GetAllVariablesList(bool bFirs
 	}
 
 	// Удаляем старые элементы
-	for (int32 i = CachedVariablesList.Num() - 1; i >= 0; i--)
+	for (int32 i = CachedVariablesList.Num() - 1; i >= 1; i--)
 	{
 		if (!NewVariablesSet.Contains(*CachedVariablesList[i]))
 		{
@@ -648,8 +653,13 @@ TArray<TSharedPtr<FString>> FSmartDialogueEditor::GetAllVariablesList(bool bFirs
 	return CachedVariablesList;
 }
 
-TArray<TSharedPtr<FString>> FSmartDialogueEditor::GetAllCharactersList(bool bFirstEmpty)
+TArray<TSharedPtr<FString>> FSmartDialogueEditor::GetAllCharactersList()
 {
+	if (CachedCharactersList.Num() == 0)
+	{
+		CachedCharactersList.Add(MakeShared<FString>(""));
+	}
+	
 	TArray<FCharacterData> Characters = GetAllCharacters();
 	TSet<FString> NewCharactersSet;
 
@@ -659,7 +669,7 @@ TArray<TSharedPtr<FString>> FSmartDialogueEditor::GetAllCharactersList(bool bFir
 	}
 
 	// Удаляем старые элементы
-	for (int32 i = CachedCharactersList.Num() - 1; i >= 0; i--)
+	for (int32 i = CachedCharactersList.Num() - 1; i >= 1; i--)
 	{
 		if (!NewCharactersSet.Contains(*CachedCharactersList[i]))
 		{
