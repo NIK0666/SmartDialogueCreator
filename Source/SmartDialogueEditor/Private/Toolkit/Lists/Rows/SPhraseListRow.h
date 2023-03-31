@@ -8,6 +8,7 @@
 
 class SVarComboBox;
 class SCharacterComboBox;
+class SMultiLineEditableTextBox;
 class FSmartDialogueEditor;
 
 class SPhraseListRow : public SCompoundWidget
@@ -30,6 +31,7 @@ private:
 	TSharedPtr<SVarComboBox> VarComboBox;
 	TSharedPtr<SComboBox<TSharedPtr<FString>>> ComparisonComboBox;
 	TSharedPtr<STextBlock> ComparisonTextBlock;
+	TSharedPtr<SMultiLineEditableTextBox> MultiLineEditableTextBox;
 
 	TSharedRef<SWidget> GenerateCharacterOption(TSharedPtr<FString> Option);
 	TSharedRef<SWidget> GenerateVarOption(TSharedPtr<FString> Option);
@@ -47,6 +49,8 @@ private:
 	FText GetCurrentCharacterText() const;
 	FText GetCurrentVarText() const;
 	FText GetCurrentComparisonText() const;
+	FReply OnMultiLineKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent);
+	FText GetCurrentText() const;
 
 
 	TSharedPtr<FSmartDialogueEditor> SmartDialogueEditor;

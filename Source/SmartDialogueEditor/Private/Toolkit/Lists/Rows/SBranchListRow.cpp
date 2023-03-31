@@ -21,12 +21,6 @@ TSharedRef<SWidget> SBranchListRow::GetContent()
 {
 	return SNew(SHorizontalBox)
 		+ SHorizontalBox::Slot()
-		.FillWidth(1.0f)
-		[
-			SNew(STextBlock)
-			.Text(FText::FromString(Item.Name))
-		]
-		+ SHorizontalBox::Slot()
 		.AutoWidth()
 		[
 			SNew(SButton)
@@ -37,6 +31,12 @@ TSharedRef<SWidget> SBranchListRow::GetContent()
 				SNew(SImage)
 				.Image(FEditorStyle::GetBrush("Icons.Edit"))
 			]
+		]
+		+ SHorizontalBox::Slot()
+		.FillWidth(1.0f)
+		[
+			SNew(STextBlock)
+			.Text(FText::FromString(Item.Name))
 		];
 }
 

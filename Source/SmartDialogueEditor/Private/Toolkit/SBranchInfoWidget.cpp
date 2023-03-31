@@ -13,9 +13,22 @@
 
 FSlateColor SBranchInfoWidget::GetBackgroundColor() const
 {
+
 	if (Editor.Get()->GetSelectedBranchName() == BranchName)
 	{
 		return FLinearColor(0.25f, 0.88f, 0.82f, 0.5f);
+	}
+	
+	if (const auto SelectedBranch = Editor.Get()->GetSelectedBranch())
+	{
+		if (SelectedBranch->Hide.Contains(BranchName.ToString()))
+		{
+			return FLinearColor(0.91f, 0.3f, 0.24f, 0.5f); // Малиновый цвет с прозрачностью 0.5
+		}
+		else if (SelectedBranch->Show.Contains(BranchName.ToString()))
+		{
+			return FLinearColor(0.4f, 1.0f, 0.4f, 0.5f);
+		}
 	}
 
 	return FLinearColor::Transparent;
@@ -27,7 +40,6 @@ void SBranchInfoWidget::Construct(const FArguments& InArgs)
 	Editor = InArgs._Editor;	
 
 	DialoguePtr = Editor.Get()->GetDialogue();
-	
 	ChildSlot
 	[
 		SNew(SBorder)
@@ -53,6 +65,7 @@ void SBranchInfoWidget::Construct(const FArguments& InArgs)
 			[
 				SAssignNew(BranchTextTextBox, SEditableTextBox)
 				.Text_Raw(this, &SBranchInfoWidget::GetBranchText)
+				.HintText_Raw(this, &SBranchInfoWidget::GetPlaceholderText)
 				.OnTextCommitted(this, &SBranchInfoWidget::OnBranchTextTextCommitted)
 			]
 			+ SHorizontalBox::Slot()
@@ -166,4 +179,17 @@ void SBranchInfoWidget::SetIsFocused(bool bNewValue)
 		Editor.Get()->SetSelectedBranchName(BranchName);
 	}	
 }
+
+FText SBranchInfoWidget::GetPlaceholderText() const
+{
+	if (const auto BranchPtr = DialoguePtr->GetBranchPtr(BranchName))
+	{
+		if (BranchPtr->Phrases.Num() > 0)
+		{
+			return BranchPtr->Phrases[0].Text;
+		}
+	}
+	return FText::GetEmpty();
+}
+
 #undef LOCTEXT_NAMESPACE

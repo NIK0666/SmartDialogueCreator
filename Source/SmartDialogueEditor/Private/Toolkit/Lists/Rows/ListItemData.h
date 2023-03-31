@@ -12,6 +12,12 @@ struct FListItemData
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	FString Name;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+	FString OperationString = "";
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+	int32 Value = 0;
 
 	bool operator==(const FListItemData& Other) const
 	{
@@ -22,17 +28,4 @@ struct FListItemData
 	{
 		return !(*this == Other);
 	}
-};
-
-USTRUCT(BlueprintType)
-struct FOperationItemData : public FListItemData
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
-	ESmartDialogueEqualOperation EqualOperation;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
-	int32 Value;
-	
 };

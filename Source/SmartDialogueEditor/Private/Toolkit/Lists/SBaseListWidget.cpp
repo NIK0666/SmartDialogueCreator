@@ -26,12 +26,6 @@ void SBaseListWidget::Construct(const FArguments& InArgs)
 			+ SHorizontalBox::Slot()
 			.AutoWidth()
 			[
-				SNew(STextBlock)
-				.Text(Title)
-			]
-			+ SHorizontalBox::Slot()
-			.AutoWidth()
-			[
 				SAssignNew(ContextMenuAnchor, SMenuAnchor)
 				.OnGetMenuContent(this, &SBaseListWidget::CreateMenuContent)
 				[
@@ -45,6 +39,12 @@ void SBaseListWidget::Construct(const FArguments& InArgs)
 					]
 				]
 			]
+			+ SHorizontalBox::Slot()
+			.AutoWidth()
+			[
+				SNew(STextBlock)
+				.Text(Title)
+			]			
 			+ SHorizontalBox::Slot()
 			.FillWidth(1.0f)
 		]

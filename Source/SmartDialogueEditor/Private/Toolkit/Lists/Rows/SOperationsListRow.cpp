@@ -29,11 +29,10 @@ TSharedRef<SWidget> SOperationsListRow::GetContent()
 	}
 
 	// FListItemData* pItem = &Item;
-	// if (FOperationItemData* pOperationItem = static_cast<FOperationItemData*>(pItem))
+	// if (FListItemData* pOperationItem = static_cast<FListItemData*>(pItem))
 	// {
 	// 	OperationItem = *pOperationItem;
 	// }
-
 
 	return SNew(SVerticalBox)
 		+ SVerticalBox::Slot()
@@ -75,6 +74,7 @@ TSharedRef<SWidget> SOperationsListRow::GetContent()
 			+ SHorizontalBox::Slot()
 			[
 				SAssignNew(InputTextBox, SEditableTextBox)
+				.Text(FText::FromString(FString::FromInt(Item.Value)))
 				.HintText(FText::FromString(TEXT("value")))
 			]
 		];

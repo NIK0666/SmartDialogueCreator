@@ -15,6 +15,7 @@ void SPhraseListRow::Construct(const FArguments& InArgs)
 	SmartDialogueEditor = InArgs._SmartDialogueEditor;
 	SmartDialoguePhrasePtr = InArgs._SmartDialoguePhrasePtr;
 	
+	
 	CharacterOptions = SmartDialogueEditor.Get()->GetAllCharactersList(true);
 	VarOptions = SmartDialogueEditor.Get()->GetAllVariablesList(true);
 
@@ -32,7 +33,7 @@ void SPhraseListRow::Construct(const FArguments& InArgs)
 			[
 				SAssignNew(CharacterComboBox, SCharacterComboBox)
 				.SmartDialogueEditor(SmartDialogueEditor)
-				.OnCharacterSelected(this, &SPhraseListRow::OnCharacterSelected)
+				.OnItemSelected(this, &SPhraseListRow::OnCharacterSelected)
 				.DefaultText(SmartDialoguePhrasePtr->NPC)
 			]
 			+ SHorizontalBox::Slot()
@@ -46,7 +47,7 @@ void SPhraseListRow::Construct(const FArguments& InArgs)
 			[
 				SAssignNew(VarComboBox, SVarComboBox)
 				.SmartDialogueEditor(SmartDialogueEditor)
-				.OnVarSelected(this, &SPhraseListRow::OnVarSelected)
+				.OnItemSelected(this, &SPhraseListRow::OnVarSelected)
 				.DefaultText(SmartDialoguePhrasePtr->If.Key)
 			]
 			+ SHorizontalBox::Slot()
@@ -125,10 +126,11 @@ void SPhraseListRow::Construct(const FArguments& InArgs)
 			SNew(SBox)
 			.WidthOverride(300.0f)
 			[
-				SNew(SMultiLineEditableTextBox)
+			SAssignNew(MultiLineEditableTextBox, SMultiLineEditableTextBox)
 			.AutoWrapText(true)
+			.Text(this, &SPhraseListRow::GetCurrentText)
 			.OnTextChanged(this, &SPhraseListRow::OnMultiLineTextChanged)
-			// .MinDesiredWidth(300.0f)
+			.OnKeyDownHandler(this, &SPhraseListRow::OnMultiLineKeyDown) // Добавляем обработчик клавиш
 			]
 		]
 	];
@@ -190,7 +192,12 @@ FReply SPhraseListRow::OnDeleteButtonClicked()
 
 void SPhraseListRow::OnMultiLineTextChanged(const FText& InText)
 {
-	// Обработка изменения текста в поле ввода с автоматическим расширением вниз
+	SmartDialoguePhrasePtr->Text = InText;
+}
+
+FText SPhraseListRow::GetCurrentText() const
+{
+	return SmartDialoguePhrasePtr->Text;
 }
 
 FText SPhraseListRow::GetCurrentCharacterText() const
@@ -206,4 +213,23 @@ FText SPhraseListRow::GetCurrentVarText() const
 FText SPhraseListRow::GetCurrentComparisonText() const
 {
 	return FText::FromString(*ComparisonComboBox->GetSelectedItem());
+}
+
+FReply SPhraseListRow::OnMultiLineKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent)
+{
+	if (InKeyEvent.GetKey() == EKeys::Enter)
+	{
+		if (!InKeyEvent.IsShiftDown())
+		{
+			// Заканчиваем ввод и снимаем фокус с виджета
+			FSlateApplication::Get().ClearKeyboardFocus(EFocusCause::Cleared);
+			return FReply::Handled();
+		}
+		
+		// Добавляем перенос строки
+		MultiLineEditableTextBox->InsertTextAtCursor(FText::FromString(TEXT("\n")));
+		return FReply::Handled();
+	}
+    
+	return FReply::Unhandled();
 }

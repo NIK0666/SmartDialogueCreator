@@ -53,7 +53,7 @@ public:
 
 	virtual void RegisterTabSpawners(const TSharedRef<FTabManager>& TabManager) override;
 	virtual void UnregisterTabSpawners(const TSharedRef<FTabManager>& TabManager) override;
-	
+
 private:
 
 	TSharedRef<SDockTab> HandleTabManagerSpawnTabDialogueBranches(const FSpawnTabArgs& Args);
@@ -95,4 +95,9 @@ private:
 	TSharedPtr<IDetailsView> DialoguePhrasesDetailsView;
 
 	TSharedPtr<SCharacterComboBox> CharacterComboBox;
+
+	TArray<TSharedPtr<FString>> CachedVariablesList;
+	TArray<TSharedPtr<FString>> CachedCharactersList;
+	TArray<TSharedPtr<FString>> CachedBranchesList;
+
 };

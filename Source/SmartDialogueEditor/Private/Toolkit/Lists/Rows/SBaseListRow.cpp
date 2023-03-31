@@ -15,11 +15,6 @@ void SBaseListRow::Construct(const FArguments& InArgs)
 	[
 		SNew(SHorizontalBox)
 		+ SHorizontalBox::Slot()
-		.FillWidth(1.0f)
-		[
-			GetContent()
-		]
-		+ SHorizontalBox::Slot()
 		.AutoWidth()
 		[
 			SNew(SButton)
@@ -31,6 +26,11 @@ void SBaseListRow::Construct(const FArguments& InArgs)
 				.Image(FEditorStyle::GetBrush("Cross"))
 			]
 		]
+		+ SHorizontalBox::Slot()
+		.FillWidth(1.0f)
+		[
+			GetContent()
+		]		
 	];
 }
 

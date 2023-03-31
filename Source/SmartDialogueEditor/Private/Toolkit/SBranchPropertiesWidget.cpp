@@ -342,11 +342,49 @@ void SBranchPropertiesWidget::UpdateWidgets()
 		}		
 	}
 
-	
-	// ShowBranchesList->UpdateData();
-	// HideBranchesList->UpdateData();	
-	// CheckEntryConditionsList->UpdateData();	
-	// ModifyVariablesList->UpdateData();	
+	// Получение данных
+	TArray<FString> ShowStrings = GetBranchDataPtr()->Show;
+	TArray<FString> HideStrings = GetBranchDataPtr()->Hide;
+	TArray<FIf> IfElements = GetBranchDataPtr()->If;
+	TArray<FSmartDialogueVars> VarElements = GetBranchDataPtr()->Vars;
+
+	// Преобразование данных для ShowBranchesList и HideBranchesList
+	TArray<FListItemData> ShowListItems, HideListItems;
+	for (const FString& ShowString : ShowStrings)
+	{
+		ShowListItems.Add(FListItemData{ ShowString });
+	}
+
+	for (const FString& HideString : HideStrings)
+	{
+		HideListItems.Add(FListItemData{ HideString });
+	}
+
+	// Преобразование данных для CheckEntryConditionsList и ModifyVariablesList
+	TArray<FListItemData> CheckEntryItems, ModifyVarItems;
+	for (const FIf& IfElement : IfElements)
+	{
+		FListItemData ItemData;
+		ItemData.Name = IfElement.Key;
+		ItemData.OperationString = UEnum::GetValueAsString<ESmartDialogueEqualOperation>(IfElement.EqualOperation);
+		ItemData.Value = IfElement.Value;
+		CheckEntryItems.Add(ItemData);
+	}
+
+	for (const FSmartDialogueVars& VarElement : VarElements)
+	{
+		FListItemData ItemData;
+		ItemData.Name = VarElement.Key;
+		ItemData.OperationString = UEnum::GetValueAsString<ESmartDialogueOperation>(VarElement.Operation);
+		ItemData.Value = VarElement.Value;
+		ModifyVarItems.Add(ItemData);
+	}
+
+	// Обновление виджетов с новыми данными
+	ShowBranchesList->UpdateData(ShowListItems);
+	HideBranchesList->UpdateData(HideListItems);
+	CheckEntryConditionsList->UpdateData(static_cast<TArray<FListItemData>>(CheckEntryItems));
+	ModifyVariablesList->UpdateData(static_cast<TArray<FListItemData>>(ModifyVarItems));
 
 }
 

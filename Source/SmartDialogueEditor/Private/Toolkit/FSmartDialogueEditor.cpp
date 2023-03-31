@@ -560,61 +560,133 @@ TArray<FName> FSmartDialogueEditor::GetBranchIDs()
 
 TArray<TSharedPtr<FString>> FSmartDialogueEditor::GetAllBranchesList(bool bFirstEmpty)
 {
-	TArray<TSharedPtr<FString>> BranchesList;
-
-	if (bFirstEmpty)
+	// Используем массив CachedBranchesList для хранения кэшированных ветвей
+	if (bFirstEmpty && CachedBranchesList.Num() == 0)
 	{
-		BranchesList.Add(MakeShared<FString>(""));
+		CachedBranchesList.Add(MakeShared<FString>(""));
 	}
 
 	if (GetDialogue())
 	{
+		TSet<FString> NewBranchesSet;
+
 		for (const auto& Branch : GetDialogue()->GetBranches())
 		{
-			// Создаем новый объект FString и инициализируем его идентификатором ветки
-			TSharedPtr<FString> BranchIDString = MakeShared<FString>(Branch.Key.ToString());
+			NewBranchesSet.Add(Branch.Key.ToString());
+		}
 
-			// Добавляем указатель на объект FString в массив
-			BranchesList.Add(BranchIDString);
+		// Удаляем старые элементы из CachedBranchesList
+		for (int32 i = CachedBranchesList.Num() - 1; i >= 0; i--)
+		{
+			if (!NewBranchesSet.Contains(*CachedBranchesList[i]))
+			{
+				CachedBranchesList.RemoveAt(i);
+			}
+		}
+
+		// Добавляем новые элементы в CachedBranchesList
+		for (const FString& NewBranch : NewBranchesSet)
+		{
+			bool bFound = false;
+			for (const TSharedPtr<FString>& CachedBranch : CachedBranchesList)
+			{
+				if (*CachedBranch == NewBranch)
+				{
+					bFound = true;
+					break;
+				}
+			}
+
+			if (!bFound)
+			{
+				CachedBranchesList.Add(MakeShared<FString>(NewBranch));
+			}
 		}
 	}
 
-	return BranchesList;
+	return CachedBranchesList;
 }
 
 TArray<TSharedPtr<FString>> FSmartDialogueEditor::GetAllVariablesList(bool bFirstEmpty)
 {
-	TArray<TSharedPtr<FString>> VarsList;
-	if (bFirstEmpty)
-	{
-		VarsList.Add(MakeShared<FString>(""));
-	}
-	
 	TArray<FVariableData> Variables = GetAllVariables();
+	TSet<FString> NewVariablesSet;
 
 	for (const FVariableData& Var : Variables)
 	{
-		VarsList.Add(MakeShared<FString>(Var.Key));
+		NewVariablesSet.Add(Var.Key);
 	}
 
-	return VarsList;
+	// Удаляем старые элементы
+	for (int32 i = CachedVariablesList.Num() - 1; i >= 0; i--)
+	{
+		if (!NewVariablesSet.Contains(*CachedVariablesList[i]))
+		{
+			CachedVariablesList.RemoveAt(i);
+		}
+	}
+
+	// Добавляем новые элементы
+	for (const FString& NewVariable : NewVariablesSet)
+	{
+		bool bFound = false;
+		for (const TSharedPtr<FString>& CachedVariable : CachedVariablesList)
+		{
+			if (*CachedVariable == NewVariable)
+			{
+				bFound = true;
+				break;
+			}
+		}
+
+		if (!bFound)
+		{
+			CachedVariablesList.Add(MakeShared<FString>(NewVariable));
+		}
+	}
+
+	return CachedVariablesList;
 }
 
 TArray<TSharedPtr<FString>> FSmartDialogueEditor::GetAllCharactersList(bool bFirstEmpty)
 {
-	TArray<TSharedPtr<FString>> CharsList;
-	if (bFirstEmpty)
-	{
-		CharsList.Add(MakeShared<FString>(""));
-	}
-	
 	TArray<FCharacterData> Characters = GetAllCharacters();
+	TSet<FString> NewCharactersSet;
+
 	for (const FCharacterData& Character : Characters)
 	{
-		CharsList.Add(MakeShared<FString>(Character.Id));
+		NewCharactersSet.Add(Character.Id);
 	}
 
-	return CharsList;
+	// Удаляем старые элементы
+	for (int32 i = CachedCharactersList.Num() - 1; i >= 0; i--)
+	{
+		if (!NewCharactersSet.Contains(*CachedCharactersList[i]))
+		{
+			CachedCharactersList.RemoveAt(i);
+		}
+	}
+
+	// Добавляем новые элементы
+	for (const FString& NewCharacter : NewCharactersSet)
+	{
+		bool bFound = false;
+		for (const TSharedPtr<FString>& CachedCharacter : CachedCharactersList)
+		{
+			if (*CachedCharacter == NewCharacter)
+			{
+				bFound = true;
+				break;
+			}
+		}
+
+		if (!bFound)
+		{
+			CachedCharactersList.Add(MakeShared<FString>(NewCharacter));
+		}
+	}
+
+	return CachedCharactersList;
 }
 
 #undef LOCTEXT_NAMESPACE

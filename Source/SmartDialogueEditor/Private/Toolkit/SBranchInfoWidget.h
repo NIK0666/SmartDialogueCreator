@@ -32,6 +32,7 @@ private:
 	void OnGrabButtonPressed();
 	void OnGrabButtonReleased();
 	void SetIsFocused(bool bCond);
+	FText GetPlaceholderText() const;
 
 	FName BranchName;
 	TSharedPtr<FSmartDialogueEditor> Editor;
