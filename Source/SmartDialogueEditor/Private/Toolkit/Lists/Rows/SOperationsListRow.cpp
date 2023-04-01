@@ -12,6 +12,7 @@ void SOperationsListRow::Construct(const FArguments& InArgs)
 	bIsExecution = InArgs._bIsExecution;
 	SBaseListRow::Construct(SBaseListRow::FArguments()
 		.Item(InArgs._Item)
+		.OnRemoveItemRequested(InArgs._OnRemoveItemRequested)
 		.Editor(InArgs._Editor));	
 }
 

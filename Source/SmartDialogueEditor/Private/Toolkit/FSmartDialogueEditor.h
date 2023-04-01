@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "SmartDialConfig.h"
 #include "SmartDialogueData.h"
+#include "Lists/Rows/SPhraseListRow.h"
 #include "Toolkits/AssetEditorToolkit.h"
 
 class SCharacterComboBox;
@@ -40,6 +41,7 @@ public:
 
 	
 	void RemoveBranch(SBranchInfoWidget* BranchInfoWidget);
+	void RemovePhrase(SPhraseListRow* PhraseListRow);
 	
 	TArray<TSharedPtr<FString>> GetAllBranchesList();
 	TArray<TSharedPtr<FString>> GetAllVariablesList();

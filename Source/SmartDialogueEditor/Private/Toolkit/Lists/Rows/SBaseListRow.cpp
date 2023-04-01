@@ -10,6 +10,7 @@ void SBaseListRow::Construct(const FArguments& InArgs)
 {
 	Item = InArgs._Item;
 	Editor = InArgs._Editor;
+	OnRemoveItemRequested = InArgs._OnRemoveItemRequested;
 	
 	ChildSlot
 	[
@@ -37,6 +38,7 @@ void SBaseListRow::Construct(const FArguments& InArgs)
 
 FReply SBaseListRow::RemoveItem()
 {
+	OnRemoveItemRequested.ExecuteIfBound(Item);
 	return FReply::Handled();
 }
 

@@ -20,7 +20,9 @@ TSharedRef<SWidget> SBranchesListWidget::GetItemContent(const FListItemData& Ite
 	return SNew(SBranchListRow)
 		.Item(Item)
 		.bIsShowed(bIsShowed)
-		.Editor(Editor);
+		.Editor(Editor)
+		.OnRemoveItemRequested(this, &SBaseListWidget::RemoveItem);
+;
 }
 
 TArray<TSharedPtr<FString>> SBranchesListWidget::GetAllStrings()

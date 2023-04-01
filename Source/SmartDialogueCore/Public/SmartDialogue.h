@@ -57,7 +57,9 @@ public:
 	
 	void RemoveBranchInList(bool bIsShowed, const FString& Name);
 
-	bool RemoveBranch(FName BranchName);	
+	bool RemoveBranch(FName BranchName);
+	bool RemoveShowBranch(FName BranchName, FString BranchNameString);
+	bool RemoveHideBranch(FName BranchName, FString BranchNameString);
 
 	FOnBranchesChanged OnBranchesChanged;
 

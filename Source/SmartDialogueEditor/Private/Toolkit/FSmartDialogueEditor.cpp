@@ -579,6 +579,14 @@ void FSmartDialogueEditor::RemoveBranch(SBranchInfoWidget* BranchInfoWidget)
 	
 }
 
+void FSmartDialogueEditor::RemovePhrase(SPhraseListRow* PhraseListRow)
+{
+	if (PhraseListRow)
+	{
+		
+	}
+}
+
 
 TArray<TSharedPtr<FString>> FSmartDialogueEditor::GetAllBranchesList()
 {

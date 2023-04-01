@@ -3,6 +3,7 @@
 
 #include "SBranchListRow.h"
 #include "EditorStyleSet.h"
+#include "SmartDialogue.h"
 #include "Toolkit/Components/SBranchComboBox.h"
 #include "Widgets/Input/SButton.h"
 #include "Widgets/Images/SImage.h"
@@ -12,6 +13,7 @@ void SBranchListRow::Construct(const FArguments& InArgs)
 {
 	SBaseListRow::Construct(SBaseListRow::FArguments()
 		.Item(InArgs._Item)
+		.OnRemoveItemRequested(InArgs._OnRemoveItemRequested)
 		.Editor(InArgs._Editor));
 	
 	bIsShowed = InArgs._bIsShowed;
@@ -59,6 +61,16 @@ TSharedRef<SWidget> SBranchListRow::GetContent()
 
 FReply SBranchListRow::RemoveItem()
 {
-	UE_LOG(LogTemp, Log, TEXT("SBranchListRow::RemoveItem"));
+	if (Editor->GetDialogue())
+	{
+		if (bIsShowed)
+		{
+			Editor->GetDialogue()->RemoveShowBranch(Editor->GetSelectedBranchName(), Item.Name);
+		}
+		else
+		{
+			Editor->GetDialogue()->RemoveHideBranch(Editor->GetSelectedBranchName(), Item.Name);
+		}		
+	}
 	return SBaseListRow::RemoveItem();
 }

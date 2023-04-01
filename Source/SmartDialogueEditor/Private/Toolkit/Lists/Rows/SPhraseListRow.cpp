@@ -195,7 +195,7 @@ FReply SPhraseListRow::OnHandButtonClicked()
 
 FReply SPhraseListRow::OnDeleteButtonClicked()
 {
-	// Обработка нажатия на кнопку удаления
+	SmartDialogueEditor->RemovePhrase(this);
 	return FReply::Handled();
 }
 

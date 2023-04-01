@@ -10,10 +10,14 @@ class FSmartDialogueEditor;
 
 class SBaseListRow : public SCompoundWidget
 {
-public:	
+public:
+	DECLARE_DELEGATE_OneParam(FOnRemoveItemRequested, const FListItemData&);
+
+	
 	SLATE_BEGIN_ARGS(SBaseListRow) {}
 	SLATE_ARGUMENT(FListItemData, Item)
 	SLATE_ARGUMENT(FSmartDialogueEditor*, Editor)
+	SLATE_EVENT(FOnRemoveItemRequested, OnRemoveItemRequested)
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs);
@@ -22,9 +26,10 @@ public:
 	
 protected:
 	virtual TSharedRef<SWidget> GetContent();
+	virtual FReply RemoveItem();
 	
 	FListItemData Item;
 	FSmartDialogueEditor* Editor = nullptr;
+	FOnRemoveItemRequested OnRemoveItemRequested;
 
-	virtual FReply RemoveItem();
 };

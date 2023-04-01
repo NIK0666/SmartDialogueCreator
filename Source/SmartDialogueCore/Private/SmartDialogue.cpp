@@ -135,19 +135,39 @@ bool USmartDialogue::RemoveBranch(FName BranchName)
 	
 	for (int32 i = 0; i < BranchKeys.Num(); i++)
 	{
-		const auto L_BranchPtr = &Branches[BranchKeys[i]];
-		
-		if (L_BranchPtr->Hide.Contains(BranchNameString))
-		{
-			L_BranchPtr->Hide.Remove(BranchNameString);
-		}
-		if (L_BranchPtr->Show.Contains(BranchNameString))
-		{
-			L_BranchPtr->Show.Remove(BranchNameString);
-		}
+		RemoveHideBranch(BranchKeys[i], BranchNameString);
+		RemoveShowBranch(BranchKeys[i], BranchNameString);
 	}
 	Branches.Remove(BranchName);
 	return true;
+}
+
+bool USmartDialogue::RemoveShowBranch(FName BranchName, FString BranchNameString)
+{
+	if (Branches.Contains(BranchName))
+	{
+		const auto L_BranchPtr = &Branches[BranchName];
+		if (L_BranchPtr->Show.Contains(BranchNameString))
+		{
+			L_BranchPtr->Show.Remove(BranchNameString);
+			return true;
+		}		
+	}
+	return false;
+}
+
+bool USmartDialogue::RemoveHideBranch(FName BranchName, FString BranchNameString)
+{
+	if (Branches.Contains(BranchName))
+	{
+		const auto L_BranchPtr = &Branches[BranchName];
+		if (L_BranchPtr->Hide.Contains(BranchNameString))
+		{
+			L_BranchPtr->Hide.Remove(BranchNameString);
+			return true;
+		}		
+	}
+	return false;
 }
 
 void USmartDialogue::BranchesChanged()
