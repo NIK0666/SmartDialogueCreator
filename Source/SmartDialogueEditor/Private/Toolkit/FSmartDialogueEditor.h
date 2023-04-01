@@ -11,6 +11,7 @@
 class SCharacterComboBox;
 class SBranchInfoWidget;
 class SBranchesWidget;
+class SBranchPhrasesWidget;
 class USmartDialogue;
 
 DECLARE_DELEGATE_OneParam(FOnBranchItemAdded, FSmartDialogueBranch&);
@@ -41,7 +42,7 @@ public:
 
 	
 	void RemoveBranch(SBranchInfoWidget* BranchInfoWidget);
-	void RemovePhrase(SPhraseListRow* PhraseListRow);
+	void RemovePhrase(int32 PhraseIndex);
 	
 	TArray<TSharedPtr<FString>> GetAllBranchesList();
 	TArray<TSharedPtr<FString>> GetAllVariablesList();
@@ -75,9 +76,7 @@ private:
 	TSharedRef<SDockTab> SpawnTab_Config(const FSpawnTabArgs& Args);
 	TSharedRef<SDockTab> SpawnTab_Player(const FSpawnTabArgs& Args);
 
-	TSharedRef<SWidget> CreateBranchesListWidget();
 	TSharedRef<SWidget> CreateSelectedBranchPropertiesWidget();
-	TSharedRef<SWidget> CreateSelectedBranchPhrasesWidget();
 	TSharedRef<FTabManager::FLayout> GetDefaultTabContents();
 
 	void OnHeroCharacterSelected(TSharedPtr<FString> NewSelection);
@@ -106,6 +105,7 @@ private:
 
 	TSharedPtr<SCharacterComboBox> CharacterComboBox;
 	TSharedPtr<SBranchesWidget> BranchesWidget;
+	TSharedPtr<SBranchPhrasesWidget> PhrasesWidget;
 	
 	TArray<TSharedPtr<FString>> CachedVariablesList;
 	TArray<TSharedPtr<FString>> CachedCharactersList;

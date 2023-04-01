@@ -3,6 +3,7 @@
 #pragma once
 
 #include "SmartDialogueData.h"
+#include "Lists/Rows/SPhraseListRow.h"
 #include "Widgets/DeclarativeSyntaxSupport.h"
 #include "Widgets/SCompoundWidget.h"
 
@@ -17,6 +18,7 @@ public:
 
 	
 	void Construct(const FArguments& InArgs);
+	void RemovePhraseRow(int32 PhraseIndex);
 
 private:
 	FSmartDialogueEditor* SmartDialogueEditor = nullptr;

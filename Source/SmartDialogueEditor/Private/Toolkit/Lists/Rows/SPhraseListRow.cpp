@@ -13,8 +13,9 @@
 void SPhraseListRow::Construct(const FArguments& InArgs)
 {
 	SmartDialogueEditor = InArgs._SmartDialogueEditor;
-	SmartDialoguePhrasePtr = InArgs._SmartDialoguePhrasePtr;
-	
+	PhraseIndex = InArgs._PhraseIndex;
+
+	SmartDialoguePhrasePtr = &SmartDialogueEditor->GetSelectedBranch()->Phrases[PhraseIndex];
 	
 	CharacterOptions = SmartDialogueEditor->GetAllCharactersList();
 	VarOptions = SmartDialogueEditor->GetAllVariablesList();
@@ -145,6 +146,11 @@ void SPhraseListRow::Construct(const FArguments& InArgs)
 	];
 }
 
+FSmartDialoguePhrase* SPhraseListRow::GetPhrasePtr() const
+{
+	return SmartDialoguePhrasePtr;
+}
+
 
 TSharedRef<SWidget> SPhraseListRow::GenerateCharacterOption(TSharedPtr<FString> Option)
 {
@@ -195,7 +201,7 @@ FReply SPhraseListRow::OnHandButtonClicked()
 
 FReply SPhraseListRow::OnDeleteButtonClicked()
 {
-	SmartDialogueEditor->RemovePhrase(this);
+	SmartDialogueEditor->RemovePhrase(PhraseIndex);
 	return FReply::Handled();
 }
 

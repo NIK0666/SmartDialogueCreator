@@ -307,7 +307,8 @@ TSharedRef<SDockTab> FSmartDialogueEditor::SpawnTab_SelectedBranchPhrases(const 
 	return SNew(SDockTab)
 		.Label(FText::FromString("Phrases"))
 		[
-			CreateSelectedBranchPhrasesWidget()
+			SAssignNew(PhrasesWidget, SBranchPhrasesWidget)
+			.SmartDialogueEditor(this)
 		];
 }
 
@@ -341,13 +342,6 @@ TSharedRef<SWidget> FSmartDialogueEditor::CreateSelectedBranchPropertiesWidget()
 {
 	return SNew(SBranchPropertiesWidget)
 		.SmartDialogueEditor(this);
-}
-
-TSharedRef<SWidget> FSmartDialogueEditor::CreateSelectedBranchPhrasesWidget()
-{
-	return SNew(SBranchPhrasesWidget)
-		.SmartDialogueEditor(this);
-
 }
 
 TSharedRef<FTabManager::FLayout> FSmartDialogueEditor::GetDefaultTabContents()
@@ -579,12 +573,10 @@ void FSmartDialogueEditor::RemoveBranch(SBranchInfoWidget* BranchInfoWidget)
 	
 }
 
-void FSmartDialogueEditor::RemovePhrase(SPhraseListRow* PhraseListRow)
+void FSmartDialogueEditor::RemovePhrase(int32 PhraseIndex)
 {
-	if (PhraseListRow)
-	{
-		
-	}
+	SelectedBranchPtr->Phrases.RemoveAt(PhraseIndex);
+	PhrasesWidget->RemovePhraseRow(PhraseIndex);
 }
 
 

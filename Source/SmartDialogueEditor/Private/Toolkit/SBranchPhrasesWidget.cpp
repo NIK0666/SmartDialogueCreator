@@ -81,6 +81,12 @@ void SBranchPhrasesWidget::Construct(const FArguments& InArgs)
 		]
 	];
 }
+
+void SBranchPhrasesWidget::RemovePhraseRow(int32 PhraseIndex)
+{
+	UpdatePhrases();
+}
+
 void SBranchPhrasesWidget::OnBranchSelected(FSmartDialogueBranch& SmartDialogueBranch)
 {
 	UpdatePhrases();
@@ -112,14 +118,15 @@ void SBranchPhrasesWidget::UpdatePhrases()
 		AddFirstHeroPhraseButton->SetVisibility(SmartDialogueEditor->GetSelectedBranch()->Phrases.IsEmpty() ? EVisibility::Visible : EVisibility::Collapsed);
 	}
 
-	for (auto& Phrase : SmartDialogueEditor->GetSelectedBranch()->Phrases)
+	
+	for (int32 Index = 0; Index < SmartDialogueEditor->GetSelectedBranch()->Phrases.Num(); Index++)
 	{
 		PhrasesVBox->AddSlot()
 		           .AutoHeight()
 		           .Padding(FMargin(0.0f, 2.0f))
 			[
 				SNew(SPhraseListRow)
-				.SmartDialoguePhrasePtr(&Phrase)
+				.PhraseIndex(Index)
 				.SmartDialogueEditor(SmartDialogueEditor)
 			];
 	}
