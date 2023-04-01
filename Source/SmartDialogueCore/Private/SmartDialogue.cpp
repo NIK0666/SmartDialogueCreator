@@ -120,11 +120,6 @@ bool USmartDialogue::RenameBranch(FName OldName, FName NewName)
 	return false;
 }
 
-void USmartDialogue::RemoveBranchInList(bool bIsShowed, const FString& Name)
-{
-	
-}
-
 bool USmartDialogue::RemoveBranch(FName BranchName)
 {
 
@@ -142,28 +137,148 @@ bool USmartDialogue::RemoveBranch(FName BranchName)
 	return true;
 }
 
-bool USmartDialogue::RemoveShowBranch(FName BranchName, FString BranchNameString)
+void USmartDialogue::AddShowBranch(const FName& BranchName, const FString& AddString)
 {
 	if (Branches.Contains(BranchName))
 	{
 		const auto L_BranchPtr = &Branches[BranchName];
-		if (L_BranchPtr->Show.Contains(BranchNameString))
+		L_BranchPtr->Show.Add(AddString);
+	}
+}
+
+void USmartDialogue::AddHideBranch(const FName& BranchName, const FString& AddString)
+{
+	if (Branches.Contains(BranchName))
+	{
+		const auto L_BranchPtr = &Branches[BranchName];
+		L_BranchPtr->Hide.Add(AddString);
+	}
+}
+
+bool USmartDialogue::RemoveShowBranch(FName BranchName, const FString& RemoveString)
+{
+	if (Branches.Contains(BranchName))
+	{
+		const auto L_BranchPtr = &Branches[BranchName];		
+		if (L_BranchPtr->Show.Contains(RemoveString))
 		{
-			L_BranchPtr->Show.Remove(BranchNameString);
+			L_BranchPtr->Show.Remove(RemoveString);
 			return true;
-		}		
+		}
 	}
 	return false;
 }
 
-bool USmartDialogue::RemoveHideBranch(FName BranchName, FString BranchNameString)
+bool USmartDialogue::RemoveVarOperation(FName BranchName, const int32 Index)
 {
 	if (Branches.Contains(BranchName))
 	{
 		const auto L_BranchPtr = &Branches[BranchName];
-		if (L_BranchPtr->Hide.Contains(BranchNameString))
+		L_BranchPtr->Vars.RemoveAt(Index);
+		return true;
+	}
+	return false;
+}
+
+bool USmartDialogue::RemoveIfOperation(FName BranchName, const int32 Index)
+{
+	if (Branches.Contains(BranchName))
+	{
+		const auto L_BranchPtr = &Branches[BranchName];
+		L_BranchPtr->If.RemoveAt(Index);
+		return true;
+	}
+	return false;
+}
+
+void USmartDialogue::AddVarOperation(FName BranchName, const FString& VarName, const FString& OperationString, int32 Value)
+{
+	if (Branches.Contains(BranchName))
+	{
+		const auto L_BranchPtr = &Branches[BranchName];
+
+		FSmartDialogueVars NewItem;
+		NewItem.Key = VarName;
+		NewItem.Value = Value;
+
+		if (OperationString == "=")
 		{
-			L_BranchPtr->Hide.Remove(BranchNameString);
+			NewItem.Operation = ESmartDialogueOperation::EO_Equals;
+		}
+		else if (OperationString == "+")
+		{
+			NewItem.Operation = ESmartDialogueOperation::EO_Plus;
+		}
+		else if (OperationString == "-")
+		{
+			NewItem.Operation = ESmartDialogueOperation::EO_Minus;
+		}
+		else if (OperationString == "*")
+		{
+			NewItem.Operation = ESmartDialogueOperation::EO_Multiply;
+		}
+		else if (OperationString == "/")
+		{
+			NewItem.Operation = ESmartDialogueOperation::EO_Divide;
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Invalid OperationString: %s"), *OperationString);
+			return;
+		}
+
+		L_BranchPtr->Vars.Add(NewItem);
+	}
+}
+
+void USmartDialogue::AddIfOperation(const FName& BranchName, const FString& VarName, const FString& OperationString, int32 Value)
+{
+	if (Branches.Contains(BranchName))
+	{
+		const auto L_BranchPtr = &Branches[BranchName];
+
+		FIf NewItem;
+		NewItem.Key = VarName;
+		NewItem.Value = Value;
+
+		if (OperationString == "==")
+		{
+			NewItem.EqualOperation = ESmartDialogueEqualOperation::EEO_Equals;
+		}
+		else if (OperationString == ">=")
+		{
+			NewItem.EqualOperation = ESmartDialogueEqualOperation::EEO_GreaterOrEquals;
+		}
+		else if (OperationString == "<=")
+		{
+			NewItem.EqualOperation = ESmartDialogueEqualOperation::EEO_LessOrEquals;
+		}
+		else if (OperationString == ">")
+		{
+			NewItem.EqualOperation = ESmartDialogueEqualOperation::EEO_Greater;
+		}
+		else if (OperationString == "<")
+		{
+			NewItem.EqualOperation = ESmartDialogueEqualOperation::EEO_Less;
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Invalid OperationString: %s"), *OperationString);
+			return;
+		}
+
+		L_BranchPtr->If.Add(NewItem);
+	}
+}
+
+bool USmartDialogue::RemoveHideBranch(FName BranchName, const FString& RemoveString)
+{
+	if (Branches.Contains(BranchName))
+	{
+		const auto L_BranchPtr = &Branches[BranchName];
+		if (L_BranchPtr->Hide.Contains(RemoveString))
+		{
+			L_BranchPtr->Hide.Remove(RemoveString);
 			return true;
 		}		
 	}

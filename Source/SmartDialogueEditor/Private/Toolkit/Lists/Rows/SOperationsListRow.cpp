@@ -3,6 +3,7 @@
 
 #include "SOperationsListRow.h"
 
+#include "SmartDialogue.h"
 #include "Toolkit/FSmartDialogueEditor.h"
 #include "Widgets/Input/SComboBox.h"
 #include "Widgets/Input/SEditableText.h"
@@ -120,6 +121,5 @@ void SOperationsListRow::OnOperationSelected(TSharedPtr<FString> SelectedItem, E
 
 FReply SOperationsListRow::RemoveItem()
 {
-	UE_LOG(LogTemp, Log, TEXT("SOperationsListRow::RemoveItem"));
 	return SBaseListRow::RemoveItem();
 }

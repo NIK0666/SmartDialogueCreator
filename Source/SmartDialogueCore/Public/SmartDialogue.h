@@ -53,13 +53,18 @@ public:
 	FName GenerateBranchName() const;
 
 	FSmartDialogueBranch* GetBranchPtr(const FName& Name);
-	bool RenameBranch(FName OldName, FName NewName);	
-	
-	void RemoveBranchInList(bool bIsShowed, const FString& Name);
-
+	bool RenameBranch(FName OldName, FName NewName);		
 	bool RemoveBranch(FName BranchName);
-	bool RemoveShowBranch(FName BranchName, FString BranchNameString);
-	bool RemoveHideBranch(FName BranchName, FString BranchNameString);
+	bool RemoveShowBranch(FName BranchName, const FString& RemoveString);
+	
+	bool RemoveVarOperation(FName BranchName, const int32 Index);
+	bool RemoveIfOperation(FName BranchName, int32 Index);
+	void AddVarOperation(FName BranchName, const FString& VarName, const FString& OperationString, int32 Value);
+	void AddIfOperation(const FName& BranchName, const FString& VarName, const FString& OperationString, int32 Value);
+	
+	bool RemoveHideBranch(FName BranchName, const FString& RemoveString);
+	void AddShowBranch(const FName& BranchName, const FString& AddString);
+	void AddHideBranch(const FName& BranchName, const FString& AddString);
 
 	FOnBranchesChanged OnBranchesChanged;
 

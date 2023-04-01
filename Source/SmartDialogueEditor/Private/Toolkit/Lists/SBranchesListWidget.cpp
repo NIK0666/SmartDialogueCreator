@@ -2,6 +2,7 @@
 
 #include "SBranchesListWidget.h"
 #include "Rows/SBranchListRow.h"
+#include "SmartDialogue.h"
 #include "Toolkit/FSmartDialogueEditor.h"
 
 void SBranchesListWidget::Construct(const FArguments& InArgs)
@@ -42,6 +43,19 @@ FReply SBranchesListWidget::OnContextMenuItemClicked(const FString& Item)
 	
 	Data.Add({Item});
 	UpdateData(Data);
+
+	if (Editor->GetDialogue())
+	{
+		if (bIsShowed)
+		{
+			Editor->GetDialogue()->AddShowBranch(Editor->GetSelectedBranchName(), Item);
+		}
+		else
+		{
+			Editor->GetDialogue()->AddHideBranch(Editor->GetSelectedBranchName(), Item);
+		}		
+	}
+	
 	return SBaseListWidget::OnContextMenuItemClicked(Item);
 }
 

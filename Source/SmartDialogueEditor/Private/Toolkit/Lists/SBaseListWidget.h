@@ -22,7 +22,7 @@ public:
 
 	void Construct(const FArguments& InArgs);
 	void UpdateData(const TArray<FListItemData>& NewData);
-	void RemoveItem(const FListItemData& ItemToRemove);
+	virtual void RemoveItem(const FListItemData& ItemToRemove);
 
 	FReply OnAddButtonClicked();
 	TSharedRef<SWidget> GenerateStringItemWidget(TSharedPtr<FString> InItem);

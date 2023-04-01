@@ -15,6 +15,8 @@ public:
 
 	void Construct(const FArguments& InArgs);
 
+	virtual void RemoveItem(const FListItemData& ItemToRemove) override;
+
 protected:
 	virtual TSharedRef<SWidget> GetItemContent(const FListItemData& Item) override;
 	virtual TArray<TSharedPtr<FString>> GetAllStrings() override;

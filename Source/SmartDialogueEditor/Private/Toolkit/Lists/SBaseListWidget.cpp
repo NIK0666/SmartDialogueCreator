@@ -3,7 +3,6 @@
 
 #include "SBaseListWidget.h"
 
-#include "EditorStyleSet.h"
 #include "Rows/SBaseListRow.h"
 #include "Widgets/Input/SButton.h"
 #include "Widgets/Input/SComboBox.h"
@@ -146,9 +145,14 @@ TSharedRef<SWidget> SBaseListWidget::CreateMenuContent()
 	{
 		MenuContent->AddSlot()
 		[
-			SNew(SButton)
-			.Text(FText::FromString(*StringPtr))
-			.OnClicked(this, FOnClicked::TMethodPtr<SBaseListWidget, FString>(&SBaseListWidget::OnContextMenuItemClicked), *StringPtr)
+			SNew(SBox)
+			.MinDesiredHeight(12.0f) // Установите минимальную высоту кнопки
+			[
+				SNew(SButton)
+				.ButtonStyle(FAppStyle::Get(), "FlatButton")
+				.Text(FText::FromString(*StringPtr))
+				.OnClicked(this, FOnClicked::TMethodPtr<SBaseListWidget, FString>(&SBaseListWidget::OnContextMenuItemClicked), *StringPtr)
+			]
 		];
 	}
 
