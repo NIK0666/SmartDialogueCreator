@@ -182,9 +182,11 @@ TSharedRef<SWidget> SBranchPropertiesWidget::GetContentWidget()
 			.FillWidth(1.f)
 			
 			+ SHorizontalBox::Slot()
+			.AutoWidth()
 			.HAlign(HAlign_Right)
 			[
-				SNew(SBox)
+				SNew(SVerticalBox)				
+				+SVerticalBox::Slot()
 				.HAlign(HAlign_Fill)
 				[
 					SNew(SHorizontalBox)
@@ -196,14 +198,16 @@ TSharedRef<SWidget> SBranchPropertiesWidget::GetContentWidget()
 						.Text(LOCTEXT("EventLabel", "Event:"))
 						.Margin(FMargin(4.f, 0.f))
 					]
-
 					+ SHorizontalBox::Slot()
 					.VAlign(VAlign_Center)
 					.AutoWidth()
 					[
 						SAssignNew(EventNameTextBox, SEditableTextBox)
 						.Text(FText::FromString(GetBranchDataPtr()->Event.Name))
-						.OnTextCommitted_Lambda([this](const FText& NewText, ETextCommit::Type CommitType) { GetBranchDataPtr()->Event.Name = NewText.ToString(); })
+						.OnTextCommitted_Lambda([this](const FText& NewText, ETextCommit::Type CommitType)
+						{
+							GetBranchDataPtr()->Event.Name = NewText.ToString();
+						})
 						.HintText(LOCTEXT("EventNameLabel", "Event name"))
 					]
 
@@ -211,24 +215,25 @@ TSharedRef<SWidget> SBranchPropertiesWidget::GetContentWidget()
 					.VAlign(VAlign_Center)
 					.AutoWidth()
 					[
-						SNew(SButton)
-						.ButtonStyle(FAppStyle::Get(), "HoverHintOnly")
-						.OnClicked_Lambda([this]()
+						SAssignNew(EventParamTextBox, SEditableTextBox)
+						.Text(FText::FromString(GetBranchDataPtr()->Event.Param))
+						.OnTextCommitted_Lambda([this](const FText& NewText, ETextCommit::Type CommitType)
 						{
-							// SmartDialogueEditor->ShowEventSettings(GetBranchDataPtr()->Event);
-							return FReply::Handled();
+							GetBranchDataPtr()->Event.Param = NewText.ToString();
 						})
-						.ToolTipText(LOCTEXT("OpenEventSettingsLabel", "Open Event Settings"))
-						.ContentPadding(2)
-						[
-							SNew(SHorizontalBox)
-							+ SHorizontalBox::Slot()
-							.HAlign(HAlign_Center)
-							[
-								SNew(SImage)
-								.Image(FAppStyle::GetBrush("Icons.Settings"))
-							]
-						]
+						.HintText(LOCTEXT("EventParamLabel", "Event param"))
+					]
+
+					+ SHorizontalBox::Slot()
+					.VAlign(VAlign_Center)
+					.AutoWidth()
+					[
+						SNew(SCheckBox)
+						.OnCheckStateChanged_Lambda([this](ECheckBoxState NewState)
+						{
+							GetBranchDataPtr()->Event.Post = (NewState == ECheckBoxState::Checked);
+						})
+						.ToolTipText(LOCTEXT("AfterAllPhrasesTooltip", "After all phrases in the branch"))
 					]
 				]
 			]

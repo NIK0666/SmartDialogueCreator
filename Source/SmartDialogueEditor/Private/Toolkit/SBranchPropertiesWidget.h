@@ -44,6 +44,7 @@ private:
 	TSharedPtr<SCheckBox> CheckAsORCheckBox;
 	TSharedPtr<SBranchComboBox> StartBranchComboBox;
 	TSharedPtr<SEditableTextBox> EventNameTextBox;
+	TSharedPtr<SEditableTextBox> EventParamTextBox;
 	TSharedPtr<SWidget> ContentWidget;
 	TSharedPtr<SVerticalBox> PropertiesContentWidget;
 
