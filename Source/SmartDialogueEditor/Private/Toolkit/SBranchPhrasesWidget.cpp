@@ -15,6 +15,7 @@ void SBranchPhrasesWidget::Construct(const FArguments& InArgs)
 	SmartDialogueEditor = InArgs._SmartDialogueEditor;
 
 	SmartDialogueEditor->OnBranchSelected.AddSP(this, &SBranchPhrasesWidget::OnBranchSelected);
+	SmartDialogueEditor->OnResetSelectedBranch.AddSP(this, &SBranchPhrasesWidget::OnResetSelectedBranch);
 
 	UpdatePhrases();
 
@@ -83,6 +84,11 @@ void SBranchPhrasesWidget::Construct(const FArguments& InArgs)
 void SBranchPhrasesWidget::OnBranchSelected(FSmartDialogueBranch& SmartDialogueBranch)
 {
 	UpdatePhrases();
+}
+
+void SBranchPhrasesWidget::OnResetSelectedBranch()
+{
+	PhrasesVBox->ClearChildren();	
 }
 
 void SBranchPhrasesWidget::UpdatePhrases()

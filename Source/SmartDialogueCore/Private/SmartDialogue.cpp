@@ -125,6 +125,31 @@ void USmartDialogue::RemoveBranchInList(bool bIsShowed, const FString& Name)
 	
 }
 
+bool USmartDialogue::RemoveBranch(FName BranchName)
+{
+
+	FString BranchNameString = BranchName.ToString();
+
+	TArray<FName> BranchKeys;
+	Branches.GetKeys(BranchKeys);
+	
+	for (int32 i = 0; i < BranchKeys.Num(); i++)
+	{
+		const auto L_BranchPtr = &Branches[BranchKeys[i]];
+		
+		if (L_BranchPtr->Hide.Contains(BranchNameString))
+		{
+			L_BranchPtr->Hide.Remove(BranchNameString);
+		}
+		if (L_BranchPtr->Show.Contains(BranchNameString))
+		{
+			L_BranchPtr->Show.Remove(BranchNameString);
+		}
+	}
+	Branches.Remove(BranchName);
+	return true;
+}
+
 void USmartDialogue::BranchesChanged()
 {
 	OnBranchesChanged.Broadcast();

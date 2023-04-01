@@ -13,8 +13,9 @@ class SBranchesWidget;
 class USmartDialogue;
 
 DECLARE_DELEGATE_OneParam(FOnBranchItemAdded, FSmartDialogueBranch&);
-DECLARE_DELEGATE_OneParam(FOnBranchItemDeleted, FSmartDialogueBranch&);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnBranchItemRemoved, FName&);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnBranchSelected, FSmartDialogueBranch&);
+DECLARE_MULTICAST_DELEGATE(FOnResetSelectedBranch);
 
 
 class SMARTDIALOGUEEDITOR_API FSmartDialogueEditor final : public FAssetEditorToolkit, public FNotifyHook
@@ -28,13 +29,17 @@ public:
 	TSharedPtr<FExtender> GetToolbarExtender();
 
 	FOnBranchItemAdded OnBranchItemAdded;
-	FOnBranchItemDeleted OnBranchItemDeleted;
+	FOnBranchItemRemoved OnBranchItemRemoved;
 	FOnBranchSelected OnBranchSelected;
+	FOnResetSelectedBranch OnResetSelectedBranch;
 	
 	USmartDialConfig* GetDialogueConfig();
 	TArray<FCharacterData> GetAllCharacters();
 	TArray<FVariableData> GetAllVariables();
 	TArray<FName> GetBranchIDs();
+
+	
+	void RemoveBranch(SBranchInfoWidget* BranchInfoWidget);
 	
 	TArray<TSharedPtr<FString>> GetAllBranchesList();
 	TArray<TSharedPtr<FString>> GetAllVariablesList();
@@ -51,7 +56,8 @@ public:
 	void SetSelectedBranchName(FName NewValue);
 	FName GetSelectedBranchName();
 	FSmartDialogueBranch* GetSelectedBranch();
-
+	void ResetSelectedBranch();
+	
 	virtual void RegisterTabSpawners(const TSharedRef<FTabManager>& TabManager) override;
 	virtual void UnregisterTabSpawners(const TSharedRef<FTabManager>& TabManager) override;
 
@@ -83,6 +89,7 @@ private:
 	TSharedPtr<SDockTab> BranchesListTab;
 	TSharedPtr<SDockTab> SelectedBranchPropertiesTab;
 	TSharedPtr<SDockTab> SelectedBranchPhrasesTab;
+
 	
 	USmartDialogue* Dialogue;
 	USmartDialConfig* DialConfig;
@@ -96,7 +103,8 @@ private:
 	TSharedPtr<IDetailsView> DialoguePhrasesDetailsView;
 
 	TSharedPtr<SCharacterComboBox> CharacterComboBox;
-
+	TSharedPtr<SBranchesWidget> BranchesWidget;
+	
 	TArray<TSharedPtr<FString>> CachedVariablesList;
 	TArray<TSharedPtr<FString>> CachedCharactersList;
 	TArray<TSharedPtr<FString>> CachedBranchesList;

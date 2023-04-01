@@ -31,6 +31,9 @@ private:
 	TSharedRef<SWidget> GetContentWidget();
 
 	void OnBranchSelected(FSmartDialogueBranch& SmartDialogueBranch);
+	void OnResetSelectedBranch();
+	void OnBranchItemRemoved(FName& Name);
+	
 	void UpdateWidgets();
 
 	// Добавляем указатели на виджеты интерфейса
@@ -50,3 +53,4 @@ private:
 	TSharedPtr<SBranchesListWidget> HideBranchesList;
 
 };
+

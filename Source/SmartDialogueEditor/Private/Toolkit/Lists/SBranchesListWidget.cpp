@@ -11,6 +11,8 @@ void SBranchesListWidget::Construct(const FArguments& InArgs)
 	SBaseListWidget::Construct(SBaseListWidget::FArguments()
 		.Title(InArgs._Title)
 		.Editor(InArgs._Editor));
+
+	Editor->OnBranchItemRemoved.AddSP(this, &SBranchesListWidget::OnBranchItemRemoved);
 }
 
 TSharedRef<SWidget> SBranchesListWidget::GetItemContent(const FListItemData& Item)
@@ -39,5 +41,16 @@ FReply SBranchesListWidget::OnContextMenuItemClicked(const FString& Item)
 	Data.Add({Item});
 	UpdateData(Data);
 	return SBaseListWidget::OnContextMenuItemClicked(Item);
+}
+
+void SBranchesListWidget::OnBranchItemRemoved(FName& Name)
+{
+	for (int32 i = Data.Num() - 1; i >= 0; i--)
+	{
+		if (Data[i].Name == Name.ToString())
+		{
+			RemoveItem(Data[i]);
+		}
+	}
 }
 

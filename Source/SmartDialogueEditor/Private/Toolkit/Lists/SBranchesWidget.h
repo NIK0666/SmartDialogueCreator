@@ -22,11 +22,11 @@ public:
 
 	// Обновляет список веток диалога
 	void UpdateBranchesList();
-	
+	void RemoveRow(SBranchInfoWidget* BranchInfoWidget);
+
 protected:
 	// Добавляет новый элемент в список веток и обновляет его отображение
 	void BranchItemAdded(FSmartDialogueBranch& NewBranch);
-	void BranchItemDeleted(FSmartDialogueBranch& DeletedBranch);
 
 private:
 	// Генерирует строку SBranchInfoWidget для SListView

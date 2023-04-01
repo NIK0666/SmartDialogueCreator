@@ -18,8 +18,10 @@ public:
 	SLATE_ARGUMENT(FSmartDialogueEditor*, Editor)
 	SLATE_END_ARGS()
 
-	
+
 	void Construct(const FArguments& InArgs);
+
+	FName GetBranchName() const;
 
 private:
 	virtual void Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime) override;
@@ -29,6 +31,8 @@ private:
 
 	void OnBranchNameTextCommitted(const FText& NewText, ETextCommit::Type CommitType);
 	void OnBranchTextTextCommitted(const FText& NewText, ETextCommit::Type CommitType);
+	FReply OnRemoveBranchButtonClicked();
+
 	void OnGrabButtonPressed();
 	void OnGrabButtonReleased();
 	void SetIsFocused(bool bCond);

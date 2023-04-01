@@ -16,7 +16,9 @@ void SBranchPropertiesWidget::Construct(const FArguments& InArgs)
 	SmartDialogueEditor = InArgs._SmartDialogueEditor;
 
 	SmartDialogueEditor->OnBranchSelected.AddSP(this, &SBranchPropertiesWidget::OnBranchSelected);
-	
+	SmartDialogueEditor->OnResetSelectedBranch.AddSP(this, &SBranchPropertiesWidget::OnResetSelectedBranch);
+	SmartDialogueEditor->OnBranchItemRemoved.AddSP(this, &SBranchPropertiesWidget::OnBranchItemRemoved);
+
 	// AllBranchesList = SmartDialogueEditor->GetAllBranchesList();
 	
 	if (GetBranchDataPtr() != nullptr)
@@ -343,7 +345,24 @@ void SBranchPropertiesWidget::OnBranchSelected(FSmartDialogueBranch& SmartDialog
 	ChildSlot
 	[
 		ContentWidget.ToSharedRef()
-	];}
+	];
+}
+
+void SBranchPropertiesWidget::OnResetSelectedBranch()
+{
+	ContentWidget = SNullWidget::NullWidget;
+	
+	ChildSlot
+	[
+		ContentWidget.ToSharedRef()
+	];
+}
+
+void SBranchPropertiesWidget::OnBranchItemRemoved(FName& Name)
+{
+	
+}
+
 
 void SBranchPropertiesWidget::UpdateWidgets()
 {

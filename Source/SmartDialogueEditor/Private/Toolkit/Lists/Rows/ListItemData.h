@@ -9,7 +9,8 @@ USTRUCT(BlueprintType)
 struct FListItemData
 {
 	GENERATED_BODY()
-
+	
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	FString Name;
 	

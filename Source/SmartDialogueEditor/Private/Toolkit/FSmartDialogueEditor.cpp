@@ -5,6 +5,7 @@
 
 #include "DesktopPlatformModule.h"
 #include "FSmartDialogueEditorCommands.h"
+#include "SBranchInfoWidget.h"
 #include "SBranchPhrasesWidget.h"
 #include "Lists/SBranchesWidget.h"
 #include "Widgets/Docking/SDockTab.h"
@@ -162,6 +163,14 @@ void FSmartDialogueEditor::SetSelectedBranchName(FName NewValue)
 	}	
 }
 
+void FSmartDialogueEditor::ResetSelectedBranch()
+{
+	SelectedBranchName = FName();
+	SelectedBranchPtr = nullptr;
+
+	OnResetSelectedBranch.Broadcast();
+}
+
 FName FSmartDialogueEditor::GetSelectedBranchName()
 {
 	return SelectedBranchName;
@@ -275,7 +284,8 @@ TSharedRef<SDockTab> FSmartDialogueEditor::SpawnTab_BranchesList(const FSpawnTab
 	return SNew(SDockTab)
 		.Label(FText::FromString("Branches List"))
 		[
-			CreateBranchesListWidget()
+			SAssignNew(BranchesWidget, SBranchesWidget)
+			.SmartDialogueEditor(this)
 		];
 }
 
@@ -325,12 +335,6 @@ TSharedRef<SDockTab> FSmartDialogueEditor::SpawnTab_Player(const FSpawnTabArgs& 
 			// Создайте виджет для содержимого вкладки Player
 		];
 
-}
-
-TSharedRef<SWidget> FSmartDialogueEditor::CreateBranchesListWidget()
-{
-	return SNew(SBranchesWidget)
-		.SmartDialogueEditor(this);
 }
 
 TSharedRef<SWidget> FSmartDialogueEditor::CreateSelectedBranchPropertiesWidget()
@@ -556,6 +560,23 @@ TArray<FName> FSmartDialogueEditor::GetBranchIDs()
 		}
 	}
 	return BranchIDs;
+}
+
+void FSmartDialogueEditor::RemoveBranch(SBranchInfoWidget* BranchInfoWidget)
+{
+	if (BranchInfoWidget)
+	{
+		FName BranchName = BranchInfoWidget->GetBranchName();
+
+		if (BranchName == SelectedBranchName)
+		{
+			ResetSelectedBranch();
+		}
+		GetDialogue()->RemoveBranch(BranchName);
+		BranchesWidget->RemoveRow(BranchInfoWidget);
+		OnBranchItemRemoved.Broadcast(BranchName);
+	}
+	
 }
 
 

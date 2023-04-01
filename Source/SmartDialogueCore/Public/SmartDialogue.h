@@ -57,6 +57,8 @@ public:
 	
 	void RemoveBranchInList(bool bIsShowed, const FString& Name);
 
+	bool RemoveBranch(FName BranchName);	
+
 	FOnBranchesChanged OnBranchesChanged;
 
 protected:

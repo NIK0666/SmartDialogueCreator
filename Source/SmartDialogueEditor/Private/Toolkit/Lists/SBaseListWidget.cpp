@@ -77,6 +77,20 @@ void SBaseListWidget::UpdateData(const TArray<FListItemData>& NewData)
 	}
 }
 
+void SBaseListWidget::RemoveItem(const FListItemData& ItemToRemove)
+{
+	int32 IndexToRemove = Data.IndexOfByPredicate([&ItemToRemove](const FListItemData& Item)
+	{
+		return Item == ItemToRemove;
+	});
+
+	if (IndexToRemove != INDEX_NONE)
+	{
+		Data.RemoveAt(IndexToRemove);
+		ListContainer->RemoveSlot(ListContainer->GetChildren()->GetChildAt(IndexToRemove));
+	}
+}
+
 TArray<TSharedPtr<FString>> SBaseListWidget::GetAllStrings()
 {
 	return {};

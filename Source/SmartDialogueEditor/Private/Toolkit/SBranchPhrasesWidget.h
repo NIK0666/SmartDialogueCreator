@@ -15,11 +15,13 @@ public:
 	SLATE_ARGUMENT(FSmartDialogueEditor*, SmartDialogueEditor)
 	SLATE_END_ARGS()
 
+	
 	void Construct(const FArguments& InArgs);
 
 private:
 	FSmartDialogueEditor* SmartDialogueEditor = nullptr;
 	void OnBranchSelected(FSmartDialogueBranch& SmartDialogueBranch);
+	void OnResetSelectedBranch();
 	void UpdatePhrases();
 	
 	TSharedPtr<SVerticalBox> PhrasesVBox;

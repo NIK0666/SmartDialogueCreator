@@ -16,7 +16,6 @@ void SBranchesWidget::Construct(const FArguments& InArgs)
 	UpdateBranchesList();
 
 	SmartDialogueEditor->OnBranchItemAdded.BindSP(this, &SBranchesWidget::BranchItemAdded);
-	SmartDialogueEditor->OnBranchItemDeleted.BindSP(this, &SBranchesWidget::BranchItemDeleted);
 	
 	ChildSlot
 	[
@@ -75,6 +74,35 @@ void SBranchesWidget::UpdateBranchesList()
 	}
 }
 
+void SBranchesWidget::RemoveRow(SBranchInfoWidget* BranchInfoWidget)
+{
+	if (!BranchInfoWidget)
+	{
+		return;
+	}
+
+	TSharedPtr<SBranchInfoWidget> BranchInfoWidgetToRemove;
+    
+	// Найти TSharedPtr для BranchInfoWidget, которое нужно удалить
+	for (const auto& BranchInfo : BranchesInfoWidgets)
+	{
+		if (BranchInfo.Get() == BranchInfoWidget)
+		{
+			BranchInfoWidgetToRemove = BranchInfo;
+			break;
+		}
+	}
+
+	if (BranchInfoWidgetToRemove.IsValid())
+	{
+		// Удалить найденный элемент из TArray
+		BranchesInfoWidgets.Remove(BranchInfoWidgetToRemove);
+
+		// Обновить SListView
+		BranchesList->RequestListRefresh();
+	}
+}
+
 void SBranchesWidget::BranchItemAdded(FSmartDialogueBranch& AddedBranch) 
 {
 	TSharedPtr<SBranchInfoWidget> NewBranchInfoWidget = SNew(SBranchInfoWidget)
@@ -88,9 +116,4 @@ void SBranchesWidget::BranchItemAdded(FSmartDialogueBranch& AddedBranch)
 		BranchesList->RequestListRefresh();
 	}
 	
-}
-
-void SBranchesWidget::BranchItemDeleted(FSmartDialogueBranch& DeletedBranch)
-{
-	// Здесь нужно удалить элемент SBranchInfoWidget из списка
 }

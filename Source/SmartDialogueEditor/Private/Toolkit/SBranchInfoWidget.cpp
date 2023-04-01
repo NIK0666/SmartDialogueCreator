@@ -90,6 +90,8 @@ void SBranchInfoWidget::Construct(const FArguments& InArgs)
 				.ButtonStyle(FAppStyle::Get(), "FlatButton")
 				.HAlign(HAlign_Center)
 				.VAlign(VAlign_Center)
+				.OnClicked(this, &SBranchInfoWidget::OnRemoveBranchButtonClicked)
+
 				.Content()
 				[
 					SNew(SImage)
@@ -98,6 +100,11 @@ void SBranchInfoWidget::Construct(const FArguments& InArgs)
 			]
 		]		
 	];
+}
+
+FName SBranchInfoWidget::GetBranchName() const
+{
+	return BranchName;
 }
 
 void SBranchInfoWidget::Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime)
@@ -158,6 +165,16 @@ void SBranchInfoWidget::OnBranchTextTextCommitted(const FText& NewText, ETextCom
 		}
 	}
 }
+
+FReply SBranchInfoWidget::OnRemoveBranchButtonClicked()
+{
+	if (Editor)
+	{
+		Editor->RemoveBranch(this);
+	}
+	return FReply::Handled();
+}
+
 
 void SBranchInfoWidget::OnGrabButtonPressed()
 {

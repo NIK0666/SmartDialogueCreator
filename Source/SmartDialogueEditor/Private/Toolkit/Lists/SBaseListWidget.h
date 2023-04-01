@@ -22,7 +22,8 @@ public:
 
 	void Construct(const FArguments& InArgs);
 	void UpdateData(const TArray<FListItemData>& NewData);
-	
+	void RemoveItem(const FListItemData& ItemToRemove);
+
 	FReply OnAddButtonClicked();
 	TSharedRef<SWidget> GenerateStringItemWidget(TSharedPtr<FString> InItem);
 	void OnComboBoxSelectionChanged(TSharedPtr<FString> NewSelection, ESelectInfo::Type SelectInfo);
