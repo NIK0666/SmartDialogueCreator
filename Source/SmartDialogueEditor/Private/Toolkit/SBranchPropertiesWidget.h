@@ -6,6 +6,8 @@
 #include "Widgets/DeclarativeSyntaxSupport.h"
 #include "Widgets/SCompoundWidget.h"
 
+class SHideBranchesComboBoxList;
+class SShowBranchesComboBoxList;
 class SBranchesListWidget;
 class SOperationsListWidget;
 class FSmartDialogueEditor;
@@ -50,8 +52,8 @@ private:
 
 	TSharedPtr<SOperationsListWidget> CheckEntryConditionsList;
 	TSharedPtr<SOperationsListWidget> ModifyVariablesList;
-	TSharedPtr<SBranchesListWidget> ShowBranchesList;
-	TSharedPtr<SBranchesListWidget> HideBranchesList;
+	TSharedPtr<SShowBranchesComboBoxList> ShowBranchesList;
+	TSharedPtr<SHideBranchesComboBoxList> HideBranchesList;
 
 };
 

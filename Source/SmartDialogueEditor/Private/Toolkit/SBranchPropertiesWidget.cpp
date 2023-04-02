@@ -6,6 +6,8 @@
 #include "EditorStyleSet.h"
 #include "FSmartDialogueEditor.h"
 #include "Components/SBranchComboBox.h"
+#include "Lists/SHideBranchesComboBoxList.h"
+#include "Lists/SShowBranchesComboBoxList.h"
 #include "Lists/SBranchesListWidget.h"
 #include "Lists/SOperationsListWidget.h"
 
@@ -249,8 +251,8 @@ TSharedRef<SWidget> SBranchPropertiesWidget::GetContentWidget()
 			  .Padding(4.f, 0.f)
 			  .VAlign(VAlign_Top)
 			[
-			SAssignNew(HideBranchesList, SBranchesListWidget)
-				.bIsShowed(false)
+				SAssignNew(HideBranchesList, SHideBranchesComboBoxList)
+				.InitialStrings(SmartDialogueEditor->GetSelectedBranch()->Hide)
 				.Editor(SmartDialogueEditor)
 				.Title(LOCTEXT("HideBranchesLabel", "Hide Branches:"))
 			]
@@ -271,8 +273,8 @@ TSharedRef<SWidget> SBranchPropertiesWidget::GetContentWidget()
 			  .Padding(4.f, 0.f)
 			  .VAlign(VAlign_Top)
 			[
-				SAssignNew(ShowBranchesList, SBranchesListWidget)
-				.bIsShowed(true)
+				SAssignNew(ShowBranchesList, SShowBranchesComboBoxList)
+				.InitialStrings(SmartDialogueEditor->GetSelectedBranch()->Show)
 				.Editor(SmartDialogueEditor)
 				.Title(LOCTEXT("ShowBranchesLabel", "Show Branches:"))
 			]
@@ -327,7 +329,7 @@ TSharedRef<SWidget> SBranchPropertiesWidget::GetContentWidget()
 }
 
 FSmartDialogueBranch* SBranchPropertiesWidget::GetBranchDataPtr()
-{
+{ 
 	if (auto SelectedBranchPtr = SmartDialogueEditor->GetSelectedBranch())
 	{
 		return SelectedBranchPtr;
@@ -390,23 +392,8 @@ void SBranchPropertiesWidget::UpdateWidgets()
 	// 	}		
 	// }
 
-	// Получение данных
-	TArray<FString> ShowStrings = GetBranchDataPtr()->Show;
-	TArray<FString> HideStrings = GetBranchDataPtr()->Hide;
 	TArray<FIf> IfElements = GetBranchDataPtr()->If;
 	TArray<FSmartDialogueVars> VarElements = GetBranchDataPtr()->Vars;
-
-	// Преобразование данных для ShowBranchesList и HideBranchesList
-	TArray<FListItemData> ShowListItems, HideListItems;
-	for (const FString& ShowString : ShowStrings)
-	{
-		ShowListItems.Add(FListItemData{ ShowString });
-	}
-
-	for (const FString& HideString : HideStrings)
-	{
-		HideListItems.Add(FListItemData{ HideString });
-	}
 
 	// Преобразование данных для CheckEntryConditionsList и ModifyVariablesList
 	TArray<FListItemData> CheckEntryItems, ModifyVarItems;
@@ -431,8 +418,8 @@ void SBranchPropertiesWidget::UpdateWidgets()
 	StartBranchComboBox->SetItemValue(GetBranchDataPtr()->ChangeStarted);
 
 	// Обновление виджетов с новыми данными
-	ShowBranchesList->UpdateData(ShowListItems);
-	HideBranchesList->UpdateData(HideListItems);
+	ShowBranchesList->UpdateInitialStrings(GetBranchDataPtr()->Show);
+	HideBranchesList->UpdateInitialStrings(GetBranchDataPtr()->Hide);
 	CheckEntryConditionsList->UpdateData(static_cast<TArray<FListItemData>>(CheckEntryItems));
 	ModifyVariablesList->UpdateData(static_cast<TArray<FListItemData>>(ModifyVarItems));
 

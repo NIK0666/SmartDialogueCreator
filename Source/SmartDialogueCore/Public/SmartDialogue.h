@@ -61,10 +61,21 @@ public:
 	bool RemoveIfOperation(FName BranchName, int32 Index);
 	void AddVarOperation(FName BranchName, const FString& VarName, const FString& OperationString, int32 Value);
 	void AddIfOperation(const FName& BranchName, const FString& VarName, const FString& OperationString, int32 Value);
-	
+
+	UFUNCTION(meta=(DeprecatedFunction))
 	bool RemoveHideBranch(FName BranchName, const FString& RemoveString);
+	UFUNCTION(meta=(DeprecatedFunction))
 	void AddShowBranch(const FName& BranchName, const FString& AddString);
+	UFUNCTION(meta=(DeprecatedFunction))
 	void AddHideBranch(const FName& BranchName, const FString& AddString);
+
+	void AddHideBranchElement(const FName& BranchName, int32 Index, const FString& Value);
+	void RemoveHideBranchElement(const FName& BranchName, int32 Index);
+	void UpdateHideBranchElement(const FName& BranchName, int32 Index, const FString& NewValue);
+
+	void AddShowBranchElement(const FName& BranchName, int32 Index, const FString& Value);
+	void RemoveShowBranchElement(const FName& BranchName, int32 Index);
+	void UpdateShowBranchElement(const FName& BranchName, int32 Index, const FString& NewValue);
 
 	FOnBranchesChanged OnBranchesChanged;
 
