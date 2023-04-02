@@ -103,6 +103,30 @@ void SBranchesWidget::RemoveRow(SBranchInfoWidget* BranchInfoWidget)
 	}
 }
 
+void SBranchesWidget::FocusNextBranchWidget(TSharedPtr<SBranchInfoWidget> CurrentWidget, bool bIsTextFocused)
+{
+	int32 Index = BranchesInfoWidgets.IndexOfByPredicate([CurrentWidget](const TSharedPtr<SBranchInfoWidget>& Widget) {
+		return Widget == CurrentWidget;
+	});
+
+	if (Index != INDEX_NONE && Index + 1 < BranchesInfoWidgets.Num())
+	{
+		BranchesInfoWidgets[Index + 1]->SetEditableTextFocus(bIsTextFocused);
+	}
+}
+
+void SBranchesWidget::FocusPreviousBranchWidget(TSharedPtr<SBranchInfoWidget> CurrentWidget, bool bIsTextFocused)
+{
+	int32 Index = BranchesInfoWidgets.IndexOfByPredicate([CurrentWidget](const TSharedPtr<SBranchInfoWidget>& Widget) {
+		return Widget == CurrentWidget;
+	});
+
+	if (Index != INDEX_NONE && Index - 1 >= 0)
+	{
+		return BranchesInfoWidgets[Index - 1]->SetEditableTextFocus(bIsTextFocused);
+	}
+}
+
 void SBranchesWidget::BranchItemAdded(FSmartDialogueBranch& AddedBranch) 
 {
 	TSharedPtr<SBranchInfoWidget> NewBranchInfoWidget = SNew(SBranchInfoWidget)
@@ -115,5 +139,4 @@ void SBranchesWidget::BranchItemAdded(FSmartDialogueBranch& AddedBranch)
 	{
 		BranchesList->RequestListRefresh();
 	}
-	
 }

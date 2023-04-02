@@ -8,6 +8,7 @@
 #include "Widgets/Images/SImage.h"
 #include "Widgets/Input/SButton.h"
 #include "EditorStyle/Public/EditorStyleSet.h"
+#include "Lists/SBranchesWidget.h"
 
 #define LOCTEXT_NAMESPACE "SmartDialogueEditor"
 
@@ -58,6 +59,7 @@ void SBranchInfoWidget::Construct(const FArguments& InArgs)
 					SAssignNew(BranchNameTextBox, SEditableTextBox)
 					.Text(FText::FromName(BranchName))
 					.OnTextCommitted(this, &SBranchInfoWidget::OnBranchNameTextCommitted)
+					.OnKeyDownHandler(this, &SBranchInfoWidget::OnBranchNameTextBoxKeyDown)
 				]
 			]
 			+ SHorizontalBox::Slot()
@@ -67,6 +69,7 @@ void SBranchInfoWidget::Construct(const FArguments& InArgs)
 				.Text_Raw(this, &SBranchInfoWidget::GetBranchText)
 				.HintText_Raw(this, &SBranchInfoWidget::GetPlaceholderText)
 				.OnTextCommitted(this, &SBranchInfoWidget::OnBranchTextTextCommitted)
+				.OnKeyDownHandler(this, &SBranchInfoWidget::OnBranchTextTextBoxKeyDown)
 			]
 			+ SHorizontalBox::Slot()
 			.AutoWidth()
@@ -105,6 +108,18 @@ void SBranchInfoWidget::Construct(const FArguments& InArgs)
 FName SBranchInfoWidget::GetBranchName() const
 {
 	return BranchName;
+}
+
+void SBranchInfoWidget::SetEditableTextFocus(bool bIsTextFocused)
+{
+	if (bIsTextFocused)
+	{
+		FSlateApplication::Get().SetKeyboardFocus(BranchTextTextBox);
+	}
+	else
+	{
+		FSlateApplication::Get().SetKeyboardFocus(BranchNameTextBox);
+	}
 }
 
 void SBranchInfoWidget::Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime)
@@ -206,6 +221,40 @@ FText SBranchInfoWidget::GetPlaceholderText() const
 		}
 	}
 	return FText::GetEmpty();
+}
+
+FReply SBranchInfoWidget::OnBranchNameTextBoxKeyDown(const FGeometry& MyGeometry, const FKeyEvent& KeyEvent)
+{
+	if (KeyEvent.GetKey() == EKeys::Up || KeyEvent.GetKey() == EKeys::Down)
+	{
+		MoveFocusToNextTextBox(KeyEvent.GetKey() == EKeys::Up ? -1 : 1);
+		return FReply::Handled();
+	}
+
+	return FReply::Unhandled();
+}
+
+FReply SBranchInfoWidget::OnBranchTextTextBoxKeyDown(const FGeometry& MyGeometry, const FKeyEvent& KeyEvent)
+{
+	if (KeyEvent.GetKey() == EKeys::Up || KeyEvent.GetKey() == EKeys::Down)
+	{
+		MoveFocusToNextTextBox(KeyEvent.GetKey() == EKeys::Up ? -1 : 1);
+		return FReply::Handled();
+	}
+
+	return FReply::Unhandled();
+}
+
+void SBranchInfoWidget::MoveFocusToNextTextBox(int32 Direction)
+{
+	if (Direction == 1) // Moving Down
+	{
+		Editor->GetBranchesListPanel()->FocusNextBranchWidget(SharedThis(this), BranchTextTextBox->HasKeyboardFocus());
+	}
+	else if (Direction == -1) // Moving Up
+	{
+		Editor->GetBranchesListPanel()->FocusPreviousBranchWidget(SharedThis(this), BranchTextTextBox->HasKeyboardFocus());
+	}
 }
 
 #undef LOCTEXT_NAMESPACE

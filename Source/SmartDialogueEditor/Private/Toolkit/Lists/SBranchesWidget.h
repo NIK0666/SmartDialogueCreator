@@ -23,6 +23,8 @@ public:
 	// Обновляет список веток диалога
 	void UpdateBranchesList();
 	void RemoveRow(SBranchInfoWidget* BranchInfoWidget);
+	void FocusNextBranchWidget(TSharedPtr<SBranchInfoWidget> CurrentWidget, bool bIsTextFocused);
+	void FocusPreviousBranchWidget(TSharedPtr<SBranchInfoWidget> CurrentWidget, bool bIsTextFocused);
 
 protected:
 	// Добавляет новый элемент в список веток и обновляет его отображение

@@ -60,6 +60,8 @@ public:
 	FName GetSelectedBranchName();
 	FSmartDialogueBranch* GetSelectedBranch();
 	void ResetSelectedBranch();
+
+	TSharedPtr<SBranchesWidget> GetBranchesListPanel() { return BranchesWidget; }
 	
 	virtual void RegisterTabSpawners(const TSharedRef<FTabManager>& TabManager) override;
 	virtual void UnregisterTabSpawners(const TSharedRef<FTabManager>& TabManager) override;

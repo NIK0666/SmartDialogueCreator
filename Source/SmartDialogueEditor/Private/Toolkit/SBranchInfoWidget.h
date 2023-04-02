@@ -22,6 +22,8 @@ public:
 	void Construct(const FArguments& InArgs);
 
 	FName GetBranchName() const;
+	
+	void SetEditableTextFocus(bool bIsTextFocused);
 
 private:
 	virtual void Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime) override;
@@ -37,6 +39,9 @@ private:
 	void OnGrabButtonReleased();
 	void SetIsFocused(bool bCond);
 	FText GetPlaceholderText() const;
+	FReply OnBranchNameTextBoxKeyDown(const FGeometry& MyGeometry, const FKeyEvent& KeyEvent);
+	FReply OnBranchTextTextBoxKeyDown(const FGeometry& MyGeometry, const FKeyEvent& KeyEvent);
+	void MoveFocusToNextTextBox(int32 Direction);
 
 	FName BranchName;
 	FSmartDialogueEditor* Editor = nullptr;
