@@ -80,6 +80,10 @@ public:
 	void AddVarElement(const FName& BranchName, int32 Index, const FSmartDialogueVars& NewVar);
 	void RemoveVarElement(const FName& BranchName, int32 Index);
 	void UpdateVarElement(const FName& BranchName, int32 Index, const FSmartDialogueVars& Element);
+	
+	void AddIfElement(const FName& Name, int32 Index, const FIf& Element);
+	void UpdateIfElement(const FName& Name, int32 Index, const FIf& Element);
+	void RemoveIfElement(const FName& Name, int32 Index);
 
 	FOnBranchesChanged OnBranchesChanged;
 

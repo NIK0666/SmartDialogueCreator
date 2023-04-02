@@ -111,7 +111,6 @@ void SBranchInfoWidget::Tick(const FGeometry& AllottedGeometry, const double InC
 {
 	SCompoundWidget::Tick(AllottedGeometry, InCurrentTime, InDeltaTime);
 	
-	// TSharedPtr<SWidget> FocusedWidget = FSlateApplication::Get().GetKeyboardFocusedWidget();
 	const bool bNewFocus = BranchNameTextBox->HasKeyboardFocus() || BranchTextTextBox->HasKeyboardFocus();
 	if (bNewFocus != bIsFocused)
 	{

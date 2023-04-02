@@ -1,28 +1,30 @@
+//
+
 #pragma once
 
 #include "Toolkit/FSmartDialogueEditor.h"
 
-class SOperationsComboBoxList : public SCompoundWidget
+class SConditionsComboBoxList : public SCompoundWidget
 {
 public:
-	SLATE_BEGIN_ARGS(SOperationsComboBoxList) {}
-	SLATE_ARGUMENT(TArray<FSmartDialogueVars>, InitialVars)
+	SLATE_BEGIN_ARGS(SConditionsComboBoxList) {}
+	SLATE_ARGUMENT(TArray<FIf>, InitialConditions)
 	SLATE_ARGUMENT(FSmartDialogueEditor*, Editor)
 	SLATE_ARGUMENT(FText, Title)
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs);
-	void UpdateInitialVars(const TArray<FSmartDialogueVars>& NewInitialVars);
+	void UpdateInitialConditions(const TArray<FIf>& NewInitialConditions);
 
 private:
-	TArray<FSmartDialogueVars> InitialVars;
+	TArray<FIf> InitialConditions;
 	TSharedPtr<SVerticalBox> ListBox;
 
 	TArray<TSharedPtr<FString>> VariableOptions;
 	TArray<TSharedPtr<FString>> OperationOptions;
 
-	FString ESmartDialogueOperationToString(ESmartDialogueOperation Operation);
-	ESmartDialogueOperation ESmartDialogueOperationFromString(FString& String);
+	FString EnumOperationToString(ESmartDialogueEqualOperation Operation);
+	ESmartDialogueEqualOperation EnumOperationFromString(FString& String);
 	
 	void RefreshList();
 

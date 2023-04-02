@@ -245,6 +245,36 @@ void USmartDialogue::UpdateVarElement(const FName& BranchName, int32 Index, cons
 	}
 }
 
+void USmartDialogue::AddIfElement(const FName& BranchName, int32 Index, const FIf& Element)
+{
+	if (Branches.Contains(BranchName))
+	{
+		auto* BranchPtr = &Branches[BranchName];
+		BranchPtr->If.Add(Element);
+	}
+}
+
+void USmartDialogue::UpdateIfElement(const FName& BranchName, int32 Index, const FIf& Element)
+{
+	if (Branches.Contains(BranchName))
+	{
+		auto* BranchPtr = &Branches[BranchName];
+		if (BranchPtr->If.IsValidIndex(Index))
+		{
+			BranchPtr->If[Index] = Element;
+		}
+	}
+}
+
+void USmartDialogue::RemoveIfElement(const FName& BranchName, int32 Index)
+{
+	if (Branches.Contains(BranchName))
+	{
+		auto* BranchPtr = &Branches[BranchName];
+		BranchPtr->If.RemoveAt(Index);
+	}
+}
+
 bool USmartDialogue::RemoveShowBranch(FName BranchName, const FString& RemoveString)
 {
 	if (Branches.Contains(BranchName))

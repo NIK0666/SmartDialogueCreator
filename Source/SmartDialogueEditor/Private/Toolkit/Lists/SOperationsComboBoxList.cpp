@@ -1,5 +1,7 @@
 #include "SOperationsComboBoxList.h"
 
+#include "SmartDialogue.h"
+
 void SOperationsComboBoxList::Construct(const FArguments& InArgs)
 {
     InitialVars = InArgs._InitialVars;

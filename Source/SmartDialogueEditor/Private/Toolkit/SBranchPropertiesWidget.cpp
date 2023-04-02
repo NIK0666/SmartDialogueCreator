@@ -3,12 +3,11 @@
 
 #include "SBranchPropertiesWidget.h"
 
-#include "EditorStyleSet.h"
 #include "FSmartDialogueEditor.h"
 #include "Components/SBranchComboBox.h"
 #include "Lists/SHideBranchesComboBoxList.h"
 #include "Lists/SShowBranchesComboBoxList.h"
-#include "Lists/SBranchesListWidget.h"
+#include "Lists/SConditionsComboBoxList.h"
 #include "Lists/SOperationsComboBoxList.h"
 #include "Lists/SOperationsListWidget.h"
 
@@ -318,9 +317,9 @@ TSharedRef<SWidget> SBranchPropertiesWidget::GetContentWidget()
 				.Padding(4.f, 0.f)
 				.VAlign(VAlign_Top)
 			[
-				SAssignNew(CheckEntryConditionsList, SOperationsListWidget)
+				SAssignNew(CheckEntryConditionsList, SConditionsComboBoxList)
+				.InitialConditions(SmartDialogueEditor->GetSelectedBranch()->If)
 				.Editor(SmartDialogueEditor)
-				.bIsExecution(false)
 				.Title(LOCTEXT("CheckEntryConditionsLabel", "Check Entry Conditions:"))
 			]
 		];
@@ -421,7 +420,7 @@ void SBranchPropertiesWidget::UpdateWidgets()
 	// Обновление виджетов с новыми данными
 	ShowBranchesList->UpdateInitialStrings(GetBranchDataPtr()->Show);
 	HideBranchesList->UpdateInitialStrings(GetBranchDataPtr()->Hide);
-	CheckEntryConditionsList->UpdateData(static_cast<TArray<FListItemData>>(CheckEntryItems));
+	CheckEntryConditionsList->UpdateInitialConditions(GetBranchDataPtr()->If);
 	ModifyVariablesList->UpdateInitialVars(GetBranchDataPtr()->Vars);
 
 }
