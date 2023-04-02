@@ -76,6 +76,10 @@ public:
 	void AddShowBranchElement(const FName& BranchName, int32 Index, const FString& Value);
 	void RemoveShowBranchElement(const FName& BranchName, int32 Index);
 	void UpdateShowBranchElement(const FName& BranchName, int32 Index, const FString& NewValue);
+	
+	void AddVarElement(const FName& BranchName, int32 Index, const FSmartDialogueVars& NewVar);
+	void RemoveVarElement(const FName& BranchName, int32 Index);
+	void UpdateVarElement(const FName& BranchName, int32 Index, const FSmartDialogueVars& Element);
 
 	FOnBranchesChanged OnBranchesChanged;
 

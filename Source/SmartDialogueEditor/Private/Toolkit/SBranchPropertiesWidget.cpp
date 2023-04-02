@@ -9,6 +9,7 @@
 #include "Lists/SHideBranchesComboBoxList.h"
 #include "Lists/SShowBranchesComboBoxList.h"
 #include "Lists/SBranchesListWidget.h"
+#include "Lists/SOperationsComboBoxList.h"
 #include "Lists/SOperationsListWidget.h"
 
 #define LOCTEXT_NAMESPACE "SmartDialogueEditor"
@@ -295,9 +296,9 @@ TSharedRef<SWidget> SBranchPropertiesWidget::GetContentWidget()
 				.Padding(4.f, 0.f)
 				.VAlign(VAlign_Top)
 			[
-				SAssignNew(ModifyVariablesList, SOperationsListWidget)
+				SAssignNew(ModifyVariablesList, SOperationsComboBoxList)
+				.InitialVars(SmartDialogueEditor->GetSelectedBranch()->Vars)
 				.Editor(SmartDialogueEditor)
-				.bIsExecution(true)
 				.Title(LOCTEXT("ModifyVariablesLabel", "Modify Variables:"))
 			]
 			+ SHorizontalBox::Slot()
@@ -421,7 +422,7 @@ void SBranchPropertiesWidget::UpdateWidgets()
 	ShowBranchesList->UpdateInitialStrings(GetBranchDataPtr()->Show);
 	HideBranchesList->UpdateInitialStrings(GetBranchDataPtr()->Hide);
 	CheckEntryConditionsList->UpdateData(static_cast<TArray<FListItemData>>(CheckEntryItems));
-	ModifyVariablesList->UpdateData(static_cast<TArray<FListItemData>>(ModifyVarItems));
+	ModifyVariablesList->UpdateInitialVars(GetBranchDataPtr()->Vars);
 
 }
 

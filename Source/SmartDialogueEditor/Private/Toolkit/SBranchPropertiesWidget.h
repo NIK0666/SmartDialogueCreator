@@ -8,6 +8,8 @@
 
 class SHideBranchesComboBoxList;
 class SShowBranchesComboBoxList;
+class SOperationsComboBoxList;
+
 class SBranchesListWidget;
 class SOperationsListWidget;
 class FSmartDialogueEditor;
@@ -51,7 +53,7 @@ private:
 	TSharedPtr<SVerticalBox> PropertiesContentWidget;
 
 	TSharedPtr<SOperationsListWidget> CheckEntryConditionsList;
-	TSharedPtr<SOperationsListWidget> ModifyVariablesList;
+	TSharedPtr<SOperationsComboBoxList> ModifyVariablesList;
 	TSharedPtr<SShowBranchesComboBoxList> ShowBranchesList;
 	TSharedPtr<SHideBranchesComboBoxList> HideBranchesList;
 
