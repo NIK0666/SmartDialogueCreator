@@ -12,8 +12,11 @@
 #include "SmartDialogue.h"
 #include "SBranchPropertiesWidget.h"
 #include "SDialConfigWidget.h"
+#include "SSmartDialogueGraph.h"
 #include "UMGStyle.h"
 #include "Components/SCharacterComboBox.h"
+#include "Graph/SmartDialogueGraph.h"
+#include "Graph/SmartDialogueGraphSchema.h"
 #include "Serializor/JsonParser.h"
 #include "SmartDialogueCore/Private/SmartDialogueSettings.h"
 
@@ -24,11 +27,15 @@ static const FName SmartDialogue_SelectedBranchPropertiesTabId(TEXT("SmartDialog
 static const FName SmartDialogue_SelectedBranchPhrasesTabId(TEXT("SmartDialogue_SelectedBranchPhrasesTab"));
 static const FName SmartDialogue_ConfigTabId(TEXT("SmartDialogue_Config"));
 static const FName SmartDialogue_PlayerTabId(TEXT("SmartDialogue_Player"));
+static const FName SmartDialogue_GraphTabId(TEXT("SmartDialogue_GraphTab"));
 
 
 void FSmartDialogueEditor::InitSmartDialogueEditor(EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, USmartDialogue* SmartDialogue)
 {
-	SetDialogue(SmartDialogue);	
+	SetDialogue(SmartDialogue);
+
+	DialogueGraph = NewObject<USmartDialogueGraph>();
+	DialogueGraph->SetFlags(RF_Transactional);
 	
 	FSmartDialogueEditorCommands::Register();
 	ToolkitCommands = MakeShareable(new FUICommandList);
@@ -263,6 +270,10 @@ void FSmartDialogueEditor::RegisterTabSpawners(const TSharedRef<FTabManager>& In
 	InTabManager->RegisterTabSpawner(SmartDialogue_PlayerTabId, FOnSpawnTab::CreateSP(this, &FSmartDialogueEditor::SpawnTab_Player))
 		.SetDisplayName(FText::FromString("Player"))
 		.SetGroup(WorkspaceMenuCategory.ToSharedRef());
+
+	TabManager->RegisterTabSpawner(SmartDialogue_GraphTabId, FOnSpawnTab::CreateSP(this, &FSmartDialogueEditor::SpawnTab_Graph))
+		.SetDisplayName(LOCTEXT("GraphTabTitle", "Graph"))
+		.SetTooltipText(LOCTEXT("GraphTabTooltip", "Open the Dialogue Graph tab."));
 }
 
 void FSmartDialogueEditor::UnregisterTabSpawners(const TSharedRef<FTabManager>& InTabManager)
@@ -338,6 +349,23 @@ TSharedRef<SDockTab> FSmartDialogueEditor::SpawnTab_Player(const FSpawnTabArgs& 
 
 }
 
+TSharedRef<SDockTab> FSmartDialogueEditor::SpawnTab_Graph(const FSpawnTabArgs& Args)
+{
+	check(Args.GetTabId() == SmartDialogue_GraphTabId);
+	
+	// Создание экземпляра вашего графа
+	USmartDialogueGraph* NewDialogueGraph = NewObject<USmartDialogueGraph>();
+	NewDialogueGraph->Schema = USmartDialogueGraphSchema::StaticClass();
+	
+	return SNew(SDockTab)
+		.TabRole(ETabRole::NomadTab)
+		[
+			SNew(SSmartDialogueGraph)
+			.InDialogueGraph(NewDialogueGraph)
+			.SmartDialogueEditor(this)
+		];
+}
+
 TSharedRef<SWidget> FSmartDialogueEditor::CreateSelectedBranchPropertiesWidget()
 {
 	return SNew(SBranchPropertiesWidget)
@@ -362,6 +390,7 @@ TSharedRef<FTabManager::FLayout> FSmartDialogueEditor::GetDefaultTabContents()
 					->AddTab(SmartDialogue_BranchesListTabId, ETabState::OpenedTab)
 					->AddTab(SmartDialogue_ConfigTabId, ETabState::ClosedTab)
 					->AddTab(SmartDialogue_PlayerTabId, ETabState::ClosedTab)
+					->AddTab(SmartDialogue_GraphTabId, ETabState::ClosedTab)
 				)
 			)
 			->Split

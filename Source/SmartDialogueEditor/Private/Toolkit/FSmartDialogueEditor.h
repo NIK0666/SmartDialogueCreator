@@ -64,7 +64,8 @@ public:
 	void ResetSelectedBranch();
 
 	TSharedPtr<SBranchesWidget> GetBranchesListPanel() { return BranchesWidget; }
-	
+
+
 	virtual void RegisterTabSpawners(const TSharedRef<FTabManager>& TabManager) override;
 	virtual void UnregisterTabSpawners(const TSharedRef<FTabManager>& TabManager) override;
 
@@ -79,6 +80,7 @@ private:
 	TSharedRef<SDockTab> SpawnTab_SelectedBranchPhrases(const FSpawnTabArgs& Args);
 	TSharedRef<SDockTab> SpawnTab_Config(const FSpawnTabArgs& Args);
 	TSharedRef<SDockTab> SpawnTab_Player(const FSpawnTabArgs& Args);
+	TSharedRef<SDockTab> SpawnTab_Graph(const FSpawnTabArgs& SpawnTabArgs);
 
 	TSharedRef<SWidget> CreateSelectedBranchPropertiesWidget();
 	TSharedRef<FTabManager::FLayout> GetDefaultTabContents();
@@ -118,5 +120,8 @@ private:
 	TArray<TSharedPtr<FString>> CachedVariablesList;
 	TArray<TSharedPtr<FString>> CachedCharactersList;
 	TArray<TSharedPtr<FString>> CachedBranchesList;
+
+	UPROPERTY()
+	class USmartDialogueGraph* DialogueGraph;
 
 };
