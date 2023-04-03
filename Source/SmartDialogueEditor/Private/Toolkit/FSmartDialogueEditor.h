@@ -12,6 +12,8 @@ class SCharacterComboBox;
 class SBranchInfoWidget;
 class SBranchesWidget;
 class SBranchPhrasesWidget;
+class SDialConfigWidget;
+
 class USmartDialogue;
 
 DECLARE_DELEGATE_OneParam(FOnBranchItemAdded, FSmartDialogueBranch&);
@@ -87,6 +89,9 @@ private:
 	void ShowBranches();
 	void PlayDialogue();
 	void ShowConfig();
+
+	void RefreshEditor();
+	
 	void ImportJson();
 
 	TSharedPtr<SDockTab> BranchesListTab;
@@ -108,6 +113,7 @@ private:
 	TSharedPtr<SCharacterComboBox> CharacterComboBox;
 	TSharedPtr<SBranchesWidget> BranchesWidget;
 	TSharedPtr<SBranchPhrasesWidget> PhrasesWidget;
+	TSharedPtr<SDialConfigWidget> DialConfigWidget;
 	
 	TArray<TSharedPtr<FString>> CachedVariablesList;
 	TArray<TSharedPtr<FString>> CachedCharactersList;

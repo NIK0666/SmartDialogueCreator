@@ -275,6 +275,14 @@ void USmartDialogue::RemoveIfElement(const FName& BranchName, int32 Index)
 	}
 }
 
+void USmartDialogue::MakeClean()
+{
+	Variables = {};
+	Branches = {};
+	AutoBranch = "";
+	Character = "";
+}
+
 bool USmartDialogue::RemoveShowBranch(FName BranchName, const FString& RemoveString)
 {
 	if (Branches.Contains(BranchName))

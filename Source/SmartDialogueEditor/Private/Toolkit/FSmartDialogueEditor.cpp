@@ -319,7 +319,7 @@ TSharedRef<SDockTab> FSmartDialogueEditor::SpawnTab_Config(const FSpawnTabArgs& 
 	return SNew(SDockTab)
 		.Label(FText::FromString("Config"))
 		[
-			SNew(SDialConfigWidget)
+			SAssignNew(DialConfigWidget, SDialConfigWidget)
 				.SmartDialogueEditor(this)
 		];
 
@@ -409,6 +409,14 @@ void FSmartDialogueEditor::ShowConfig()
 	TabManager->TryInvokeTab(SmartDialogue_ConfigTabId);
 }
 
+void FSmartDialogueEditor::RefreshEditor()
+{
+	SelectedBranchPtr = nullptr;
+	GetBranchesListPanel()->UpdateBranchesList();
+	CharacterComboBox->SetItemValue(GetDialogue()->GetCharacter());
+	DialConfigWidget->UpdateData();
+}
+
 void FSmartDialogueEditor::ImportJson()
 {
 	// Открываем диалог выбора файла
@@ -442,8 +450,8 @@ void FSmartDialogueEditor::ImportJson()
 
 			if (bParseSuccessful)
 			{
-				// Обрабатываем результаты парсинга (например, обновляем редактор)
-				// UpdateDialogueEditor();
+				RefreshEditor();
+				
 			}
 			else
 			{
@@ -530,10 +538,10 @@ TArray<FVariableData> FSmartDialogueEditor::GetAllVariables()
 {
 	TArray<FVariableData> Result;
 	//
-	// if (GetDialogue())
-	// {
-	// 	Result = Dialogue->GetVariables(); //TODO Получить все локальные переменные
-	// }
+	if (GetDialogue())
+	{
+		Result = Dialogue->GetVariables();
+	}
 	if (GetDialogueConfig())
 	{
 		Result.Append(GetDialogueConfig()->GetVariables());

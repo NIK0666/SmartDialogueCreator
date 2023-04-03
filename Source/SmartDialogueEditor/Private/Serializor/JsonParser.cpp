@@ -27,7 +27,9 @@ bool UJsonParser::ParseJson(const FString& FilePath, USmartDialogue* DialogueAss
         UE_LOG(LogTemp, Warning, TEXT("Failed to deserialize JSON file: %s"), *FilePath);
         return false;
     }
-	
+
+    DialogueAsset->MakeClean();
+    
     // Parse Character
     FString Character;
     if (JsonObject->TryGetStringField("Character", Character))
@@ -74,6 +76,36 @@ bool UJsonParser::ParseJson(const FString& FilePath, USmartDialogue* DialogueAss
                 Phrase.Random = PhraseObject->GetBoolField("Random");
                 Phrase.Text = FText::FromString(PhraseObject->GetStringField("Text"));
 
+                TSharedPtr<FJsonObject> IfObject = PhraseObject->GetObjectField("If");
+                if (IfObject.IsValid())
+                {
+                    //{"Key":"Silent","Op":"==","Value":"1"}
+                    Phrase.If.Key = IfObject->GetStringField("Key");
+                    Phrase.If.Value = IfObject->GetIntegerField("Value");
+                    FString Operation = IfObject->GetStringField("Operation");
+                    
+                    if (Operation == "==")
+                    {
+                        Phrase.If.EqualOperation = ESmartDialogueEqualOperation::EEO_Equals;
+                    }
+                    else if (Operation == ">=")
+                    {
+                        Phrase.If.EqualOperation = ESmartDialogueEqualOperation::EEO_GreaterOrEquals;
+                    }
+                    else if (Operation == "<=")
+                    {
+                        Phrase.If.EqualOperation = ESmartDialogueEqualOperation::EEO_LessOrEquals;
+                    }
+                    else if (Operation == ">")
+                    {
+                        Phrase.If.EqualOperation = ESmartDialogueEqualOperation::EEO_Greater;
+                    }
+                    else if (Operation == "<")
+                    {
+                        Phrase.If.EqualOperation = ESmartDialogueEqualOperation::EEO_Less;
+                    }
+                }
+                
                 // Parse Custom_params
                 // TSharedPtr<FJsonObject> CustomParamsObject = PhraseObject->GetObjectField("Custom_params");
                 // if (CustomParamsObject.IsValid())

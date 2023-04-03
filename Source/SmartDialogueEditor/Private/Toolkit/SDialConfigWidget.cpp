@@ -6,6 +6,7 @@
 #include "Widgets/Text/STextBlock.h"
 #include "EditorStyleSet.h"
 #include "SmartDialConfig.h"
+#include "SmartDialogue.h"
 #include "Components/SCharacterComboBox.h"
 #include "Lists/Rows/SCharacterListRow.h"
 #include "Lists/Rows/SDialVarListRow.h"
@@ -71,9 +72,9 @@ void SDialConfigWidget::Construct(const FArguments& InArgs)
 							.AutoWidth()
 							[
 								SNew(SButton)
-						.ButtonStyle(FAppStyle::Get(), "FlatButton.Success")
-						.ForegroundColor(FSlateColor::UseForeground())
-						.OnClicked(this, &SDialConfigWidget::OnAddButtonClicked)
+								.ButtonStyle(FAppStyle::Get(), "FlatButton.Success")
+								.ForegroundColor(FSlateColor::UseForeground())
+								.OnClicked(this, &SDialConfigWidget::OnAddButtonClicked)
 								[
 									SNew(SImage)
 									.Image(FAppStyle::Get().GetBrush("Icons.Plus"))
@@ -192,6 +193,10 @@ void SDialConfigWidget::Construct(const FArguments& InArgs)
 
 void SDialConfigWidget::UpdateData()
 {
+	ScrollBoxContent->ClearChildren();
+	ScrollBoxGlobalVarsContent->ClearChildren();
+	ScrollBoxLocalVarsContent->ClearChildren();
+	
 	if (DialConfig)
 	{
 		for (const auto L_Character : DialConfig->GetCharacters())
@@ -201,6 +206,15 @@ void SDialConfigWidget::UpdateData()
 		for (const auto L_Var : DialConfig->GetVariables())
 		{
 			AddGlobalVarRow(L_Var.Key, L_Var.Value, L_Var.Desc);
+		}		
+	}
+
+	if (SmartDialogueEditor->GetDialogue())
+	{
+		auto LocalVars = SmartDialogueEditor->GetDialogue()->GetVariables();
+		for (auto Element : LocalVars)
+		{
+			AddLocalVarRow(Element.Key, Element.Value, Element.Desc);
 		}		
 	}
 }
@@ -256,6 +270,25 @@ void SDialConfigWidget::AddGlobalVarRow(const FString& Key, const FString& Value
 		.OnDeleteButtonClicked(FSimpleDelegate::CreateLambda([this, SharedId]()
 		{
 			this->OnDeleteButtonClicked(SharedId);
+		}))
+	];
+}
+
+void SDialConfigWidget::AddLocalVarRow(const FString& Key, const FString& Value, const FString& Desc)
+{
+	TSharedPtr<FString> SharedId = MakeShared<FString>(Key);
+
+	ScrollBoxLocalVarsContent->AddSlot()
+	.AutoHeight()
+	.Padding(2.0f)
+	[
+		SNew(SDialVarListRow)
+		.VarKey(Key)
+		.VarValue(Value)
+		.VarDesc(Desc)
+		.OnDeleteButtonClicked(FSimpleDelegate::CreateLambda([this, SharedId]()
+		{
+			// this->OnDeleteButtonClicked(SharedId);
 		}))
 	];
 }

@@ -21,6 +21,7 @@ void SPhraseListRow::Construct(const FArguments& InArgs)
 	VarOptions = SmartDialogueEditor->GetAllVariablesList();
 
 	ComparisonOptions = SmartDialogueEditor->GetOperations(false);
+
 	
 	ChildSlot
 	[
@@ -42,6 +43,8 @@ void SPhraseListRow::Construct(const FArguments& InArgs)
 			[
 				SNew(SEditableTextBox)
 				.HintText(NSLOCTEXT("SPhraseListRow", "Animation", "Animation"))
+				.Text(this, &SPhraseListRow::GetAnimationText)
+				.OnTextChanged(this, &SPhraseListRow::OnAnimationTextChanged)
 			]
 			+ SHorizontalBox::Slot()
 			.AutoWidth()
@@ -59,6 +62,7 @@ void SPhraseListRow::Construct(const FArguments& InArgs)
 				.OptionsSource(&ComparisonOptions)
 				.OnGenerateWidget(this, &SPhraseListRow::GenerateComparisonOption)
 				.OnSelectionChanged(this, &SPhraseListRow::OnComparisonSelected)
+				.Visibility(this, &SPhraseListRow::GetComparisonVisibility)
 				.InitiallySelectedItem(ComparisonOptions[0])
 				[
 					SAssignNew(ComparisonTextBlock, STextBlock)
@@ -70,12 +74,16 @@ void SPhraseListRow::Construct(const FArguments& InArgs)
 			[
 				SNew(SEditableTextBox)
 				.HintText(NSLOCTEXT("SPhraseListRow", "Value", "Value"))
+				.Text(this, &SPhraseListRow::GetCompareValueText)
+				.Visibility(this, &SPhraseListRow::GetComparisonVisibility)
+				.OnTextChanged(this, &SPhraseListRow::OnCompareValueTextChanged)
 			]
 			+ SHorizontalBox::Slot()
 			.AutoWidth()
 			[
 				SNew(SCheckBox)
 				.OnCheckStateChanged(this, &SPhraseListRow::OnOrCheckStateChanged)
+				.Visibility(this, &SPhraseListRow::GetComparisonVisibility)
 				.Content()
 				[
 					SNew(STextBlock)
@@ -174,6 +182,7 @@ void SPhraseListRow::OnCharacterSelected(TSharedPtr<FString> NewSelection)
 
 void SPhraseListRow::OnVarSelected(TSharedPtr<FString> NewSelection)
 {
+	
     SmartDialoguePhrasePtr->If.Key = *NewSelection;
 }
 
@@ -230,6 +239,27 @@ FText SPhraseListRow::GetCurrentComparisonText() const
 	return FText::FromString(*ComparisonComboBox->GetSelectedItem());
 }
 
+FText SPhraseListRow::GetAnimationText() const
+{
+	return FText::FromString(*SmartDialoguePhrasePtr->Anim);
+}
+
+void SPhraseListRow::OnAnimationTextChanged(const FText& Text)
+{
+	SmartDialoguePhrasePtr->Anim = Text.ToString();
+}
+
+FText SPhraseListRow::GetCompareValueText() const
+{
+	return FText::FromString(FString::FromInt(SmartDialoguePhrasePtr->If.Value));
+}
+
+void SPhraseListRow::OnCompareValueTextChanged(const FText& Text)
+{
+	FIf* ComparePtr = &SmartDialoguePhrasePtr->If;
+	ComparePtr->Value = FCString::Atoi(*Text.ToString());
+}
+
 FReply SPhraseListRow::OnMultiLineKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent)
 {
 	if (InKeyEvent.GetKey() == EKeys::Enter)
@@ -247,4 +277,9 @@ FReply SPhraseListRow::OnMultiLineKeyDown(const FGeometry& MyGeometry, const FKe
 	}
     
 	return FReply::Unhandled();
+}
+
+EVisibility SPhraseListRow::GetComparisonVisibility() const
+{
+	return SmartDialoguePhrasePtr->If.Key.IsEmpty() ? EVisibility::Collapsed : EVisibility::Visible;
 }

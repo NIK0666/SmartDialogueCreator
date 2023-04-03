@@ -38,6 +38,10 @@ const TSharedPtr<FString>& SBaseComboBox::SetItemValue(const FString& NewStringV
 	{
 		if (Option->Equals(NewStringValue))
 		{
+			if (ComboBox.IsValid())
+			{
+				ComboBox->SetSelectedItem(Option);
+			}
 			return Option;
 		}
 	}

@@ -84,6 +84,7 @@ public:
 	void AddIfElement(const FName& Name, int32 Index, const FIf& Element);
 	void UpdateIfElement(const FName& Name, int32 Index, const FIf& Element);
 	void RemoveIfElement(const FName& Name, int32 Index);
+	void MakeClean();
 
 	FOnBranchesChanged OnBranchesChanged;
 

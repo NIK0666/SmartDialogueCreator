@@ -22,6 +22,8 @@ public:
 
 	void OnPublicVarDeleted(TSharedPtr<FString> VarId);
 	void OnLocalVarDeleted(TSharedPtr<FString> VarId);
+	
+	void UpdateData();
 
 private:
 	
@@ -30,7 +32,8 @@ private:
 	void OnDeleteButtonClicked(TSharedPtr<FString> CharacterId);	
 	void AddCharacterRow(FString Id = "", FString Name = "");
 	void AddGlobalVarRow(const FString& Key = "", const FString& Value = "", const FString& Desc = "");
-	
+	void AddLocalVarRow(const FString& Key, const FString& Value, const FString& Desc);
+
 	FReply OnAddPublicVarClicked();
 
 	FReply OnAddLocalVarClicked();
@@ -39,8 +42,6 @@ private:
 	FReply OnTabButtonClicked(int32 TabIndex);
 	void UpdateButtonStyles();
 	void AddTabButton(const FString& ButtonText);
-	
-	void UpdateData();
 
 	TSharedPtr<SVerticalBox> ScrollBoxGlobalVarsContent;
 	TArray<TSharedPtr<FString>> PublicVarIds;

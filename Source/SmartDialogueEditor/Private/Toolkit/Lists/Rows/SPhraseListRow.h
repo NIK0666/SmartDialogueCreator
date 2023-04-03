@@ -17,7 +17,7 @@ public:
 	SLATE_BEGIN_ARGS(SPhraseListRow) {}
 	SLATE_ARGUMENT(FSmartDialogueEditor*, SmartDialogueEditor)
 	SLATE_ARGUMENT(int32, PhraseIndex)
-	SLATE_END_ARGS() 
+	SLATE_END_ARGS()
 
 
 	void Construct(const FArguments& InArgs);
@@ -51,8 +51,15 @@ private:
 	FText GetCurrentCharacterText() const;
 	FText GetCurrentVarText() const;
 	FText GetCurrentComparisonText() const;
+
 	FReply OnMultiLineKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent);
+	EVisibility GetComparisonVisibility() const;
 	FText GetCurrentText() const;
+	
+	FText GetAnimationText() const;
+	void OnAnimationTextChanged(const FText& Text);
+	FText GetCompareValueText() const;
+	void OnCompareValueTextChanged(const FText& Text);
 
 
 	FSmartDialogueEditor* SmartDialogueEditor = nullptr;
