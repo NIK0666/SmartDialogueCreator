@@ -1,5 +1,4 @@
-// 
-
+// SSmartDialogueGraph.h
 
 #include "SSmartDialogueGraph.h"
 

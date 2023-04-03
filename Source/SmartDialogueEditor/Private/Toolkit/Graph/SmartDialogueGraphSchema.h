@@ -1,4 +1,4 @@
-// 
+// SmartDialogueGraphSchema.h
 
 #pragma once
 
@@ -11,5 +11,10 @@ class SMARTDIALOGUEEDITOR_API USmartDialogueGraphSchema : public UEdGraphSchema
 {
 	GENERATED_BODY()
 
-	// Переопределите необходимые методы
+public:
+
+	// Override required methods
+	virtual void GetGraphContextActions(FGraphContextMenuBuilder& ContextMenuBuilder) const override;
+	virtual TSharedPtr<FEdGraphSchemaAction> GetCreateCommentAction() const override;
+	virtual void GetContextMenuActions(class UToolMenu* Menu, class UGraphNodeContextMenuContext* Context) const override;
 };
