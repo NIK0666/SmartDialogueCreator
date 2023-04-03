@@ -21,6 +21,5 @@ public:
 
 protected:
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
-
 	virtual TSharedPtr<SGraphNode> CreateVisualWidget() override;
 };

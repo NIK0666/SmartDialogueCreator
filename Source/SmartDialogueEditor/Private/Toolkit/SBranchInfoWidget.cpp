@@ -145,11 +145,11 @@ void SBranchInfoWidget::OnBranchNameTextCommitted(const FText& NewText, ETextCom
 {
 	if (CommitType == ETextCommit::OnEnter || CommitType == ETextCommit::OnUserMovedFocus)
 	{
-		FName OldName = BranchName;
-		FName NewName = FName(*NewText.ToString());
-
 		if (Editor)
 		{
+			const FName OldName = BranchName;
+			const FName NewName = FName(*NewText.ToString());
+			
 			if (DialoguePtr && DialoguePtr->RenameBranch(OldName, NewName))
 			{
 				BranchName = NewName;

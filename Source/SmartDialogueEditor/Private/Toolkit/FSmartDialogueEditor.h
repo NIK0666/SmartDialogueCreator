@@ -122,6 +122,6 @@ private:
 	TArray<TSharedPtr<FString>> CachedBranchesList;
 
 	UPROPERTY()
-	class USmartDialogueGraph* DialogueGraph;
+	class USmartDialogueGraph* DialogueGraph = nullptr;
 
 };
