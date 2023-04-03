@@ -9,7 +9,6 @@
 #include "Lists/SShowBranchesComboBoxList.h"
 #include "Lists/SConditionsComboBoxList.h"
 #include "Lists/SOperationsComboBoxList.h"
-#include "Lists/SOperationsListWidget.h"
 
 #define LOCTEXT_NAMESPACE "SmartDialogueEditor"
 
@@ -230,7 +229,7 @@ TSharedRef<SWidget> SBranchPropertiesWidget::GetContentWidget()
 					.VAlign(VAlign_Center)
 					.AutoWidth()
 					[
-						SNew(SCheckBox)
+						SAssignNew(AfterBranchCheckBox, SCheckBox)
 						.OnCheckStateChanged_Lambda([this](ECheckBoxState NewState)
 						{
 							GetBranchDataPtr()->Event.Post = (NewState == ECheckBoxState::Checked);
@@ -381,39 +380,8 @@ void SBranchPropertiesWidget::UpdateWidgets()
 	CheckAsORCheckBox->SetIsChecked(GetBranchDataPtr()->OrCond ? ECheckBoxState::Checked : ECheckBoxState::Unchecked);
 
 	EventNameTextBox->SetText(FText::FromString(GetBranchDataPtr()->Event.Name));
-	
-	// AllBranchesList = SmartDialogueEditor->GetAllBranchesList();
-	// for (auto Element : AllBranchesList)
-	// {
-	// 	if (Element.Get()->Equals(GetBranchDataPtr()->ChangeStarted))
-	// 	{
-	// 		StartBranchComboBox->SetSelectedItem(Element);
-	// 		break;
-	// 	}		
-	// }
-
-	TArray<FIf> IfElements = GetBranchDataPtr()->If;
-	TArray<FSmartDialogueVars> VarElements = GetBranchDataPtr()->Vars;
-
-	// Преобразование данных для CheckEntryConditionsList и ModifyVariablesList
-	TArray<FListItemData> CheckEntryItems, ModifyVarItems;
-	for (const FIf& IfElement : IfElements)
-	{
-		FListItemData ItemData;
-		ItemData.Name = IfElement.Key;
-		ItemData.OperationString = UEnum::GetValueAsString<ESmartDialogueEqualOperation>(IfElement.EqualOperation);
-		ItemData.Value = IfElement.Value;
-		CheckEntryItems.Add(ItemData);
-	}
-
-	for (const FSmartDialogueVars& VarElement : VarElements)
-	{
-		FListItemData ItemData;
-		ItemData.Name = VarElement.Key;
-		ItemData.OperationString = UEnum::GetValueAsString<ESmartDialogueOperation>(VarElement.Operation);
-		ItemData.Value = VarElement.Value;
-		ModifyVarItems.Add(ItemData);
-	}
+	EventParamTextBox->SetText(FText::FromString(GetBranchDataPtr()->Event.Param));
+	AfterBranchCheckBox->SetIsChecked(GetBranchDataPtr()->Event.Post);
 
 	StartBranchComboBox->SetItemValue(GetBranchDataPtr()->ChangeStarted);
 

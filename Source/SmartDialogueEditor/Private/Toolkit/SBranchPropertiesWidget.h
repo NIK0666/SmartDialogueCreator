@@ -11,8 +11,6 @@ class SShowBranchesComboBoxList;
 class SOperationsComboBoxList;
 class SConditionsComboBoxList;
 
-class SBranchesListWidget;
-class SOperationsListWidget;
 class FSmartDialogueEditor;
 class SBranchComboBox;
 
@@ -50,6 +48,7 @@ private:
 	TSharedPtr<SBranchComboBox> StartBranchComboBox;
 	TSharedPtr<SEditableTextBox> EventNameTextBox;
 	TSharedPtr<SEditableTextBox> EventParamTextBox;
+	TSharedPtr<SCheckBox> AfterBranchCheckBox;
 	TSharedPtr<SWidget> ContentWidget;
 	TSharedPtr<SVerticalBox> PropertiesContentWidget;
 
