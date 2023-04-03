@@ -38,6 +38,7 @@ private:
 	void OnBranchItemRemoved(FName& Name);
 	
 	void UpdateWidgets();
+	EVisibility GetEventParamVisibility() const;
 
 	// Добавляем указатели на виджеты интерфейса
 	TSharedPtr<SCheckBox> HiddenCheckBox;

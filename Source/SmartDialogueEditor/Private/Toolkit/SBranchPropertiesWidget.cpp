@@ -4,6 +4,7 @@
 #include "SBranchPropertiesWidget.h"
 
 #include "FSmartDialogueEditor.h"
+#include "SmartDialogue.h"
 #include "Components/SBranchComboBox.h"
 #include "Lists/SHideBranchesComboBoxList.h"
 #include "Lists/SShowBranchesComboBoxList.h"
@@ -19,8 +20,6 @@ void SBranchPropertiesWidget::Construct(const FArguments& InArgs)
 	SmartDialogueEditor->OnBranchSelected.AddSP(this, &SBranchPropertiesWidget::OnBranchSelected);
 	SmartDialogueEditor->OnResetSelectedBranch.AddSP(this, &SBranchPropertiesWidget::OnResetSelectedBranch);
 	SmartDialogueEditor->OnBranchItemRemoved.AddSP(this, &SBranchPropertiesWidget::OnBranchItemRemoved);
-
-	// AllBranchesList = SmartDialogueEditor->GetAllBranchesList();
 	
 	if (GetBranchDataPtr() != nullptr)
 	{
@@ -207,7 +206,9 @@ TSharedRef<SWidget> SBranchPropertiesWidget::GetContentWidget()
 						.Text(FText::FromString(GetBranchDataPtr()->Event.Name))
 						.OnTextCommitted_Lambda([this](const FText& NewText, ETextCommit::Type CommitType)
 						{
-							GetBranchDataPtr()->Event.Name = NewText.ToString();
+							auto L_Event = GetBranchDataPtr()->Event;
+							L_Event.Name = NewText.ToString();
+							SmartDialogueEditor->GetDialogue()->UpdateEventInfo(SmartDialogueEditor->GetSelectedBranchName(), L_Event);							
 						})
 						.HintText(LOCTEXT("EventNameLabel", "Event name"))
 					]
@@ -220,9 +221,12 @@ TSharedRef<SWidget> SBranchPropertiesWidget::GetContentWidget()
 						.Text(FText::FromString(GetBranchDataPtr()->Event.Param))
 						.OnTextCommitted_Lambda([this](const FText& NewText, ETextCommit::Type CommitType)
 						{
-							GetBranchDataPtr()->Event.Param = NewText.ToString();
+							auto L_Event = GetBranchDataPtr()->Event;
+							L_Event.Param = NewText.ToString();
+							SmartDialogueEditor->GetDialogue()->UpdateEventInfo(SmartDialogueEditor->GetSelectedBranchName(), L_Event);	
 						})
 						.HintText(LOCTEXT("EventParamLabel", "Event param"))
+						.Visibility(this, &SBranchPropertiesWidget::GetEventParamVisibility)
 					]
 
 					+ SHorizontalBox::Slot()
@@ -232,9 +236,12 @@ TSharedRef<SWidget> SBranchPropertiesWidget::GetContentWidget()
 						SAssignNew(AfterBranchCheckBox, SCheckBox)
 						.OnCheckStateChanged_Lambda([this](ECheckBoxState NewState)
 						{
-							GetBranchDataPtr()->Event.Post = (NewState == ECheckBoxState::Checked);
+							auto L_Event = GetBranchDataPtr()->Event;
+							L_Event.Post = (NewState == ECheckBoxState::Checked);
+							SmartDialogueEditor->GetDialogue()->UpdateEventInfo(SmartDialogueEditor->GetSelectedBranchName(), L_Event);	
 						})
-						.ToolTipText(LOCTEXT("AfterAllPhrasesTooltip", "After all phrases in the branch"))
+						.ToolTipText(LOCTEXT("AfterAllPhrasesTooltip", "After all phrases"))
+						.Visibility(this, &SBranchPropertiesWidget::GetEventParamVisibility)
 					]
 				]
 			]
@@ -391,6 +398,11 @@ void SBranchPropertiesWidget::UpdateWidgets()
 	CheckEntryConditionsList->UpdateInitialConditions(GetBranchDataPtr()->If);
 	ModifyVariablesList->UpdateInitialVars(GetBranchDataPtr()->Vars);
 
+}
+
+EVisibility SBranchPropertiesWidget::GetEventParamVisibility() const
+{	
+	return SmartDialogueEditor->GetSelectedBranch()->Event.Name.IsEmpty() ? EVisibility::Collapsed : EVisibility::Visible;
 }
 
 #undef LOCTEXT_NAMESPACE

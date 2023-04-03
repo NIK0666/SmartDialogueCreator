@@ -275,6 +275,15 @@ void USmartDialogue::RemoveIfElement(const FName& BranchName, int32 Index)
 	}
 }
 
+void USmartDialogue::UpdateEventInfo(const FName& BranchName, const FSmartDialogueEvent& Event)
+{
+	if (Branches.Contains(BranchName))
+	{
+		auto* BranchPtr = &Branches[BranchName];
+		BranchPtr->Event = Event;
+	}
+}
+
 void USmartDialogue::MakeClean()
 {
 	Variables = {};
