@@ -13,12 +13,31 @@ void SGraphNode_Branch::Construct(const FArguments& InArgs, UBranchNode* InNode)
 	this->UpdateGraphNode();
 }
 
+void SGraphNode_Branch::CreatePinWidgets()
+{
+	// Create Pin widgets for each of the pins.
+	for (int32 PinIndex = 0; PinIndex < GraphNode->Pins.Num(); ++PinIndex)
+	{
+		UEdGraphPin* CurPin = GraphNode->Pins[PinIndex];
+		CurPin->PinName = FName();
+	}
+
+	SGraphNode::CreatePinWidgets();
+}
+
 TSharedRef<SWidget> SGraphNode_Branch::CreateNodeContentArea()
-{    
-	return SNew(SVerticalBox)
+{
+	return SNew(SOverlay)
+	+SOverlay::Slot()
+	[
+		SGraphNode::CreateNodeContentArea()
+	]
+	+SOverlay::Slot()
+	[
+		SNew(SVerticalBox)
 		+ SVerticalBox::Slot()
 		.AutoHeight()
-		.Padding(2.0f)
+		.Padding(32.f, 8.f)
 		[
 			SNew(SInlineEditableTextBlock)
 			.Text(FText::FromString(Cast<UBranchNode>(GraphNode)->PhraseText))
@@ -26,7 +45,8 @@ TSharedRef<SWidget> SGraphNode_Branch::CreateNodeContentArea()
 			{
 				Cast<UBranchNode>(GraphNode)->PhraseText = InText.ToString();
 			})
-		];
+		]
+	];
 }
 
 TSharedRef<SWidget> SGraphNode_Branch::CreateTitleWidget(TSharedPtr<SNodeTitle> NodeTitle)
@@ -53,13 +73,4 @@ TSharedRef<SWidget> SGraphNode_Branch::CreateNodeTitleWidget()
 			}
 		})
 		.IsReadOnly(!IsEditable.Get());
-}
-
-void SGraphNode_Branch::EnterRenameMode()
-{
-	if (IsEditable.Get())
-	{
-		TitleSwitcher->SetActiveWidgetIndex(1);
-		FSlateApplication::Get().SetKeyboardFocus(TitleEditableText, EFocusCause::Mouse);
-	}
 }

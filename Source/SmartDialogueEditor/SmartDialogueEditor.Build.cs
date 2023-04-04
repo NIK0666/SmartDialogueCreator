@@ -24,6 +24,7 @@ public class SmartDialogueEditor : ModuleRules
             "InputCore", 
             "EditorStyle",
             "UnrealEd", 
+            "BlueprintGraph", 
             "GraphEditor", 
             "ToolMenus",
             "PropertyEditor", 

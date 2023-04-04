@@ -68,14 +68,60 @@ void USmartDialogueGraphSchema::GetContextMenuActions(UToolMenu* Menu, UGraphNod
 
 					DuplicatedNode->CreateNewGuid();
 					DuplicatedNode->PostPasteNode();
-					DuplicatedNode->AllocateDefaultPins();
-					DuplicatedNode->NodePosX += 50;
-					DuplicatedNode->NodePosY += 50;
+					DuplicatedNode->NodePosX += 100;
+					DuplicatedNode->NodePosY += 10;
 				}),
 				FCanExecuteAction::CreateLambda([Context]() { return Context->Node->CanDuplicateNode(); })
 			)
 		);
 	}
 }
+
+const FPinConnectionResponse USmartDialogueGraphSchema::CanCreateConnection(const UEdGraphPin* A, const UEdGraphPin* B) const
+{
+	// Ensure both pins are valid
+	if (!A || !B)
+	{
+		return FPinConnectionResponse(CONNECT_RESPONSE_DISALLOW, TEXT("Invalid pin(s)"));
+	}
+
+	// Disallow connections to self
+	if (A->GetOwningNode() == B->GetOwningNode())
+	{
+		return FPinConnectionResponse(CONNECT_RESPONSE_DISALLOW, TEXT("Cannot connect node to itself"));
+	}
+
+	// Disallow multiple connections to the same input pin
+	if (A->Direction == EGPD_Input && B->Direction == EGPD_Input)
+	{
+		return FPinConnectionResponse(CONNECT_RESPONSE_DISALLOW, TEXT("Both pins are input pins"));
+	}
+
+	// Disallow connections between two output pins
+	if (A->Direction == EGPD_Output && B->Direction == EGPD_Output)
+	{
+		return FPinConnectionResponse(CONNECT_RESPONSE_DISALLOW, TEXT("Both pins are output pins"));
+	}
+
+	// Allow the connection if the pins are execution pins
+	if (A->PinType.PinCategory == UEdGraphSchema_K2::PC_Exec && B->PinType.PinCategory == UEdGraphSchema_K2::PC_Exec)
+	{
+		return FPinConnectionResponse(CONNECT_RESPONSE_MAKE, TEXT(""));
+	}
+
+	// For other pin types, defer to the parent class (UEdGraphSchema_K2)
+	return Super::CanCreateConnection(A, B);
+}
+
+bool USmartDialogueGraphSchema::TryCreateConnection(UEdGraphPin* A, UEdGraphPin* B) const
+{
+	return UEdGraphSchema::TryCreateConnection(A, B);
+}
+
+void USmartDialogueGraphSchema::BreakPinLinks(UEdGraphPin& TargetPin, bool bSendsNodeNotifcation) const
+{
+	UEdGraphSchema::BreakPinLinks(TargetPin, bSendsNodeNotifcation);
+}
+
 
 #undef LOCTEXT_NAMESPACE

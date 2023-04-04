@@ -17,6 +17,7 @@ public:
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs, UBranchNode* InNode);
+	virtual void CreatePinWidgets() override;
 
 protected:	
 	virtual TSharedRef<SWidget> CreateNodeContentArea() override;
@@ -24,7 +25,6 @@ protected:
 
 	TSharedRef<SWidget> CreateNodeTitleWidget();
 	FText GetNodeTitle() const;
-	void EnterRenameMode();
 
 	FOnNodeTitleChanged OnNodeTitleChanged;
 	TSharedPtr<SWidgetSwitcher> TitleSwitcher;

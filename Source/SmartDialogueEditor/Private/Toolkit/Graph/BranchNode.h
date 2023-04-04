@@ -18,8 +18,13 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Branch")
 	FString PhraseText;
+	
+	virtual void AllocateDefaultPins() override;
 
 protected:
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
 	virtual TSharedPtr<SGraphNode> CreateVisualWidget() override;
+
+	void CreateInputPin();
+	void CreateOutputPins();
 };
