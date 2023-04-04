@@ -15,6 +15,7 @@
 #include "SSmartDialogueGraph.h"
 #include "UMGStyle.h"
 #include "Components/SCharacterComboBox.h"
+#include "Graph/BranchNode.h"
 #include "Graph/SmartDialogueGraph.h"
 #include "Graph/SmartDialogueGraphSchema.h"
 #include "Serializor/JsonParser.h"
@@ -35,6 +36,7 @@ void FSmartDialogueEditor::InitSmartDialogueEditor(EToolkitMode::Type Mode, cons
 	SetDialogue(SmartDialogue);
 
 	DialogueGraph = NewObject<USmartDialogueGraph>();
+	DialogueGraph->SetEditor(this);
 	DialogueGraph->SetFlags(RF_Transactional);
 	
 	FSmartDialogueEditorCommands::Register();
@@ -49,8 +51,8 @@ void FSmartDialogueEditor::InitSmartDialogueEditor(EToolkitMode::Type Mode, cons
 	FAssetEditorToolkit::AddToolbarExtender(ToolbarExtender);
 	
 	
-	
 	RegenerateMenusAndToolbars();
+
 }
 
 void FSmartDialogueEditor::SetDialogue(USmartDialogue* InDialogue)
@@ -353,15 +355,11 @@ TSharedRef<SDockTab> FSmartDialogueEditor::SpawnTab_Graph(const FSpawnTabArgs& A
 {
 	check(Args.GetTabId() == SmartDialogue_GraphTabId);
 	
-	// Создание экземпляра вашего графа
-	USmartDialogueGraph* NewDialogueGraph = NewObject<USmartDialogueGraph>();
-	NewDialogueGraph->SetEditor(this);
-	
 	return SNew(SDockTab)
 		.TabRole(ETabRole::NomadTab)
 		[
 			SNew(SSmartDialogueGraph)
-			.InDialogueGraph(NewDialogueGraph)
+			.InDialogueGraph(DialogueGraph)
 			.SmartDialogueEditor(this)
 		];
 }
@@ -444,6 +442,7 @@ void FSmartDialogueEditor::RefreshEditor()
 	GetBranchesListPanel()->UpdateBranchesList();
 	CharacterComboBox->SetItemValue(GetDialogue()->GetCharacter());
 	DialConfigWidget->UpdateData();
+	RefreshGraphNodes();
 }
 
 void FSmartDialogueEditor::ImportJson()
@@ -505,6 +504,29 @@ void FSmartDialogueEditor::PlayDialogue()
 {
 	// Переключение на вкладку Player
 	TabManager->TryInvokeTab(SmartDialogue_PlayerTabId);
+}
+
+void FSmartDialogueEditor::RefreshGraphNodes()
+{
+	if (!Dialogue || !DialogueGraph)
+	{
+		return;
+	}
+
+	// Удалить все существующие ноды
+	DialogueGraph->Nodes.Empty();
+
+	// Создать ноды на основе ветвей диалога
+	for (const TPair<FName, FSmartDialogueBranch>& Pair : Dialogue->GetBranches())
+	{
+		UBranchNode* BranchNode = DialogueGraph->CreateBranchNode();
+		BranchNode->Initialize(Pair.Key, this);
+
+		DialogueGraph->Nodes.Add(BranchNode);
+	}
+
+	// Обновить граф после добавления нод
+	DialogueGraph->NotifyGraphChanged();
 }
 
 USmartDialConfig* FSmartDialogueEditor::GetDialogueConfig()

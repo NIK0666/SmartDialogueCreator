@@ -13,6 +13,7 @@ class SBranchInfoWidget;
 class SBranchesWidget;
 class SBranchPhrasesWidget;
 class SDialConfigWidget;
+class USmartDialogueGraph;
 
 class USmartDialogue;
 
@@ -62,6 +63,8 @@ public:
 	FName GetSelectedBranchName();
 	FSmartDialogueBranch* GetSelectedBranch();
 	void ResetSelectedBranch();
+	
+	void RefreshGraphNodes();
 
 	TSharedPtr<SBranchesWidget> GetBranchesListPanel() { return BranchesWidget; }
 
@@ -122,6 +125,6 @@ private:
 	TArray<TSharedPtr<FString>> CachedBranchesList;
 
 	UPROPERTY()
-	class USmartDialogueGraph* DialogueGraph = nullptr;
+	USmartDialogueGraph* DialogueGraph = nullptr;
 
 };
