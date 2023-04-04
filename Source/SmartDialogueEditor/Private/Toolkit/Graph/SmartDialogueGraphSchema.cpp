@@ -85,8 +85,35 @@ const FPinConnectionResponse USmartDialogueGraphSchema::CanCreateConnection(cons
 		return FPinConnectionResponse(CONNECT_RESPONSE_DISALLOW, TEXT("Invalid pin(s)"));
 	}
 
+	// Disallow multiple connections between the same pair of nodes
+	UEdGraphNode* NodeA = A->GetOwningNode();
+	UEdGraphNode* NodeB = B->GetOwningNode();
+	for (UEdGraphPin* NodeAPin : NodeA->Pins)
+	{
+		if (NodeAPin->Direction == EGPD_Output)
+		{
+			for (UEdGraphPin* NodeBPin : NodeB->Pins)
+			{
+				if (NodeBPin->Direction == EGPD_Input && NodeAPin->LinkedTo.Contains(NodeBPin))
+				{
+					return FPinConnectionResponse(CONNECT_RESPONSE_DISALLOW, TEXT("Nodes are already connected"));
+				}
+			}
+		}
+		else
+		{
+			for (UEdGraphPin* NodeBPin : NodeB->Pins)
+			{
+				if (NodeBPin->Direction == EGPD_Output && NodeAPin->LinkedTo.Contains(NodeBPin))
+				{
+					return FPinConnectionResponse(CONNECT_RESPONSE_DISALLOW, TEXT("Nodes are already connected"));
+				}
+			}
+		}
+	}
+
 	// Disallow connections to self
-	if (A->GetOwningNode() == B->GetOwningNode())
+	if (NodeA == NodeB)
 	{
 		return FPinConnectionResponse(CONNECT_RESPONSE_DISALLOW, TEXT("Cannot connect node to itself"));
 	}
