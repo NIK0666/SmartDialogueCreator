@@ -4,6 +4,7 @@
 #include "SmartDialogueGraphSchema.h"
 
 #include "BranchNode.h"
+#include "SmartDialogueGraph.h"
 #include "EdGraph/EdGraph.h"
 #include "Framework/MultiBox/MultiBoxBuilder.h"
 #include "ToolMenus.h"
@@ -12,13 +13,15 @@
 
 void USmartDialogueGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& ContextMenuBuilder) const
 {
-	// Add "Add Branch Node" action
+	auto* DialogueGraph = Cast<USmartDialogueGraph>(ContextMenuBuilder.CurrentGraph);
+	check(DialogueGraph);
+
 	const FText Name = LOCTEXT("AddBranchNodeAction", "Add Branch Node");
 	const FText ToolTip = LOCTEXT("AddBranchNodeTooltip", "Create a new Branch Node");
 	const FText Category = LOCTEXT("DialogueNodesCategory", "Dialogue Nodes");
 
 	TSharedPtr<FEdGraphSchemaAction_NewNode> AddBranchNodeAction = TSharedPtr<FEdGraphSchemaAction_NewNode>(new FEdGraphSchemaAction_NewNode(Category, Name, ToolTip, 0));
-	AddBranchNodeAction->NodeTemplate = NewObject<UBranchNode>();
+	AddBranchNodeAction->NodeTemplate = DialogueGraph->CreateBranchNode();
 
 	ContextMenuBuilder.AddAction(AddBranchNodeAction);
 }

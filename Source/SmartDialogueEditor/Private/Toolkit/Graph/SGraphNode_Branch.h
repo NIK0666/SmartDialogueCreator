@@ -6,6 +6,7 @@
 
 class UBranchNode;
 class SWidgetSwitcher;
+class SBranchPin;
 
 class SMARTDIALOGUEEDITOR_API SGraphNode_Branch : public SGraphNode
 {
@@ -22,6 +23,7 @@ public:
 protected:	
 	virtual TSharedRef<SWidget> CreateNodeContentArea() override;
 	virtual TSharedRef<SWidget> CreateTitleWidget(TSharedPtr<SNodeTitle> NodeTitle) override;
+	virtual TSharedPtr<SGraphPin> CreatePinWidget(UEdGraphPin* Pin) const override;
 
 	TSharedRef<SWidget> CreateNodeTitleWidget();
 	FText GetNodeTitle() const;

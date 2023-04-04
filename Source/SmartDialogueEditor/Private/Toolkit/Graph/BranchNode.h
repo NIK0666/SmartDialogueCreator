@@ -5,6 +5,7 @@
 #include "EdGraph/EdGraphNode.h"
 #include "BranchNode.generated.h"
 
+class FSmartDialogueEditor;
 UCLASS()
 class SMARTDIALOGUEEDITOR_API UBranchNode : public UEdGraphNode
 {
@@ -14,12 +15,12 @@ public:
 	UBranchNode();
 	
 	UPROPERTY(EditAnywhere, Category = "Branch")
-	FString BranchTitle;
-
-	UPROPERTY(EditAnywhere, Category = "Branch")
 	FString PhraseText;
 	
 	virtual void AllocateDefaultPins() override;
+
+	UBranchNode* Initialize(const FName& InBranchName, FSmartDialogueEditor* InEditor);
+	FName GetBranchName() const { return BranchName; }
 
 protected:
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
@@ -27,4 +28,7 @@ protected:
 
 	void CreateInputPin();
 	void CreateOutputPins();
+	
+	FName BranchName;
+	FSmartDialogueEditor* Editor;
 };

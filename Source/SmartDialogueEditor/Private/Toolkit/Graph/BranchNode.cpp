@@ -4,22 +4,48 @@
 #include "BranchNode.h"
 
 #include "SGraphNode_Branch.h"
+#include "Toolkit/FSmartDialogueEditor.h"
+
 
 UBranchNode::UBranchNode()
 {
-	BranchTitle = TEXT("Branch Title");
-	PhraseText = TEXT("Phrase Text");
+	// BranchName = InBranchName;
+	// Editor = InEditor;
+	// if (Editor->GetSelectedBranch())
+	// {
+	// 	PhraseText = Editor->GetSelectedBranch()->Text.ToString();
+	// }
+	// else
+	// {
+	// 	PhraseText = "Base Phrase Text";
+	// }
 }
 
 FText UBranchNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-	return FText::FromString(BranchTitle);
+	return FText::FromName(BranchName);
 }
 
 void UBranchNode::AllocateDefaultPins()
 {
 	CreateInputPin();
 	CreateOutputPins();
+}
+
+UBranchNode* UBranchNode::Initialize(const FName& InBranchName, FSmartDialogueEditor* InEditor)
+{
+	BranchName = InBranchName;
+	Editor = InEditor;
+	if (Editor->GetSelectedBranch())
+	{
+		PhraseText = Editor->GetSelectedBranch()->Text.ToString();
+	}
+	else
+	{
+		PhraseText = "Base Phrase Text";
+	}
+
+	return this;
 }
 
 TSharedPtr<SGraphNode> UBranchNode::CreateVisualWidget()

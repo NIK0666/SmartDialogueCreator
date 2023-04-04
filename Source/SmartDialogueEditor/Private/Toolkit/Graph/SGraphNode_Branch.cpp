@@ -1,6 +1,7 @@
 // SGraphNode_Branch.cpp
 #include "SGraphNode_Branch.h"
 #include "BranchNode.h"
+#include "SBranchPin.h"
 #include "SGraphPin.h"
 #include "Widgets/Layout/SWidgetSwitcher.h"
 #include "Widgets/Text/SInlineEditableTextBlock.h"
@@ -57,7 +58,7 @@ TSharedRef<SWidget> SGraphNode_Branch::CreateTitleWidget(TSharedPtr<SNodeTitle> 
 FText SGraphNode_Branch::GetNodeTitle() const
 {
 	UBranchNode* BranchNode = Cast<UBranchNode>(GraphNode);
-	return BranchNode ? FText::FromString(BranchNode->BranchTitle) : FText::GetEmpty();
+	return BranchNode ? FText::FromName(BranchNode->GetBranchName()) : FText::GetEmpty();
 }
 
 TSharedRef<SWidget> SGraphNode_Branch::CreateNodeTitleWidget()
@@ -67,10 +68,15 @@ TSharedRef<SWidget> SGraphNode_Branch::CreateNodeTitleWidget()
 		.Font(FAppStyle::GetFontStyle("BoldFont"))
 		.OnTextCommitted_Lambda([this](const FText& InText, ETextCommit::Type CommitInfo)
 		{
-			if (UBranchNode* BranchNode = Cast<UBranchNode>(GraphNode))
-			{
-				BranchNode->BranchTitle = InText.ToString();
-			}
+			// if (UBranchNode* BranchNode = Cast<UBranchNode>(GraphNode))
+			// {
+			// 	BranchNode->BranchTitle = InText.ToString();
+			// }
 		})
 		.IsReadOnly(!IsEditable.Get());
+}
+
+TSharedPtr<SGraphPin> SGraphNode_Branch::CreatePinWidget(UEdGraphPin* Pin) const
+{
+	return SNew(SBranchPin, Pin);
 }

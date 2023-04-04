@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BranchNode.h"
 #include "EdGraph/EdGraph.h"
 #include "SmartDialogueGraph.generated.h"
 
@@ -18,6 +17,9 @@ public:
 	USmartDialogueGraph();
 
 	void SetEditor(FSmartDialogueEditor* InEditor);
+
+	UFUNCTION(BlueprintCallable, Category = "Dialogue")
+	UBranchNode* CreateBranchNode() const;
 
 private:
 	FSmartDialogueEditor* Editor;

@@ -2,6 +2,7 @@
 
 
 #include "SmartDialogueGraph.h"
+#include "BranchNode.h"
 
 #include "SmartDialogueGraphSchema.h"
 
@@ -10,14 +11,12 @@ USmartDialogueGraph::USmartDialogueGraph()
 	Schema = USmartDialogueGraphSchema::StaticClass();
 }
 
-// UBranchNode* USmartDialogueGraph::CreateBranchNode(bool bisUserAction, bool bIsSelectNewNode)
-// {
-// 	UBranchNode* NewBranchNode = NewObject<UBranchNode>(this);
-// 	AddNode(NewBranchNode, bisUserAction, bIsSelectNewNode);
-// 	return NewBranchNode;
-// }
-
 void USmartDialogueGraph::SetEditor(FSmartDialogueEditor* InEditor)
 {
 	Editor = InEditor;
+}
+
+UBranchNode* USmartDialogueGraph::CreateBranchNode() const
+{	
+	return NewObject<UBranchNode>()->Initialize(FName("branch_0"), Editor);
 }
