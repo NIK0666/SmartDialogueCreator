@@ -355,7 +355,7 @@ TSharedRef<SDockTab> FSmartDialogueEditor::SpawnTab_Graph(const FSpawnTabArgs& A
 	
 	// Создание экземпляра вашего графа
 	USmartDialogueGraph* NewDialogueGraph = NewObject<USmartDialogueGraph>();
-	NewDialogueGraph->Schema = USmartDialogueGraphSchema::StaticClass();
+	NewDialogueGraph->SetEditor(this);
 	
 	return SNew(SDockTab)
 		.TabRole(ETabRole::NomadTab)
