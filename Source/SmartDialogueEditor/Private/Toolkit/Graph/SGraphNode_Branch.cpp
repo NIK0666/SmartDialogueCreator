@@ -3,6 +3,7 @@
 #include "BranchNode.h"
 #include "SBranchPin.h"
 #include "SGraphPin.h"
+#include "SmartDialogueData.h"
 #include "Widgets/Layout/SWidgetSwitcher.h"
 #include "Widgets/Text/SInlineEditableTextBlock.h"
 
@@ -28,26 +29,28 @@ void SGraphNode_Branch::CreatePinWidgets()
 
 TSharedRef<SWidget> SGraphNode_Branch::CreateNodeContentArea()
 {
+	UBranchNode* BranchNode = Cast<UBranchNode>(GraphNode);
+
 	return SNew(SOverlay)
-	+SOverlay::Slot()
-	[
-		SGraphNode::CreateNodeContentArea()
-	]
-	+SOverlay::Slot()
-	[
-		SNew(SVerticalBox)
-		+ SVerticalBox::Slot()
-		.AutoHeight()
-		.Padding(32.f, 8.f)
+		+ SOverlay::Slot()
 		[
-			SNew(SInlineEditableTextBlock)
-			.Text(FText::FromString(Cast<UBranchNode>(GraphNode)->PhraseText))
-			.OnTextCommitted_Lambda([this](const FText& InText, ETextCommit::Type CommitInfo)
-			{
-				Cast<UBranchNode>(GraphNode)->PhraseText = InText.ToString();
-			})
+			SGraphNode::CreateNodeContentArea()
 		]
-	];
+		+ SOverlay::Slot()
+		[
+			SNew(SVerticalBox)
+			+ SVerticalBox::Slot()
+			.AutoHeight()
+			.Padding(32.f, 8.f)
+			[
+				SNew(SInlineEditableTextBlock)
+				.Text_Lambda([BranchNode]() { return BranchNode->GetBranchPtr()->Text; }) 
+				.OnTextCommitted_Lambda([BranchNode](const FText& InText, ETextCommit::Type CommitInfo)
+				{
+					BranchNode->GetBranchPtr()->Text = InText;
+				})
+			]
+		];
 }
 
 TSharedRef<SWidget> SGraphNode_Branch::CreateTitleWidget(TSharedPtr<SNodeTitle> NodeTitle)
@@ -68,10 +71,8 @@ TSharedRef<SWidget> SGraphNode_Branch::CreateNodeTitleWidget()
 		.Font(FAppStyle::GetFontStyle("BoldFont"))
 		.OnTextCommitted_Lambda([this](const FText& InText, ETextCommit::Type CommitInfo)
 		{
-			// if (UBranchNode* BranchNode = Cast<UBranchNode>(GraphNode))
-			// {
-			// 	BranchNode->BranchTitle = InText.ToString();
-			// }
+			UBranchNode* BranchNode = Cast<UBranchNode>(GraphNode);
+			BranchNode->RenameBranch(InText.ToString());
 		})
 		.IsReadOnly(!IsEditable.Get());
 }

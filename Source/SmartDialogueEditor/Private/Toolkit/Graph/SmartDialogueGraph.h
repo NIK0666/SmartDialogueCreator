@@ -24,7 +24,7 @@ public:
 	UBranchNode* CreateBranchNode(const FName& BranchName) const;
 	void AddBranchNode(FSmartDialogueBranch& SmartDialogueBranch);
 	
-	FVector2D LastMousePos;
+	FVector2D LastNodePos;
 
 private:
 	FSmartDialogueEditor* Editor;

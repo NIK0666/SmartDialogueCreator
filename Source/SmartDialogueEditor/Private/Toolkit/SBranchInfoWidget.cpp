@@ -40,6 +40,8 @@ void SBranchInfoWidget::Construct(const FArguments& InArgs)
 	Editor = InArgs._Editor;	
 
 	DialoguePtr = Editor->GetDialogue();
+	BranchRenamedHandle = DialoguePtr->OnBranchRenamed.AddRaw(this, &SBranchInfoWidget::OnBranchRenamed);
+
 	ChildSlot
 	[
 		SNew(SBorder)
@@ -56,7 +58,7 @@ void SBranchInfoWidget::Construct(const FArguments& InArgs)
 				.WidthOverride(150)
 				[
 					SAssignNew(BranchNameTextBox, SEditableTextBox)
-					.Text(FText::FromName(BranchName))
+					.Text(this, &SBranchInfoWidget::GetBranchNameAsText)
 					.OnTextCommitted(this, &SBranchInfoWidget::OnBranchNameTextCommitted)
 					.OnKeyDownHandler(this, &SBranchInfoWidget::OnBranchNameTextBoxKeyDown)
 				]
@@ -104,9 +106,19 @@ void SBranchInfoWidget::Construct(const FArguments& InArgs)
 	];
 }
 
+SBranchInfoWidget::~SBranchInfoWidget()
+{
+	DialoguePtr->OnBranchRenamed.Remove(BranchRenamedHandle);
+}
+
 FName SBranchInfoWidget::GetBranchName() const
 {
 	return BranchName;
+}
+
+FText SBranchInfoWidget::GetBranchNameAsText() const
+{
+	return FText::FromName(BranchName);
 }
 
 void SBranchInfoWidget::SetEditableTextFocus(bool bIsTextFocused)
@@ -129,6 +141,14 @@ void SBranchInfoWidget::Tick(const FGeometry& AllottedGeometry, const double InC
 	if (bNewFocus != bIsFocused)
 	{
 		SetIsFocused(bNewFocus);
+	}
+}
+
+void SBranchInfoWidget::OnBranchRenamed(FName OldName, FName NewName)
+{
+	if (BranchName == OldName)
+	{
+		BranchName = NewName;
 	}
 }
 
@@ -161,6 +181,7 @@ void SBranchInfoWidget::OnBranchNameTextCommitted(const FText& NewText, ETextCom
 		}
 	}
 }
+
 
 void SBranchInfoWidget::OnBranchTextTextCommitted(const FText& NewText, ETextCommit::Type CommitType)
 {

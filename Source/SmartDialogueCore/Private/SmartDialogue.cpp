@@ -115,10 +115,15 @@ bool USmartDialogue::RenameBranch(FName OldName, FName NewName)
 		Branches.Add(NewName, BranchToRename);
 		LastBranchName = NewName;
 		MarkAsDirty();
+
+		// Вызовите делегат после успешного переименования
+		OnBranchRenamed.Broadcast(OldName, NewName);
+
 		return true;
 	}
 	return false;
 }
+
 
 bool USmartDialogue::RemoveBranch(FName BranchName)
 {

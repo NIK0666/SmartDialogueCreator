@@ -19,15 +19,21 @@ public:
 	SLATE_END_ARGS()
 
 
+
 	void Construct(const FArguments& InArgs);
+	virtual ~SBranchInfoWidget() override;
 
 	FName GetBranchName() const;
+	FText GetBranchNameAsText() const;
 	
 	void SetEditableTextFocus(bool bIsTextFocused);
 
 private:
 	virtual void Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime) override;
 	
+	UFUNCTION()
+	void OnBranchRenamed(FName OldName, FName NewName);
+
 	FText GetBranchText() const;
 	FSlateColor GetBackgroundColor() const;
 
@@ -48,6 +54,8 @@ private:
 	TSharedPtr<SEditableTextBox> BranchNameTextBox;
 	TSharedPtr<SEditableTextBox> BranchTextTextBox;
 	TSharedPtr<SButton> GrabButton;
+	FDelegateHandle BranchRenamedHandle;
+
 	
 	USmartDialogue* DialoguePtr = nullptr;
 	bool bIsFocused = false;

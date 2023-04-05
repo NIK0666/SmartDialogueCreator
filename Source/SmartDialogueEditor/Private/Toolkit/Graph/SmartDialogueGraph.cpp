@@ -5,6 +5,7 @@
 #include "BranchNode.h"
 
 #include "SmartDialogueGraphSchema.h"
+#include "Settings/EditorStyleSettings.h"
 #include "Toolkit/FSmartDialogueEditor.h"
 
 USmartDialogueGraph::USmartDialogueGraph()
@@ -24,11 +25,17 @@ void USmartDialogueGraph::SetEditor(FSmartDialogueEditor* InEditor)
 
 UBranchNode* USmartDialogueGraph::CreateBranchNode(const FName& BranchName) const
 {
-    UBranchNode* NewNode = NewObject<UBranchNode>(const_cast<USmartDialogueGraph*>(this));
-    NewNode->Initialize(BranchName, Editor);
-    NewNode->NodePosX = LastMousePos.X;
-    NewNode->NodePosY = LastMousePos.Y;
-    return NewNode;
+    UBranchNode* ResultNode = NewObject<UBranchNode>(const_cast<USmartDialogueGraph*>(this));
+    ResultNode->Initialize(BranchName, Editor);
+	ResultNode->AllocateDefaultPins();
+    ResultNode->NodePosX = LastNodePos.X;
+    ResultNode->NodePosY = LastNodePos.Y;
+	
+	ResultNode->CreateNewGuid();
+	ResultNode->PostPlacedNewNode();
+	ResultNode->AutowireNewNode(nullptr);
+	ResultNode->SnapToGrid(GetDefault<UEditorStyleSettings>()->GridSnapSize);
+    return ResultNode;
 }
 
 void USmartDialogueGraph::AddBranchNode(FSmartDialogueBranch& NewBranch)
@@ -36,4 +43,6 @@ void USmartDialogueGraph::AddBranchNode(FSmartDialogueBranch& NewBranch)
 	UBranchNode* NewNode = CreateBranchNode(NewBranch.Name);
 	this->AddNode(NewNode, true, false);
 	this->NotifyGraphChanged();
+
+	LastNodePos.Y += 150.f;
 }

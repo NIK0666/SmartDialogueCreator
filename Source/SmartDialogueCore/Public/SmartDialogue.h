@@ -7,6 +7,7 @@
 #include "SmartDialogue.generated.h"
 
 DECLARE_EVENT(USmartDialogue, FOnBranchesChanged);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnBranchRenamed, FName /*OldName*/, FName /*NewName*/);
 
 UCLASS(BlueprintType, Blueprintable)
 class SMARTDIALOGUECORE_API USmartDialogue : public UObject
@@ -89,7 +90,8 @@ public:
 	
 	void MakeClean();
 
-	FOnBranchesChanged OnBranchesChanged;
+	FOnBranchesChanged OnBranchesChanged;	
+	FOnBranchRenamed OnBranchRenamed;
 
 protected:
 	UFUNCTION(BlueprintCallable, Category = "SmartDialogue")

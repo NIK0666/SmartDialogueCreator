@@ -12,7 +12,7 @@ UEdGraphNode* FEdGraphSchemaAction_AddBranchNode::PerformAction(UEdGraph* Parent
 	auto* DialogueGraph = Cast<USmartDialogueGraph>(ParentGraph);
 	if (DialogueGraph && DialogueGraph->GetEditor())
 	{
-		DialogueGraph->LastMousePos = Location;
+		DialogueGraph->LastNodePos = Location;
 		DialogueGraph->GetEditor()->AddNewBranch();
 	}
 	return nullptr;
