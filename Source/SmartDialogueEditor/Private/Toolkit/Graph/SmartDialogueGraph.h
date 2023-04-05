@@ -18,6 +18,7 @@ public:
 	USmartDialogueGraph();
 
 	void SetEditor(FSmartDialogueEditor* InEditor);
+	void LoadNodesFromAsset();
 	FSmartDialogueEditor* GetEditor() const { return Editor; }
 
 	UFUNCTION(BlueprintCallable, Category = "Dialogue")
@@ -25,7 +26,12 @@ public:
 	void AddBranchNode(FSmartDialogueBranch& SmartDialogueBranch);
 	
 	FVector2D LastNodePos;
+	bool bIsInitializeGraph = false;
 
 private:
+	void CreateConnections();
+	void SortNodes();
+	UBranchNode* GetBranchNodeByName(FName BranchName) const;
+
 	FSmartDialogueEditor* Editor;
 };

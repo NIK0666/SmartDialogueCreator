@@ -40,7 +40,8 @@ UBranchNode* UBranchNode::Initialize(const FName& InBranchName, FSmartDialogueEd
 
 TSharedPtr<SGraphNode> UBranchNode::CreateVisualWidget()
 {
-	return SNew(SGraphNode_Branch, this);
+	VisualWidget = SNew(SGraphNode_Branch, this);
+	return VisualWidget;
 }
 
 void UBranchNode::OnBranchRenamed(FName OldName, FName NewName)
@@ -78,10 +79,5 @@ void UBranchNode::RenameBranch(const FString& NewNameString)
 	if (Editor->GetDialogue()->RenameBranch(BranchName, NewName))
 	{
 		BranchName = NewName;
-	}
-	else
-	{
-		// Вернуть старое имя, если переименование не удалось
-		// Здесь вы можете добавить код для обновления пользовательского интерфейса
 	}
 }

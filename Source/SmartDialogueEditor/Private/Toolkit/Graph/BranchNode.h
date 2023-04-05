@@ -23,6 +23,8 @@ public:
 	FSmartDialogueBranch* GetBranchPtr();
 	void RenameBranch(const FString& NewNameString);
 
+	TSharedPtr<SGraphNode> GetVisualWidget() { return VisualWidget; }
+
 protected:
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
 	virtual TSharedPtr<SGraphNode> CreateVisualWidget() override;
@@ -37,4 +39,5 @@ protected:
 	FSmartDialogueEditor* Editor;
 
 	FDelegateHandle BranchRenamedHandle;
+	TSharedPtr<SGraphNode> VisualWidget;
 };

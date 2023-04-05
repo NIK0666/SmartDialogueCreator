@@ -7,7 +7,7 @@
 #include "Widgets/Input/SEditableTextBox.h"
 #include "Widgets/Images/SImage.h"
 #include "Widgets/Input/SButton.h"
-#include "Lists/SBranchesWidget.h"
+#include "SBranchesWidget.h"
 
 #define LOCTEXT_NAMESPACE "SmartDialogueEditor"
 
