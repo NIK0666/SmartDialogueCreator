@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "SmartDialConfig.h"
 #include "SmartDialogueData.h"
+#include "Graph/BranchNode.h"
 #include "Lists/Rows/SPhraseListRow.h"
 #include "Toolkits/AssetEditorToolkit.h"
 
@@ -17,7 +18,7 @@ class USmartDialogueGraph;
 
 class USmartDialogue;
 
-DECLARE_DELEGATE_OneParam(FOnBranchItemAdded, FSmartDialogueBranch&);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnBranchItemAdded, FSmartDialogueBranch&);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnBranchItemRemoved, FName&);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnBranchSelected, FSmartDialogueBranch&);
 DECLARE_MULTICAST_DELEGATE(FOnResetSelectedBranch);
@@ -62,9 +63,10 @@ public:
 	void SetSelectedBranchName(FName NewValue);
 	FName GetSelectedBranchName();
 	FSmartDialogueBranch* GetSelectedBranch();
-	void ResetSelectedBranch();
+	FSmartDialogueBranch* GetBranch(const FName& Name);
 	
-	void RefreshGraphNodes();
+	void ResetSelectedBranch();
+	void AddNewBranch();
 
 	TSharedPtr<SBranchesWidget> GetBranchesListPanel() { return BranchesWidget; }
 
@@ -90,7 +92,6 @@ private:
 
 	void OnHeroCharacterSelected(TSharedPtr<FString> NewSelection);
 
-	void AddNewBranch();
 	void ShowBranches();
 	void PlayDialogue();
 	void ShowConfig();

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SmartDialogueData.h"
 #include "EdGraph/EdGraph.h"
 #include "SmartDialogueGraph.generated.h"
 
@@ -17,9 +18,13 @@ public:
 	USmartDialogueGraph();
 
 	void SetEditor(FSmartDialogueEditor* InEditor);
+	FSmartDialogueEditor* GetEditor() const { return Editor; }
 
 	UFUNCTION(BlueprintCallable, Category = "Dialogue")
-	UBranchNode* CreateBranchNode() const;
+	UBranchNode* CreateBranchNode(const FName& BranchName) const;
+	void AddBranchNode(FSmartDialogueBranch& SmartDialogueBranch);
+	
+	FVector2D LastMousePos;
 
 private:
 	FSmartDialogueEditor* Editor;

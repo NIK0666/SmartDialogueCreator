@@ -15,7 +15,7 @@ void SBranchesWidget::Construct(const FArguments& InArgs)
 
 	UpdateBranchesList();
 
-	SmartDialogueEditor->OnBranchItemAdded.BindSP(this, &SBranchesWidget::BranchItemAdded);
+	SmartDialogueEditor->OnBranchItemAdded.AddSP(this, &SBranchesWidget::BranchItemAdded);
 	
 	ChildSlot
 	[

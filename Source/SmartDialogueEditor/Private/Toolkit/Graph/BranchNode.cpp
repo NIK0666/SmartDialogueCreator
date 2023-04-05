@@ -36,9 +36,9 @@ UBranchNode* UBranchNode::Initialize(const FName& InBranchName, FSmartDialogueEd
 {
 	BranchName = InBranchName;
 	Editor = InEditor;
-	if (Editor->GetSelectedBranch())
+	if (FSmartDialogueBranch* BranchPtr = Editor->GetBranch(BranchName))
 	{
-		PhraseText = Editor->GetSelectedBranch()->Text.ToString();
+		PhraseText = BranchPtr->Text.ToString();
 	}
 	else
 	{
