@@ -24,6 +24,7 @@ public:
 	void RenameBranch(const FString& NewNameString);
 
 	TSharedPtr<SGraphNode> GetVisualWidget() { return VisualWidget; }
+	FVector2D GetNodeSize();
 
 protected:
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;

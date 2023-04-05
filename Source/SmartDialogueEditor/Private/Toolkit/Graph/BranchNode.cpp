@@ -8,6 +8,10 @@
 #include "Toolkit/FSmartDialogueEditor.h"
 
 
+FVector2D UBranchNode::GetNodeSize()
+{
+	return FVector2D(100.0f, 80.0f);
+}
 
 FText UBranchNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {

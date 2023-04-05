@@ -123,7 +123,7 @@ void USmartDialogueGraph::SortNodes()
 	{
 		Node->NodePosX = 0;
 		Node->NodePosY = CurrentY;
-		CurrentY += YOffset;
+		CurrentY += Node->GetNodeSize().Y + YOffset;
 	}
 
 	// Располагаем ноды с Show-связями
@@ -133,8 +133,18 @@ void USmartDialogueGraph::SortNodes()
 		UEdGraphPin* ShowPin = ParentNode->FindPin(UEdGraphSchema_K2::PN_Then);
 
 		int32 ChildNodesCount = ShowPin->LinkedTo.Num();
-		float ChildNodesTotalHeight = ChildNodesCount * YOffset;
-		float ChildNodesStartY = ParentNode->NodePosY - ChildNodesTotalHeight / 2.0f + YOffset / 2.0f;
+		float ChildNodesTotalHeight = 0.0f;
+		for (int32 ChildIndex = 0; ChildIndex < ChildNodesCount; ++ChildIndex)
+		{
+			UEdGraphPin* LinkedPin = ShowPin->LinkedTo[ChildIndex];
+			UBranchNode* ChildNode = Cast<UBranchNode>(LinkedPin->GetOwningNode());
+			if (ChildNode)
+			{
+				ChildNodesTotalHeight += ChildNode->GetNodeSize().Y + YOffset;
+			}
+		}
+
+		float ChildNodesStartY = ParentNode->NodePosY - ChildNodesTotalHeight / 2.0f + ParentNode->GetNodeSize().Y / 2.0f;
 
 		for (int32 ChildIndex = 0; ChildIndex < ChildNodesCount; ++ChildIndex)
 		{
@@ -143,11 +153,13 @@ void USmartDialogueGraph::SortNodes()
 
 			if (ChildNode)
 			{
-				ChildNode->NodePosX = ParentNode->NodePosX + XOffset;
-				ChildNode->NodePosY = ChildNodesStartY + ChildIndex * YOffset;
+				ChildNode->NodePosX = ParentNode->NodePosX + ParentNode->GetNodeSize().X + XOffset;
+				ChildNode->NodePosY = ChildNodesStartY;
 
 				SortedNodes.Add(ChildNode);
 				UnsortedNodes.Remove(ChildNode);
+
+				ChildNodesStartY += ChildNode->GetNodeSize().Y + YOffset;
 			}
 		}
 	}
