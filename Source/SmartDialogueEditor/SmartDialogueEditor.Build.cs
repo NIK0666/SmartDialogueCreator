@@ -31,6 +31,7 @@ public class SmartDialogueEditor : ModuleRules
             "AssetTools",
             "Json",
             "DesktopPlatform",
+            "ApplicationCore",
             "SmartDialogueCore"
         });
 

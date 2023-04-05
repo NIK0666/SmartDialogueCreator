@@ -24,7 +24,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Dialogue")
 	UBranchNode* CreateBranchNode(const FName& BranchName) const;
 	void AddBranchNode(FSmartDialogueBranch& SmartDialogueBranch);
-	
+	FString GetNodesInformation();
+
 	FVector2D LastNodePos;
 	bool bIsInitializeGraph = false;
 

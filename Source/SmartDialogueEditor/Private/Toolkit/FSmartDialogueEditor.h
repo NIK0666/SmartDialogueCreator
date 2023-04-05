@@ -99,6 +99,7 @@ private:
 	void RefreshEditor();
 	
 	void ImportJson();
+	void OnCopyNodesInfo();
 
 	TSharedPtr<SDockTab> BranchesListTab;
 	TSharedPtr<SDockTab> SelectedBranchPropertiesTab;

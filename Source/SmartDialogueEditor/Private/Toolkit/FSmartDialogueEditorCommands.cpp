@@ -15,6 +15,7 @@ void FSmartDialogueEditorCommands::RegisterCommands()
 	UI_COMMAND(PlayDialogue, "Play", "Play the dialogue", EUserInterfaceActionType::Button, FInputChord());
 	UI_COMMAND(ShowConfig, "Config", "Show configuration cnaracters and variables", EUserInterfaceActionType::Button, FInputChord());
 	UI_COMMAND(ImportJSON, "Import from JSON", "Import data into the current dialogue from a JSON file", EUserInterfaceActionType::Button, FInputChord());
+	UI_COMMAND(CopyNodesInfo, "Copy Nodes Info", "Copies the information of the nodes", EUserInterfaceActionType::Button, FInputChord(EKeys::C, EModifierKey::Control));
 }
 
 #undef LOCTEXT_NAMESPACE

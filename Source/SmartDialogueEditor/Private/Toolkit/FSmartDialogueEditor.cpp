@@ -20,6 +20,7 @@
 #include "Graph/SmartDialogueGraphSchema.h"
 #include "Serializor/JsonParser.h"
 #include "SmartDialogueCore/Private/SmartDialogueSettings.h"
+#include "Windows/WindowsPlatformApplicationMisc.h"
 
 #define LOCTEXT_NAMESPACE "SmartDialogueEditor"
 
@@ -91,6 +92,11 @@ void FSmartDialogueEditor::BindCommands()
 		FSmartDialogueEditorCommands::Get().ImportJSON,
 		FExecuteAction::CreateSP(this, &FSmartDialogueEditor::ImportJson),
 		FCanExecuteAction());
+
+	const FSmartDialogueEditorCommands& Commands = FSmartDialogueEditorCommands::Get();
+	ToolkitCommands->MapAction(
+		Commands.CopyNodesInfo,
+		FExecuteAction::CreateSP(this, &FSmartDialogueEditor::OnCopyNodesInfo));
 }
 
 TSharedPtr<FExtender> FSmartDialogueEditor::GetToolbarExtender()
@@ -500,6 +506,16 @@ void FSmartDialogueEditor::ImportJson()
 			// Выводим сообщение об ошибке
 			FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(TEXT("Ассет диалога не открыт в редакторе.")));
 		}
+	}
+}
+
+void FSmartDialogueEditor::OnCopyNodesInfo()
+{
+	FString NodesInfo = DialogueGraph->GetNodesInformation();
+
+	if (!NodesInfo.IsEmpty())
+	{
+		FPlatformApplicationMisc::ClipboardCopy(*NodesInfo);
 	}
 }
 

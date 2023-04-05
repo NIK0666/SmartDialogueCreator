@@ -97,92 +97,66 @@ void USmartDialogueGraph::CreateConnections()
 
 void USmartDialogueGraph::SortNodes()
 {
-	const float XOffset = 200.0f;
-	const float YOffset = 150.0f;
+	TQueue<UBranchNode*> NodesToProcess;
+	TMap<FName, int32> NodeLevels;
+	TMap<int32, TArray<UBranchNode*>> NodesByLevel;
 
-	TArray<UBranchNode*> SortedNodes;
-	TArray<UBranchNode*> UnsortedNodes;
-
-	// Находим все ноды без входных связей и добавляем их в список SortedNodes
+	// Шаг 1: Найдите все начальные ноды
 	for (UEdGraphNode* Node : Nodes)
 	{
 		UBranchNode* BranchNode = Cast<UBranchNode>(Node);
 		if (BranchNode && BranchNode->FindPin(UEdGraphSchema_K2::PN_Execute)->LinkedTo.Num() == 0)
 		{
-			SortedNodes.Add(BranchNode);
-		}
-		else
-		{
-			UnsortedNodes.Add(BranchNode);
+			NodesToProcess.Enqueue(BranchNode);
+			NodeLevels.Add(BranchNode->GetBranchName(), 0);
+			NodesByLevel.FindOrAdd(0).Add(BranchNode);
 		}
 	}
 
-	// Располагаем ноды без входных связей по Y
-	float CurrentY = 0.0f;
-	for (UBranchNode* Node : SortedNodes)
+	// Шаги 2-3: Обработка нод
+	while (!NodesToProcess.IsEmpty())
 	{
-		Node->NodePosX = 0;
-		Node->NodePosY = CurrentY;
-		CurrentY += Node->GetNodeSize().Y + YOffset;
-	}
-
-	// Располагаем ноды с Show-связями
-	for (int32 Index = 0; Index < SortedNodes.Num(); ++Index)
-	{
-		UBranchNode* ParentNode = SortedNodes[Index];
-		UEdGraphPin* ShowPin = ParentNode->FindPin(UEdGraphSchema_K2::PN_Then);
-
-		int32 ChildNodesCount = ShowPin->LinkedTo.Num();
-		float ChildNodesTotalHeight = 0.0f;
-		for (int32 ChildIndex = 0; ChildIndex < ChildNodesCount; ++ChildIndex)
+		UBranchNode* CurrentNode;
+		NodesToProcess.Dequeue(CurrentNode);
+		int32 CurrentLevel = NodeLevels[CurrentNode->GetBranchName()];
+		
+		UEdGraphPin* ShowPin = CurrentNode->FindPin(UEdGraphSchema_K2::PN_Then);
+		
+		for (UEdGraphPin* Pin : ShowPin->LinkedTo)
 		{
-			UEdGraphPin* LinkedPin = ShowPin->LinkedTo[ChildIndex];
-			UBranchNode* ChildNode = Cast<UBranchNode>(LinkedPin->GetOwningNode());
-			if (ChildNode)
+			UBranchNode* LinkedBranchNode = Cast<UBranchNode>(Pin->GetOwningNode());
+			if (LinkedBranchNode && !NodeLevels.Contains(LinkedBranchNode->GetBranchName()))
 			{
-				ChildNodesTotalHeight += ChildNode->GetNodeSize().Y + YOffset;
-			}
-		}
-
-		float ChildNodesStartY = ParentNode->NodePosY - ChildNodesTotalHeight / 2.0f + ParentNode->GetNodeSize().Y / 2.0f;
-
-		for (int32 ChildIndex = 0; ChildIndex < ChildNodesCount; ++ChildIndex)
-		{
-			UEdGraphPin* LinkedPin = ShowPin->LinkedTo[ChildIndex];
-			UBranchNode* ChildNode = Cast<UBranchNode>(LinkedPin->GetOwningNode());
-
-			if (ChildNode)
-			{
-				ChildNode->NodePosX = ParentNode->NodePosX + ParentNode->GetNodeSize().X + XOffset;
-				ChildNode->NodePosY = ChildNodesStartY;
-
-				SortedNodes.Add(ChildNode);
-				UnsortedNodes.Remove(ChildNode);
-
-				ChildNodesStartY += ChildNode->GetNodeSize().Y + YOffset;
+				NodesToProcess.Enqueue(LinkedBranchNode);
+				NodeLevels.Add(LinkedBranchNode->GetBranchName(), CurrentLevel + 1);
+				NodesByLevel.FindOrAdd(CurrentLevel + 1).Add(LinkedBranchNode);
 			}
 		}
 	}
 
-	// Если еще остались нерасположенные ноды (возможно, имеют только Hide-связи), добавляем их к списку SortedNodes
-	for (UBranchNode* Node : UnsortedNodes)
+	// Шаг 4: Сортировка нод на каждом уровне по вертикальной координате
+	for (auto& LevelNodesPair : NodesByLevel)
 	{
-		SortedNodes.Add(Node);
+		LevelNodesPair.Value.Sort([](const UBranchNode& A, const UBranchNode& B) {
+			return A.NodePosY < B.NodePosY;
+		});
 	}
 
-	// Заменяем текущий список нод отсортированным списком
-	TArray<UEdGraphNode*> NewNodes;
-	NewNodes.Reserve(Nodes.Num());
-	for (UBranchNode* Node : SortedNodes)
+	// Шаг 5: Присвоение новых позиций нодам
+	float HorizontalSpacing = 384.0f;
+	float VerticalSpacing = 128.0f;
+	for (auto& LevelNodesPair : NodesByLevel)
 	{
-		NewNodes.Add(Node);
-		Nodes.Remove(Node);
+		int32 Level = LevelNodesPair.Key;
+		float LevelX = Level * HorizontalSpacing;
+		for (int32 i = 0; i < LevelNodesPair.Value.Num(); ++i)
+		{
+			UBranchNode* Node = LevelNodesPair.Value[i];
+			float NewY = i * VerticalSpacing;
+			Node->NodePosX = LevelX;
+			Node->NodePosY = NewY;
+		}
 	}
-
-	// Добавляем оставшиеся ноды, которые не являются UBranchNode
-	NewNodes.Append(Nodes);
-	Nodes = MoveTemp(NewNodes);
-
 }
 
 UBranchNode* USmartDialogueGraph::GetBranchNodeByName(FName BranchName) const
@@ -222,4 +196,59 @@ void USmartDialogueGraph::AddBranchNode(FSmartDialogueBranch& NewBranch)
 	this->NotifyGraphChanged();
 
 	LastNodePos.Y += 150.f;
+}
+
+FString USmartDialogueGraph::GetNodesInformation()
+{
+	FString NodesInfo;
+
+	// Получение нод и их соединений
+	TArray<UEdGraphNode*> AllNodes = Nodes;
+	for (UEdGraphNode* Node : AllNodes)
+	{
+		if (UBranchNode* BranchNode = Cast<UBranchNode>(Node))
+		{
+			FVector2D NodePosition = FVector2D(BranchNode->NodePosX, BranchNode->NodePosY);
+			FVector2D NodeSize = BranchNode->GetNodeSize();
+			FName NodeName = BranchNode->GetBranchName();
+
+			FString InNodes, OutNodes;
+
+			for (UEdGraphPin* Pin : BranchNode->Pins)
+			{
+				if (Pin->Direction == EGPD_Input)
+				{
+					for (UEdGraphPin* LinkedPin : Pin->LinkedTo)
+					{
+						UBranchNode* LinkedBranchNode = Cast<UBranchNode>(LinkedPin->GetOwningNode());
+						if (LinkedBranchNode)
+						{
+							InNodes += FString::Printf(TEXT("\"%s\", "), *LinkedBranchNode->GetBranchName().ToString());
+						}
+					}
+				}
+				else if (Pin->Direction == EGPD_Output)
+				{
+					for (UEdGraphPin* LinkedPin : Pin->LinkedTo)
+					{
+						UBranchNode* LinkedBranchNode = Cast<UBranchNode>(LinkedPin->GetOwningNode());
+						if (LinkedBranchNode)
+						{
+							OutNodes += FString::Printf(TEXT("\"%s\", "), *LinkedBranchNode->GetBranchName().ToString());
+						}
+					}
+				}
+			}
+
+			// Удаление последней запятой и пробела
+			if (!InNodes.IsEmpty()) InNodes.RemoveAt(InNodes.Len() - 2, 2);
+			if (!OutNodes.IsEmpty()) OutNodes.RemoveAt(OutNodes.Len() - 2, 2);
+
+			NodesInfo += FString::Printf(
+				TEXT("{\nName: \"%s\"\nPos: (%.1f, %.1f)\nSize: (%.1f, %.1f)\nIn: [%s]\nOut: [%s]\n},\n"),
+				*NodeName.ToString(), NodePosition.X, NodePosition.Y, NodeSize.X, NodeSize.Y, *InNodes, *OutNodes);
+		}
+	}
+
+	return NodesInfo;
 }

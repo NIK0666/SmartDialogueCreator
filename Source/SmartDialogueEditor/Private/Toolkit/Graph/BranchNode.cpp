@@ -10,7 +10,7 @@
 
 FVector2D UBranchNode::GetNodeSize()
 {
-	return FVector2D(100.0f, 80.0f);
+	return VisualWidget->GetCachedGeometry().Size;
 }
 
 FText UBranchNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
