@@ -31,4 +31,7 @@ protected:
 	FOnNodeTitleChanged OnNodeTitleChanged;
 	TSharedPtr<SWidgetSwitcher> TitleSwitcher;
 	TSharedPtr<SEditableText> TitleEditableText;
+
+	float MaxNodeWidth = 200.f;
+
 };

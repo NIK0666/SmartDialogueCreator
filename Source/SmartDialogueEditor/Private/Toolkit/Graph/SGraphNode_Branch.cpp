@@ -4,7 +4,6 @@
 #include "SBranchPin.h"
 #include "SGraphPin.h"
 #include "SmartDialogueData.h"
-#include "Widgets/Layout/SWidgetSwitcher.h"
 #include "Widgets/Text/SInlineEditableTextBlock.h"
 
 void SGraphNode_Branch::Construct(const FArguments& InArgs, UBranchNode* InNode)
@@ -43,12 +42,19 @@ TSharedRef<SWidget> SGraphNode_Branch::CreateNodeContentArea()
 			.AutoHeight()
 			.Padding(32.f, 8.f)
 			[
-				SNew(SInlineEditableTextBlock)
-				.Text_Lambda([BranchNode]() { return BranchNode->GetBranchPtr()->Text; }) 
-				.OnTextCommitted_Lambda([BranchNode](const FText& InText, ETextCommit::Type CommitInfo)
-				{
-					BranchNode->GetBranchPtr()->Text = InText;
-				})
+				SNew(SBox)
+				.Padding(0.f)
+				.HeightOverride(32.f)
+				[
+					SNew(SInlineEditableTextBlock)
+					.Text_Lambda([BranchNode]() { return BranchNode->GetBranchPtr()->Text; })
+					.OnTextCommitted_Lambda([BranchNode](const FText& InText, ETextCommit::Type CommitInfo)
+					{
+						BranchNode->GetBranchPtr()->Text = InText;
+					})
+					.WrapTextAt(MaxNodeWidth)
+					.MultiLine(true)
+				]
 			]
 		];
 }
@@ -66,15 +72,20 @@ FText SGraphNode_Branch::GetNodeTitle() const
 
 TSharedRef<SWidget> SGraphNode_Branch::CreateNodeTitleWidget()
 {   
-	return SNew(SInlineEditableTextBlock)
-		.Text(this, &SGraphNode_Branch::GetNodeTitle)
-		.Font(FAppStyle::GetFontStyle("BoldFont"))
-		.OnTextCommitted_Lambda([this](const FText& InText, ETextCommit::Type CommitInfo)
-		{
-			UBranchNode* BranchNode = Cast<UBranchNode>(GraphNode);
-			BranchNode->RenameBranch(InText.ToString());
-		})
-		.IsReadOnly(!IsEditable.Get());
+	return SNew(SBox)
+		.Padding(0.f)
+		.MaxDesiredWidth(MaxNodeWidth)
+		[
+			SNew(SInlineEditableTextBlock)
+			.Text(this, &SGraphNode_Branch::GetNodeTitle)
+			.Font(FAppStyle::GetFontStyle("BoldFont"))
+			.OnTextCommitted_Lambda([this](const FText& InText, ETextCommit::Type CommitInfo)
+			{
+				UBranchNode* BranchNode = Cast<UBranchNode>(GraphNode);
+				BranchNode->RenameBranch(InText.ToString());
+			})
+			.IsReadOnly(!IsEditable.Get())
+		];
 }
 
 TSharedPtr<SGraphPin> SGraphNode_Branch::CreatePinWidget(UEdGraphPin* Pin) const
