@@ -33,5 +33,6 @@ protected:
 	TSharedPtr<SEditableText> TitleEditableText;
 
 	float MaxNodeWidth = 200.f;
+	bool bIsEditing = false;
 
 };

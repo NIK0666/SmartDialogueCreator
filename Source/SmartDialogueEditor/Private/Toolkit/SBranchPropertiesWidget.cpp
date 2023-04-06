@@ -20,6 +20,12 @@ void SBranchPropertiesWidget::Construct(const FArguments& InArgs)
 	SmartDialogueEditor->OnBranchSelected.AddSP(this, &SBranchPropertiesWidget::OnBranchSelected);
 	SmartDialogueEditor->OnResetSelectedBranch.AddSP(this, &SBranchPropertiesWidget::OnResetSelectedBranch);
 	SmartDialogueEditor->OnBranchItemRemoved.AddSP(this, &SBranchPropertiesWidget::OnBranchItemRemoved);
+
+	SmartDialogueEditor->GetDialogue()->OnShowBranchRemoved.AddSP(this, &SBranchPropertiesWidget::OnShowBranchRemoved);
+	SmartDialogueEditor->GetDialogue()->OnShowBranchAdded.AddSP(this, &SBranchPropertiesWidget::OnShowBranchAdded);
+	SmartDialogueEditor->GetDialogue()->OnHideBranchRemoved.AddSP(this, &SBranchPropertiesWidget::OnHideBranchRemoved);
+	SmartDialogueEditor->GetDialogue()->OnHideBranchAdded.AddSP(this, &SBranchPropertiesWidget::OnHideBranchAdded);
+
 	
 	if (GetBranchDataPtr() != nullptr)
 	{
@@ -374,6 +380,38 @@ void SBranchPropertiesWidget::OnResetSelectedBranch()
 void SBranchPropertiesWidget::OnBranchItemRemoved(FName& Name)
 {
 	
+}
+
+void SBranchPropertiesWidget::OnShowBranchRemoved(FName BranchName, int32 Index, FString Value)
+{
+	if (SmartDialogueEditor->GetSelectedBranchName() == BranchName)
+	{
+		ShowBranchesList->UpdateInitialStrings(GetBranchDataPtr()->Show);
+	}
+}
+
+void SBranchPropertiesWidget::OnShowBranchAdded(FName BranchName, FString String)
+{
+	if (SmartDialogueEditor->GetSelectedBranchName() == BranchName)
+	{
+		ShowBranchesList->UpdateInitialStrings(GetBranchDataPtr()->Show);
+	}
+}
+
+void SBranchPropertiesWidget::OnHideBranchRemoved(FName BranchName, int32 Index, FString Value)
+{
+	if (SmartDialogueEditor->GetSelectedBranchName() == BranchName)
+	{
+		HideBranchesList->UpdateInitialStrings(GetBranchDataPtr()->Hide);
+	}
+}
+
+void SBranchPropertiesWidget::OnHideBranchAdded(FName BranchName, FString String)
+{
+	if (SmartDialogueEditor->GetSelectedBranchName() == BranchName)
+	{
+		HideBranchesList->UpdateInitialStrings(GetBranchDataPtr()->Hide);
+	}
 }
 
 

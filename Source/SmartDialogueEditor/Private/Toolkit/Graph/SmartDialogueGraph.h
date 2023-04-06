@@ -28,12 +28,30 @@ public:
 
 	void OnUserConnectPins(UEdGraphPin* A, UEdGraphPin* B);
 	void OnUserDisconnectPins(UEdGraphPin* A, UEdGraphPin* B);
+	void HandleSelectedNodesChanged(const TSet<UObject*>& NewSelection);
+
 
 	void SortNodes();
 
 	FVector2D LastNodePos;
 	bool bIsInitializeGraph = false;
 
+
+protected:	
+	UFUNCTION()
+	void OnShowBranchRemoved(FName BranchName, int32 Index, FString Value);
+	UFUNCTION()
+	void OnShowBranchAdded(FName BranchName, FString String);
+	UFUNCTION()
+	void OnHideBranchRemoved(FName BranchName, int32 Index, FString Value);
+	UFUNCTION()
+	void OnHideBranchAdded(FName BranchName, FString String);
+	UFUNCTION()
+	void OnShowBranchUpdated(FName BranchName, int32 Index, FString OldValue, FString NewValue);
+	UFUNCTION()
+	void OnHideBranchUpdated(FName BranchName, int32 Index, FString OldValue, FString NewValue);
+
+	
 private:
 	void CreateConnections();
 	void PositionNode(UEdGraphNode* Node, int32 X, int32 Y, TSet<UEdGraphNode*>& ProcessedNodes, int32& MaxY);

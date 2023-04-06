@@ -188,7 +188,7 @@ FReply SOperationsComboBoxList::OnAddButtonClicked()
 
     InitialVars.Add(NewVar);
     RefreshList();
-    Editor->GetDialogue()->AddVarElement(Editor->GetSelectedBranchName(), InitialVars.Num() - 1, NewVar);
+    Editor->GetDialogue()->AddVarElement(Editor->GetSelectedBranchName(), NewVar);
 
     return FReply::Handled();
 }

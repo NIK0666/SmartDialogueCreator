@@ -21,7 +21,6 @@ public:
 	SLATE_ARGUMENT(FSmartDialogueEditor*, SmartDialogueEditor)
 	SLATE_END_ARGS()
 
-
 	void Construct(const FArguments& InArgs);
 
 private:
@@ -36,6 +35,11 @@ private:
 	void OnBranchSelected(FSmartDialogueBranch& SmartDialogueBranch);
 	void OnResetSelectedBranch();
 	void OnBranchItemRemoved(FName& Name);
+
+	void OnShowBranchRemoved(FName BranchName, int32 Index, FString Value);
+	void OnShowBranchAdded(FName BranchName, FString String);
+	void OnHideBranchRemoved(FName BranchName, int32 Index, FString Value);
+	void OnHideBranchAdded(FName BranchName, FString String);
 	
 	void UpdateWidgets();
 	EVisibility GetEventParamVisibility() const;
@@ -59,4 +63,3 @@ private:
 	TSharedPtr<SHideBranchesComboBoxList> HideBranchesList;
 
 };
-

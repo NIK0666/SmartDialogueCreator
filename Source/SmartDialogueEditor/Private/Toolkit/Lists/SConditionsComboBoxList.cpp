@@ -190,7 +190,7 @@ FReply SConditionsComboBoxList::OnAddButtonClicked()
 
     InitialConditions.Add(NewVar);
     RefreshList();
-    Editor->GetDialogue()->AddIfElement(Editor->GetSelectedBranchName(), InitialConditions.Num() - 1, NewVar);
+    Editor->GetDialogue()->AddIfElement(Editor->GetSelectedBranchName(), NewVar);
 
     return FReply::Handled();
 }

@@ -8,9 +8,11 @@
 void SSmartDialogueGraph::Construct(const FArguments& InArgs)
 {
 	SmartDialogueEditor = InArgs._SmartDialogueEditor;
+	DialogueGraph = InArgs._InDialogueGraph;
 
 	SGraphEditor::FGraphEditorEvents InEvents = {};
-
+	InEvents.OnSelectionChanged = SGraphEditor::FOnSelectionChanged::CreateSP(this, &SSmartDialogueGraph::HandleSelectedNodesChanged);
+	// InEvents.OnSelectionChanged = SGraphEditor::FOnSelectionChanged::CreateSP(this, &FEnvironmentQueryEditor::OnSelectedNodesChanged);
 	
 	if (InArgs._InDialogueGraph)
 	{
@@ -27,5 +29,13 @@ void SSmartDialogueGraph::Construct(const FArguments& InArgs)
 				GraphEditorWidget.ToSharedRef()
 			];
 		}
+	}
+}
+
+void SSmartDialogueGraph::HandleSelectedNodesChanged(const TSet<UObject*>& NewSelection)
+{
+	if (DialogueGraph)
+	{
+		DialogueGraph->HandleSelectedNodesChanged(NewSelection);
 	}
 }

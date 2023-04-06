@@ -20,12 +20,16 @@ public:
 	SLATE_ARGUMENT(USmartDialogueGraph*, InDialogueGraph)
 	SLATE_ARGUMENT(FSmartDialogueEditor*, SmartDialogueEditor)
 	SLATE_END_ARGS()
-
+	
 	void Construct(const FArguments& InArgs);
 
 private:
-	TSharedPtr<SGraphEditor> GraphEditorWidget;
 
+	void HandleSelectedNodesChanged(const TSet<UObject*>& NewSelection);
+	
+	
+	TSharedPtr<SGraphEditor> GraphEditorWidget;
+	USmartDialogueGraph* DialogueGraph;
 	FSmartDialogueEditor* SmartDialogueEditor;
 
 };

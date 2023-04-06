@@ -4,7 +4,6 @@
 #include "SmartDialogue.h"
 
 #include "SmartDialConfig.h"
-#include "SmartDialogueSettings.h"
 
 TMap<FName, FSmartDialogueBranch> USmartDialogue::GetBranches() const
 {
@@ -105,6 +104,15 @@ FSmartDialogueBranch* USmartDialogue::GetBranchPtr(const FName& Name)
 	return nullptr;
 }
 
+
+void USmartDialogue::MakeClean()
+{
+	Variables = {};
+	Branches = {};
+	AutoBranch = "";
+	Character = "";
+}
+
 bool USmartDialogue::RenameBranch(FName OldName, FName NewName)
 {
 	if (Branches.Contains(OldName) && !Branches.Contains(NewName))
@@ -116,7 +124,6 @@ bool USmartDialogue::RenameBranch(FName OldName, FName NewName)
 		LastBranchName = NewName;
 		MarkAsDirty();
 
-		// Вызовите делегат после успешного переименования
 		OnBranchRenamed.Broadcast(OldName, NewName);
 
 		return true;
@@ -135,37 +142,21 @@ bool USmartDialogue::RemoveBranch(FName BranchName)
 	
 	for (int32 i = 0; i < BranchKeys.Num(); i++)
 	{
-		RemoveHideBranch(BranchKeys[i], BranchNameString);
-		RemoveShowBranch(BranchKeys[i], BranchNameString);
+		RemoveHideBranchByString(BranchKeys[i], BranchNameString);
+		RemoveShowBranchByString(BranchKeys[i], BranchNameString);
 	}
 	Branches.Remove(BranchName);
 	return true;
 }
 
-void USmartDialogue::AddShowBranch(const FName& BranchName, const FString& AddString)
-{
-	if (Branches.Contains(BranchName))
-	{
-		const auto L_BranchPtr = &Branches[BranchName];
-		L_BranchPtr->Show.Add(AddString);
-	}
-}
-
-void USmartDialogue::AddHideBranch(const FName& BranchName, const FString& AddString)
-{
-	if (Branches.Contains(BranchName))
-	{
-		const auto L_BranchPtr = &Branches[BranchName];
-		L_BranchPtr->Hide.Add(AddString);
-	}
-}
-
-void USmartDialogue::AddHideBranchElement(const FName& BranchName, int32 Index, const FString& Value)
+void USmartDialogue::AddHideBranchElement(const FName& BranchName, const FString& Value)
 {
 	if (Branches.Contains(BranchName))
 	{
 		auto* BranchPtr = &Branches[BranchName];
 		BranchPtr->Hide.Add(Value);
+
+		OnHideBranchAdded.Broadcast(BranchName, Value);
 	}
 }
 
@@ -174,7 +165,10 @@ void USmartDialogue::RemoveHideBranchElement(const FName& BranchName, int32 Inde
 	if (Branches.Contains(BranchName))
 	{
 		auto* BranchPtr = &Branches[BranchName];
+		const FString Value = BranchPtr->Hide[Index];
 		BranchPtr->Hide.RemoveAt(Index);
+
+		OnHideBranchRemoved.Broadcast(BranchName, Index, Value);
 	}
 }
 
@@ -183,19 +177,35 @@ void USmartDialogue::UpdateHideBranchElement(const FName& BranchName, int32 Inde
 	if (Branches.Contains(BranchName))
 	{
 		auto* BranchPtr = &Branches[BranchName];
+		const FString OldValue = BranchPtr->Show[Index];
 		if (BranchPtr->Hide.IsValidIndex(Index))
 		{
 			BranchPtr->Hide[Index] = NewValue;
 		}
+		OnHideBranchUpdated.Broadcast(BranchName, Index, OldValue, NewValue);
 	}
 }
 
-void USmartDialogue::AddShowBranchElement(const FName& BranchName, int32 Index, const FString& Value)
+void USmartDialogue::RemoveHideBranchByString(const FName& BranchName, const FString& String)
+{
+	if (Branches.Contains(BranchName))
+	{
+		int32 Index = Branches[BranchName].Hide.Find(String);
+		if (Index != INDEX_NONE)
+		{
+			RemoveHideBranchElement(BranchName, Index);
+		}		
+	}
+}
+
+void USmartDialogue::AddShowBranchElement(const FName& BranchName, const FString& Value)
 {
 	if (Branches.Contains(BranchName))
 	{
 		auto* BranchPtr = &Branches[BranchName];
 		BranchPtr->Show.Add(Value);
+
+		OnShowBranchAdded.Broadcast(BranchName, Value);
 	}
 }
 
@@ -204,7 +214,10 @@ void USmartDialogue::RemoveShowBranchElement(const FName& BranchName, int32 Inde
 	if (Branches.Contains(BranchName))
 	{
 		auto* BranchPtr = &Branches[BranchName];
+		const FString Value = BranchPtr->Show[Index];
 		BranchPtr->Show.RemoveAt(Index);
+
+		OnShowBranchRemoved.Broadcast(BranchName, Index, Value);
 	}
 }
 
@@ -213,14 +226,28 @@ void USmartDialogue::UpdateShowBranchElement(const FName& BranchName, int32 Inde
 	if (Branches.Contains(BranchName))
 	{
 		auto* BranchPtr = &Branches[BranchName];
+		const FString OldValue = BranchPtr->Show[Index];
 		if (BranchPtr->Show.IsValidIndex(Index))
 		{
 			BranchPtr->Show[Index] = NewValue;
 		}
+		OnShowBranchUpdated.Broadcast(BranchName, Index, OldValue, NewValue);
 	}
 }
 
-void USmartDialogue::AddVarElement(const FName& BranchName, int32 Index, const FSmartDialogueVars& NewVar)
+void USmartDialogue::RemoveShowBranchByString(const FName& BranchName, const FString& String)
+{
+	if (Branches.Contains(BranchName))
+	{
+		int32 Index = Branches[BranchName].Show.Find(String);
+		if (Index != INDEX_NONE)
+		{
+			RemoveShowBranchElement(BranchName, Index);
+		}		
+	}
+}
+
+void USmartDialogue::AddVarElement(const FName& BranchName, const FSmartDialogueVars& NewVar)
 {
 	if (Branches.Contains(BranchName))
 	{
@@ -250,7 +277,7 @@ void USmartDialogue::UpdateVarElement(const FName& BranchName, int32 Index, cons
 	}
 }
 
-void USmartDialogue::AddIfElement(const FName& BranchName, int32 Index, const FIf& Element)
+void USmartDialogue::AddIfElement(const FName& BranchName, const FIf& Element)
 {
 	if (Branches.Contains(BranchName))
 	{
@@ -287,28 +314,6 @@ void USmartDialogue::UpdateEventInfo(const FName& BranchName, const FSmartDialog
 		auto* BranchPtr = &Branches[BranchName];
 		BranchPtr->Event = Event;
 	}
-}
-
-void USmartDialogue::MakeClean()
-{
-	Variables = {};
-	Branches = {};
-	AutoBranch = "";
-	Character = "";
-}
-
-bool USmartDialogue::RemoveShowBranch(FName BranchName, const FString& RemoveString)
-{
-	if (Branches.Contains(BranchName))
-	{
-		const auto L_BranchPtr = &Branches[BranchName];		
-		if (L_BranchPtr->Show.Contains(RemoveString))
-		{
-			L_BranchPtr->Show.Remove(RemoveString);
-			return true;
-		}
-	}
-	return false;
 }
 
 bool USmartDialogue::RemoveVarOperation(FName BranchName, const int32 Index)
@@ -411,20 +416,6 @@ void USmartDialogue::AddIfOperation(const FName& BranchName, const FString& VarN
 
 		L_BranchPtr->If.Add(NewItem);
 	}
-}
-
-bool USmartDialogue::RemoveHideBranch(FName BranchName, const FString& RemoveString)
-{
-	if (Branches.Contains(BranchName))
-	{
-		const auto L_BranchPtr = &Branches[BranchName];
-		if (L_BranchPtr->Hide.Contains(RemoveString))
-		{
-			L_BranchPtr->Hide.Remove(RemoveString);
-			return true;
-		}		
-	}
-	return false;
 }
 
 void USmartDialogue::BranchesChanged()

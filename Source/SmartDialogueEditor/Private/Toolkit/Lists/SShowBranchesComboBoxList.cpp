@@ -115,7 +115,7 @@ FReply SShowBranchesComboBoxList::OnAddButtonClicked()
 	
 	InitialStrings.Add(*Options[0]);
 	RefreshList();
-	Editor->GetDialogue()->AddShowBranchElement(Editor->GetSelectedBranchName(), InitialStrings.Num() - 1, *Options[0]);
+	Editor->GetDialogue()->AddShowBranchElement(Editor->GetSelectedBranchName(), *Options[0]);
 
 	return FReply::Handled();
 }

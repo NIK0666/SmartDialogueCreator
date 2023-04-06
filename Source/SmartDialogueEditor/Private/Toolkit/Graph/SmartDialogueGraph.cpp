@@ -3,7 +3,6 @@
 
 #include "SmartDialogueGraph.h"
 #include "BranchNode.h"
-#include "SGraphNode.h"
 #include "SmartDialogue.h"
 
 #include "SmartDialogueGraphSchema.h"
@@ -24,6 +23,13 @@ void USmartDialogueGraph::SetEditor(FSmartDialogueEditor* InEditor)
 		Editor->OnBranchItemAdded.AddUObject(this, &USmartDialogueGraph::AddBranchNode);
 
 		LoadNodesFromAsset();
+		
+		Editor->GetDialogue()->OnShowBranchAdded.AddUObject(this, &USmartDialogueGraph::OnShowBranchAdded);
+		Editor->GetDialogue()->OnHideBranchAdded.AddUObject(this, &USmartDialogueGraph::OnHideBranchAdded);
+		Editor->GetDialogue()->OnHideBranchRemoved.AddUObject(this, &USmartDialogueGraph::OnHideBranchRemoved);
+		Editor->GetDialogue()->OnShowBranchRemoved.AddUObject(this, &USmartDialogueGraph::OnShowBranchRemoved);
+		Editor->GetDialogue()->OnShowBranchUpdated.AddUObject(this, &USmartDialogueGraph::OnShowBranchUpdated);
+		Editor->GetDialogue()->OnHideBranchUpdated.AddUObject(this, &USmartDialogueGraph::OnHideBranchUpdated);
 	}
 }
 
@@ -48,8 +54,6 @@ void USmartDialogueGraph::LoadNodesFromAsset()
 		
 		CreateConnections();
 		SortNodes();
-		UE_LOG(LogTemp, Log, TEXT("PIN NAME: %s"), *Nodes[0]->GetAllPins()[0]->PinName.ToString());
-
 	}
 }
 
@@ -157,8 +161,6 @@ void USmartDialogueGraph::SortNodes()
 			break;
 		}
 	}
-
-	UE_LOG(LogTemp, Log, TEXT("PIN NAME: %s"), *Nodes[0]->GetAllPins()[0]->PinName.ToString());
 }
 
 
@@ -274,11 +276,11 @@ void USmartDialogueGraph::OnUserConnectPins(UEdGraphPin* A, UEdGraphPin* B)
 	const int32 OutputIndex = OutputNode->Pins.Find(OutputPin);	
 	if (OutputIndex == 1)
 	{
-		Editor->GetDialogue()->AddShowBranch(OutputNode->GetBranchName(), InputNode->GetBranchName().ToString());
+		Editor->GetDialogue()->AddShowBranchElement(OutputNode->GetBranchName(), InputNode->GetBranchName().ToString());
 	}
 	else if (OutputIndex == 2)
 	{
-		Editor->GetDialogue()->AddHideBranch(OutputNode->GetBranchName(), InputNode->GetBranchName().ToString());
+		Editor->GetDialogue()->AddHideBranchElement(OutputNode->GetBranchName(), InputNode->GetBranchName().ToString());
 	}
 }
 
@@ -299,11 +301,115 @@ void USmartDialogueGraph::OnUserDisconnectPins(UEdGraphPin* A, UEdGraphPin* B)
 	// TODO Решение не идеальное, но почему то PinName = none
 	const int32 OutputIndex = OutputNode->Pins.Find(OutputPin);	
 	if (OutputIndex == 1)
-	{
-		Editor->GetDialogue()->RemoveShowBranch(OutputNode->GetBranchName(), InputNode->GetBranchName().ToString());
+	{		
+		Editor->GetDialogue()->RemoveShowBranchByString(OutputNode->GetBranchName(), InputNode->GetBranchName().ToString());
 	}
 	else if (OutputIndex == 2)
 	{
-		Editor->GetDialogue()->RemoveHideBranch(OutputNode->GetBranchName(), InputNode->GetBranchName().ToString());
+		Editor->GetDialogue()->RemoveHideBranchByString(OutputNode->GetBranchName(), InputNode->GetBranchName().ToString());
 	}
+}
+
+void USmartDialogueGraph::HandleSelectedNodesChanged(const TSet<UObject*>& NewSelection)
+{
+	if (NewSelection.Num() != 1)
+	{
+		return;
+	}
+
+	UObject* SelectedObject = *NewSelection.CreateConstIterator();
+	UBranchNode* BranchNode = Cast<UBranchNode>(SelectedObject);
+    
+	if (BranchNode)
+	{
+		Editor->SetSelectedBranchName(BranchNode->GetBranchName());
+	}
+}
+
+// Удаляет связь от выхода UEdGraphSchema_K2::PN_Then ноды с именем BranchName до входа UEdGraphSchema_K2::PN_Execute узла с именем ToName
+void USmartDialogueGraph::OnShowBranchRemoved(FName BranchName, int32 Index, FString Value)
+{
+	FName ToName = FName(Value);
+	UBranchNode* SourceNode = GetBranchNodeByName(BranchName);
+	UBranchNode* TargetNode = GetBranchNodeByName(ToName);
+
+	if (SourceNode && TargetNode)
+	{
+		UEdGraphPin* ShowPin = SourceNode->FindPin(UEdGraphSchema_K2::PN_Then);
+		UEdGraphPin* InputPin = TargetNode->FindPin(UEdGraphSchema_K2::PN_Execute);
+
+		if (ShowPin->LinkedTo.Contains(InputPin))
+		{
+			ShowPin->BreakLinkTo(InputPin);
+		}
+	}
+}
+
+// Добавляет связь от выхода UEdGraphSchema_K2::PN_Then ноды с именем BranchName до входа UEdGraphSchema_K2::PN_Execute узла с именем ToName
+void USmartDialogueGraph::OnShowBranchAdded(FName BranchName, FString String)
+{
+	FName ToName = FName(String);
+	UBranchNode* SourceNode = GetBranchNodeByName(BranchName);
+	UBranchNode* TargetNode = GetBranchNodeByName(ToName);
+
+	if (SourceNode && TargetNode)
+	{
+		UEdGraphPin* ShowPin = SourceNode->FindPin(UEdGraphSchema_K2::PN_Then);
+		UEdGraphPin* InputPin = TargetNode->FindPin(UEdGraphSchema_K2::PN_Execute);
+
+		if (!ShowPin->LinkedTo.Contains(InputPin))
+		{
+			ShowPin->MakeLinkTo(InputPin);
+		}
+	}
+}
+
+// Удаляет связь от выхода UEdGraphSchema_K2::PN_Else ноды с именем BranchName до входа UEdGraphSchema_K2::PN_Execute узла с именем ToName
+void USmartDialogueGraph::OnHideBranchRemoved(FName BranchName, int32 Index, FString Value)
+{
+	FName ToName = FName(Value);
+	UBranchNode* SourceNode = GetBranchNodeByName(BranchName);
+	UBranchNode* TargetNode = GetBranchNodeByName(ToName);
+
+	if (SourceNode && TargetNode)
+	{
+		UEdGraphPin* HidePin = SourceNode->FindPin(UEdGraphSchema_K2::PN_Else);
+		UEdGraphPin* InputPin = TargetNode->FindPin(UEdGraphSchema_K2::PN_Execute);
+
+		if (HidePin->LinkedTo.Contains(InputPin))
+		{
+			HidePin->BreakLinkTo(InputPin);
+		}
+	}
+}
+
+// Добавляет связь от выхода UEdGraphSchema_K2::PN_Else ноды с именем BranchName до входа UEdGraphSchema_K2::PN_Execute узла с именем ToName
+void USmartDialogueGraph::OnHideBranchAdded(FName BranchName, FString String)
+{
+	FName ToName = FName(String);
+	UBranchNode* SourceNode = GetBranchNodeByName(BranchName);
+	UBranchNode* TargetNode = GetBranchNodeByName(ToName);
+
+	if (SourceNode && TargetNode)
+	{
+		UEdGraphPin* ShowPin = SourceNode->FindPin(UEdGraphSchema_K2::PN_Else);
+		UEdGraphPin* InputPin = TargetNode->FindPin(UEdGraphSchema_K2::PN_Execute);
+
+		if (!ShowPin->LinkedTo.Contains(InputPin))
+		{
+			ShowPin->MakeLinkTo(InputPin);
+		}
+	}
+}
+
+void USmartDialogueGraph::OnShowBranchUpdated(FName BranchName, int32 Index, FString OldValue, FString NewValue)
+{
+	OnShowBranchRemoved(BranchName, Index, OldValue);
+	OnShowBranchAdded(BranchName, NewValue);
+}
+
+void USmartDialogueGraph::OnHideBranchUpdated(FName BranchName, int32 Index, FString OldValue, FString NewValue)
+{
+	OnHideBranchRemoved(BranchName, Index, OldValue);
+	OnHideBranchAdded(BranchName, NewValue);
 }
