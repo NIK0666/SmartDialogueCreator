@@ -140,13 +140,34 @@ const FPinConnectionResponse USmartDialogueGraphSchema::CanCreateConnection(cons
 	return Super::CanCreateConnection(A, B);
 }
 
+
 bool USmartDialogueGraphSchema::TryCreateConnection(UEdGraphPin* A, UEdGraphPin* B) const
 {
-	return UEdGraphSchema::TryCreateConnection(A, B);
+	UE_LOG(LogTemp, Log, TEXT("PIN NAME A: %s B: %s"), *A->PinName.ToString(), *B->PinName.ToString());
+	bool bIsSuccess = UEdGraphSchema::TryCreateConnection(A, B);
+
+	if (bIsSuccess)
+	{		
+		if (USmartDialogueGraph* Graph = Cast<USmartDialogueGraph>(A->GetOwningNode()->GetGraph()))
+		{
+			Graph->OnUserConnectPins(A, B);
+		}
+	}
+	
+	return bIsSuccess;
+	
 }
 
 void USmartDialogueGraphSchema::BreakPinLinks(UEdGraphPin& TargetPin, bool bSendsNodeNotifcation) const
 {
+	UE_LOG(LogTemp, Log, TEXT("PIN NAME TargetPin: %s"), *TargetPin.PinName.ToString());
+	if (USmartDialogueGraph* Graph = Cast<USmartDialogueGraph>(TargetPin.GetOwningNode()->GetGraph()))
+	{
+		for (UEdGraphPin* L_LinkedPin : TargetPin.LinkedTo)
+		{
+			Graph->OnUserDisconnectPins(L_LinkedPin, &TargetPin);
+		}
+	}
 	UEdGraphSchema::BreakPinLinks(TargetPin, bSendsNodeNotifcation);
 }
 

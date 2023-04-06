@@ -97,6 +97,11 @@ void FSmartDialogueEditor::BindCommands()
 	ToolkitCommands->MapAction(
 		Commands.CopyNodesInfo,
 		FExecuteAction::CreateSP(this, &FSmartDialogueEditor::OnCopyNodesInfo));
+
+	ToolkitCommands->MapAction(
+	FSmartDialogueEditorCommands::Get().SortNodes,
+	FExecuteAction::CreateSP(this, &FSmartDialogueEditor::SortNodes),
+	FCanExecuteAction());
 }
 
 TSharedPtr<FExtender> FSmartDialogueEditor::GetToolbarExtender()
@@ -129,6 +134,9 @@ TSharedPtr<FExtender> FSmartDialogueEditor::GetToolbarExtender()
 					.DefaultText(GetDialogue()->GetCharacter())
 				]
 			);
+			
+			ToolbarBuilder.AddSeparator();
+			ToolbarBuilder.AddToolBarButton(FSmartDialogueEditorCommands::Get().SortNodes, NAME_None, FText::GetEmpty(), TAttribute<FText>(),FSlateIcon(FAppStyle::GetAppStyleSetName(), "Icons.Adjust"));
 		})
 	);
 	
@@ -516,6 +524,14 @@ void FSmartDialogueEditor::OnCopyNodesInfo()
 	if (!NodesInfo.IsEmpty())
 	{
 		FPlatformApplicationMisc::ClipboardCopy(*NodesInfo);
+	}
+}
+
+void FSmartDialogueEditor::SortNodes()
+{
+	if (DialogueGraph)
+	{
+		DialogueGraph->SortNodes();
 	}
 }
 

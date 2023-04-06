@@ -21,4 +21,6 @@ public:
 	TSharedPtr<FUICommandInfo> ShowConfig;
 	TSharedPtr<FUICommandInfo> ImportJSON;
 	TSharedPtr<FUICommandInfo> CopyNodesInfo;
+	TSharedPtr<FUICommandInfo> SortNodes;
+
 };

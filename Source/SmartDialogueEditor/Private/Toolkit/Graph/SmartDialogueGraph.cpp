@@ -48,6 +48,8 @@ void USmartDialogueGraph::LoadNodesFromAsset()
 		
 		CreateConnections();
 		SortNodes();
+		UE_LOG(LogTemp, Log, TEXT("PIN NAME: %s"), *Nodes[0]->GetAllPins()[0]->PinName.ToString());
+
 	}
 }
 
@@ -95,69 +97,70 @@ void USmartDialogueGraph::CreateConnections()
 	}
 }
 
-void USmartDialogueGraph::SortNodes()
+void USmartDialogueGraph::PositionNode(UEdGraphNode* Node, int32 X, int32 Y, TSet<UEdGraphNode*>& ProcessedNodes, int32& MaxY)
 {
-	TQueue<UBranchNode*> NodesToProcess;
-	TMap<FName, int32> NodeLevels;
-	TMap<int32, TArray<UBranchNode*>> NodesByLevel;
-
-	// Шаг 1: Найдите все начальные ноды
-	for (UEdGraphNode* Node : Nodes)
+	if (ProcessedNodes.Contains(Node))
 	{
-		UBranchNode* BranchNode = Cast<UBranchNode>(Node);
-		if (BranchNode && BranchNode->FindPin(UEdGraphSchema_K2::PN_Execute)->LinkedTo.Num() == 0)
-		{
-			NodesToProcess.Enqueue(BranchNode);
-			NodeLevels.Add(BranchNode->GetBranchName(), 0);
-			NodesByLevel.FindOrAdd(0).Add(BranchNode);
-		}
+		return;
 	}
+	ProcessedNodes.Add(Node);
 
-	// Шаги 2-3: Обработка нод
-	while (!NodesToProcess.IsEmpty())
+	Node->NodePosX = X * 384;
+	Node->NodePosY = Y * 128;
+
+	MaxY = FMath::Max(MaxY, Y);
+
+	int32 ChildY = Y;
+	for (UEdGraphPin* OutputPin : Node->GetAllPins())
 	{
-		UBranchNode* CurrentNode;
-		NodesToProcess.Dequeue(CurrentNode);
-		int32 CurrentLevel = NodeLevels[CurrentNode->GetBranchName()];
-		
-		UEdGraphPin* ShowPin = CurrentNode->FindPin(UEdGraphSchema_K2::PN_Then);
-		
-		for (UEdGraphPin* Pin : ShowPin->LinkedTo)
+		if (OutputPin->Direction == EGPD_Output && OutputPin->LinkedTo.Num() > 0)
 		{
-			UBranchNode* LinkedBranchNode = Cast<UBranchNode>(Pin->GetOwningNode());
-			if (LinkedBranchNode && !NodeLevels.Contains(LinkedBranchNode->GetBranchName()))
+			for (UEdGraphPin* LinkedPin : OutputPin->LinkedTo)
 			{
-				NodesToProcess.Enqueue(LinkedBranchNode);
-				NodeLevels.Add(LinkedBranchNode->GetBranchName(), CurrentLevel + 1);
-				NodesByLevel.FindOrAdd(CurrentLevel + 1).Add(LinkedBranchNode);
+				if (!ProcessedNodes.Contains(LinkedPin->GetOwningNode()))
+				{
+					PositionNode(LinkedPin->GetOwningNode(), X + 1, ChildY, ProcessedNodes, MaxY);
+					ChildY++;
+				}
 			}
 		}
 	}
+}
 
-	// Шаг 4: Сортировка нод на каждом уровне по вертикальной координате
-	for (auto& LevelNodesPair : NodesByLevel)
-	{
-		LevelNodesPair.Value.Sort([](const UBranchNode& A, const UBranchNode& B) {
-			return A.NodePosY < B.NodePosY;
-		});
-	}
+void USmartDialogueGraph::SortNodes()
+{
+	TSet<UEdGraphNode*> ProcessedNodes;
+	int32 CurrentY = 0;
+	int32 MaxY = -1;
 
-	// Шаг 5: Присвоение новых позиций нодам
-	float HorizontalSpacing = 384.0f;
-	float VerticalSpacing = 128.0f;
-	for (auto& LevelNodesPair : NodesByLevel)
+	while (ProcessedNodes.Num() != Nodes.Num())
 	{
-		int32 Level = LevelNodesPair.Key;
-		float LevelX = Level * HorizontalSpacing;
-		for (int32 i = 0; i < LevelNodesPair.Value.Num(); ++i)
+		UEdGraphNode* StartNode = nullptr;
+		for (UEdGraphNode* Node : Nodes)
 		{
-			UBranchNode* Node = LevelNodesPair.Value[i];
-			float NewY = i * VerticalSpacing;
-			Node->NodePosX = LevelX;
-			Node->NodePosY = NewY;
+			if (!ProcessedNodes.Contains(Node) && Node->GetAllPins().FindByPredicate([](UEdGraphPin* Pin) {
+				return Pin->Direction == EGPD_Input && Pin->LinkedTo.Num() > 0;
+			}) == nullptr)
+			{
+				StartNode = Node;
+				break;
+			}
+		}
+
+		if (StartNode)
+		{
+			CurrentY = MaxY + 1;
+			PositionNode(StartNode, 0, CurrentY, ProcessedNodes, MaxY);
+		}
+		else
+		{
+			break;
 		}
 	}
+
+	UE_LOG(LogTemp, Log, TEXT("PIN NAME: %s"), *Nodes[0]->GetAllPins()[0]->PinName.ToString());
 }
+
 
 UBranchNode* USmartDialogueGraph::GetBranchNodeByName(FName BranchName) const
 {
@@ -245,10 +248,62 @@ FString USmartDialogueGraph::GetNodesInformation()
 			if (!OutNodes.IsEmpty()) OutNodes.RemoveAt(OutNodes.Len() - 2, 2);
 
 			NodesInfo += FString::Printf(
-				TEXT("{\nName: \"%s\"\nPos: (%.1f, %.1f)\nSize: (%.1f, %.1f)\nIn: [%s]\nOut: [%s]\n},\n"),
-				*NodeName.ToString(), NodePosition.X, NodePosition.Y, NodeSize.X, NodeSize.Y, *InNodes, *OutNodes);
+				TEXT("{Name: \"%s\",Pos: (%d, %.d),In: [%s],Out: [%s]}\n"),
+				*NodeName.ToString(), int32(NodePosition.X), int32(NodePosition.Y), *InNodes, *OutNodes);
 		}
 	}
 
 	return NodesInfo;
+}
+
+void USmartDialogueGraph::OnUserConnectPins(UEdGraphPin* A, UEdGraphPin* B)
+{
+	if (!A || !B) {	return;	}
+	
+	UEdGraphPin* InputPin =  (A->Direction == EGPD_Input) ? A : B;
+	UEdGraphPin* OutputPin =  (A->Direction == EGPD_Output) ? A : B;
+	
+	if (!InputPin || !OutputPin) { return; }
+	
+	UBranchNode* InputNode = Cast<UBranchNode>(InputPin->GetOwningNode());
+	UBranchNode* OutputNode = Cast<UBranchNode>(OutputPin->GetOwningNode());
+	
+	if (!InputNode || !OutputNode) { return; }
+
+	// TODO Решение не идеальное, но почему то PinName = none
+	const int32 OutputIndex = OutputNode->Pins.Find(OutputPin);	
+	if (OutputIndex == 1)
+	{
+		Editor->GetDialogue()->AddShowBranch(OutputNode->GetBranchName(), InputNode->GetBranchName().ToString());
+	}
+	else if (OutputIndex == 2)
+	{
+		Editor->GetDialogue()->AddHideBranch(OutputNode->GetBranchName(), InputNode->GetBranchName().ToString());
+	}
+}
+
+void USmartDialogueGraph::OnUserDisconnectPins(UEdGraphPin* A, UEdGraphPin* B)
+{
+	if (!A || !B) {	return;	}
+	
+	UEdGraphPin* InputPin =  (A->Direction == EGPD_Input) ? A : B;
+	UEdGraphPin* OutputPin =  (A->Direction == EGPD_Output) ? A : B;
+	
+	if (!InputPin || !OutputPin) { return; }
+	
+	UBranchNode* InputNode = Cast<UBranchNode>(InputPin->GetOwningNode());
+	UBranchNode* OutputNode = Cast<UBranchNode>(OutputPin->GetOwningNode());
+	
+	if (!InputNode || !OutputNode) { return; }
+
+	// TODO Решение не идеальное, но почему то PinName = none
+	const int32 OutputIndex = OutputNode->Pins.Find(OutputPin);	
+	if (OutputIndex == 1)
+	{
+		Editor->GetDialogue()->RemoveShowBranch(OutputNode->GetBranchName(), InputNode->GetBranchName().ToString());
+	}
+	else if (OutputIndex == 2)
+	{
+		Editor->GetDialogue()->RemoveHideBranch(OutputNode->GetBranchName(), InputNode->GetBranchName().ToString());
+	}
 }

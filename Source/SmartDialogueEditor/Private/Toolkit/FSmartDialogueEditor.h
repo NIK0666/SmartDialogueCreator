@@ -100,6 +100,7 @@ private:
 	
 	void ImportJson();
 	void OnCopyNodesInfo();
+	void SortNodes();
 
 	TSharedPtr<SDockTab> BranchesListTab;
 	TSharedPtr<SDockTab> SelectedBranchPropertiesTab;
