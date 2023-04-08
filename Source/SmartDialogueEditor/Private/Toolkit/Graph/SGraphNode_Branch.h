@@ -24,7 +24,7 @@ protected:
 	virtual TSharedRef<SWidget> CreateNodeContentArea() override;
 	virtual TSharedRef<SWidget> CreateTitleWidget(TSharedPtr<SNodeTitle> NodeTitle) override;
 	virtual TSharedPtr<SGraphPin> CreatePinWidget(UEdGraphPin* Pin) const override;
-
+	
 	TSharedRef<SWidget> CreateNodeTitleWidget();
 	FText GetNodeTitle() const;
 

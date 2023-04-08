@@ -113,6 +113,11 @@ void USmartDialogue::MakeClean()
 	Character = "";
 }
 
+FString USmartDialogue::GetDialogueId()
+{
+	return GetName();
+}
+
 bool USmartDialogue::RenameBranch(FName OldName, FName NewName)
 {
 	if (Branches.Contains(OldName) && !Branches.Contains(NewName))

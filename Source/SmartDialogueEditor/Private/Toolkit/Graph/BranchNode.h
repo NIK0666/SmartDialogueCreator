@@ -20,11 +20,13 @@ public:
 	UBranchNode* Initialize(const FName& InBranchName, FSmartDialogueEditor* InEditor);
 	FName GetBranchName() const { return BranchName; }
 
-	FSmartDialogueBranch* GetBranchPtr();
+	FSmartDialogueBranch* GetBranchPtr() const;
 	void RenameBranch(const FString& NewNameString);
 
 	TSharedPtr<SGraphNode> GetVisualWidget() { return VisualWidget; }
 	FVector2D GetNodeSize();
+
+	virtual FLinearColor GetNodeTitleColor() const override;
 
 protected:
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;

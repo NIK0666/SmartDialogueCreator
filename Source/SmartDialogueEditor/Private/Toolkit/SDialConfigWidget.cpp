@@ -237,7 +237,7 @@ void SDialConfigWidget::OnDeleteButtonClicked(TSharedPtr<FString> CharacterId)
 	// Remove character with the specified ID
 }
 
-void SDialConfigWidget::AddCharacterRow(FString Id, FString Name)
+void SDialConfigWidget::AddCharacterRow(FString Id, FText Name)
 {
 	TSharedPtr<FString> SharedId = MakeShared<FString>(Id);
 
@@ -255,7 +255,7 @@ void SDialConfigWidget::AddCharacterRow(FString Id, FString Name)
 	];
 }
 
-void SDialConfigWidget::AddGlobalVarRow(const FString& Key, const FString& Value, const FString& Desc)
+void SDialConfigWidget::AddGlobalVarRow(const FString& Key, const int32& Value, const FString& Desc)
 {
 	TSharedPtr<FString> SharedId = MakeShared<FString>(Key);
 
@@ -274,7 +274,7 @@ void SDialConfigWidget::AddGlobalVarRow(const FString& Key, const FString& Value
 	];
 }
 
-void SDialConfigWidget::AddLocalVarRow(const FString& Key, const FString& Value, const FString& Desc)
+void SDialConfigWidget::AddLocalVarRow(const FString& Key, const int32& Value, const FString& Desc)
 {
 	TSharedPtr<FString> SharedId = MakeShared<FString>(Key);
 

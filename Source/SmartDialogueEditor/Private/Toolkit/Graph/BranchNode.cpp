@@ -13,6 +13,26 @@ FVector2D UBranchNode::GetNodeSize()
 	return VisualWidget->GetCachedGeometry().Size;
 }
 
+FLinearColor UBranchNode::GetNodeTitleColor() const
+{
+    if (GetBranchPtr()->Closed)
+    {
+        return FLinearColor::Yellow;
+    }
+    
+    if (!GetBranchPtr()->Event.Name.IsEmpty())
+    {
+        return FLinearColor::Red;
+    }
+    
+    if (FindPin(UEdGraphSchema_K2::PN_Execute)->LinkedTo.Num() == 0)
+    {
+        return FLinearColor::Green;
+    }
+	
+	return Super::GetNodeTitleColor();
+}
+
 FText UBranchNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
 	return FText::FromName(BranchName);
@@ -67,7 +87,7 @@ void UBranchNode::CreateOutputPins()
 	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, UEdGraphSchema_K2::PN_Else);
 }
 
-FSmartDialogueBranch* UBranchNode::GetBranchPtr()
+FSmartDialogueBranch* UBranchNode::GetBranchPtr() const
 {
 	if (auto BranchPtr = Editor->GetBranch(BranchName))
 	{

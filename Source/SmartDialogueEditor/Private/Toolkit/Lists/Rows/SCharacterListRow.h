@@ -11,7 +11,7 @@ class SCharacterListRow : public SCompoundWidget
 public:
 	SLATE_BEGIN_ARGS(SCharacterListRow) {}
 	SLATE_ATTRIBUTE(FString, Id)
-	SLATE_ATTRIBUTE(FString, Name)
+	SLATE_ATTRIBUTE(FText, Name)
 	SLATE_EVENT(FSimpleDelegate, OnDeleteButtonClicked)
 SLATE_END_ARGS()
 
@@ -19,6 +19,6 @@ void Construct(const FArguments& InArgs);
 
 private:
 	TAttribute<FString> Id;
-	TAttribute<FString> Name;
+	TAttribute<FText> Name;
 	FSimpleDelegate OnDeleteButtonClicked;
 };

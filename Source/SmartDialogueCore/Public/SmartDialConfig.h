@@ -42,14 +42,14 @@ public:
 
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    TArray<FCharacterData> Characters;
+    TArray<FCharacterData> Characters; //Геттер GetCharacters()
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    TArray<FCustomParameterData> CustomParameters;
+    TArray<FCustomParameterData> CustomParameters; //Геттер GetCustomParameters()
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    FString Hero;
+    FString Hero; //Геттер GetHero()
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    TArray<FVariableData> Variables;
+    TArray<FVariableData> Variables; //Геттер GetVariables()
 };

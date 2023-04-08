@@ -24,7 +24,7 @@ void SCharacterListRow::Construct(const FArguments& InArgs)
 		[
 			SNew(SEditableTextBox)
 			.HintText(FText::FromString("name"))
-			.Text(FText::FromString(Name.Get()))
+			.Text(Name.Get())
 		]
 		+ SHorizontalBox::Slot()
 		.AutoWidth()

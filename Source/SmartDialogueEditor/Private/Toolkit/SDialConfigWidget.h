@@ -30,9 +30,9 @@ private:
 	void OnCharacterSelected(TSharedPtr<FString> NewSelection);
 	FReply OnAddButtonClicked();
 	void OnDeleteButtonClicked(TSharedPtr<FString> CharacterId);	
-	void AddCharacterRow(FString Id = "", FString Name = "");
-	void AddGlobalVarRow(const FString& Key = "", const FString& Value = "", const FString& Desc = "");
-	void AddLocalVarRow(const FString& Key, const FString& Value, const FString& Desc);
+	void AddCharacterRow(FString Id = "", FText Name = FText::GetEmpty());
+	void AddGlobalVarRow(const FString& Key = "", const int32& Value = 0, const FString& Desc = "");
+	void AddLocalVarRow(const FString& Key, const int32& Value, const FString& Desc);
 
 	FReply OnAddPublicVarClicked();
 

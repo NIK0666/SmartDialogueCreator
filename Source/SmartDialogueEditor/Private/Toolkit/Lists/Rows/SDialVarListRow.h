@@ -14,7 +14,7 @@ public:
 	
 	SLATE_BEGIN_ARGS(SDialVarListRow) {}
 	SLATE_ARGUMENT(FString, VarKey)
-	SLATE_ARGUMENT(FString, VarValue)
+	SLATE_ARGUMENT(int32, VarValue)
 	SLATE_ARGUMENT(FString, VarDesc)
 	SLATE_EVENT(FSimpleDelegate, OnDeleteButtonClicked)
 	SLATE_END_ARGS()
@@ -25,7 +25,7 @@ public:
 
 private:
 	TAttribute<FString> VarKey;
-	TAttribute<FString> VarValue;
+	TAttribute<int32> VarValue;
 	TAttribute<FString> VarDesc;
 	FSimpleDelegate OnDeleteButtonClicked;
 

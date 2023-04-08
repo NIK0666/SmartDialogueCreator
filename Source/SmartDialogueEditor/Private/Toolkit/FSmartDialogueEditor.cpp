@@ -18,6 +18,7 @@
 #include "Graph/BranchNode.h"
 #include "Graph/SmartDialogueGraph.h"
 #include "Graph/SmartDialogueGraphSchema.h"
+#include "PlayPanel/SDialoguePlayerTab.h"
 #include "Serializor/JsonParser.h"
 #include "SmartDialogueCore/Private/SmartDialogueSettings.h"
 #include "Windows/WindowsPlatformApplicationMisc.h"
@@ -364,12 +365,12 @@ TSharedRef<SDockTab> FSmartDialogueEditor::SpawnTab_Config(const FSpawnTabArgs& 
 TSharedRef<SDockTab> FSmartDialogueEditor::SpawnTab_Player(const FSpawnTabArgs& Args)
 {
 	check(Args.GetTabId() == SmartDialogue_PlayerTabId);
-
+	
 	return SNew(SDockTab)
 		.Label(FText::FromString("Player"))
 		[
-			SNullWidget::NullWidget
-			// Создайте виджет для содержимого вкладки Player
+			SNew(SDialoguePlayerTab)
+				.SmartDialogueEditor(this)
 		];
 
 }

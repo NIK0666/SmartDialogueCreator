@@ -247,7 +247,7 @@ bool UJsonParser::ParseJson(const FString& FilePath, USmartDialogue* DialogueAss
 
             Variable.Desc = VariableObject->GetStringField("Desc");
             Variable.Key = VariableObject->GetStringField("Key");
-            Variable.Value = VariableObject->GetStringField("Value");
+            Variable.Value = VariableObject->GetIntegerField("Value");
 
             DialogueAsset->AddNewVariable(Variable);
         }

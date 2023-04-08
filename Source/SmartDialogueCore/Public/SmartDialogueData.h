@@ -34,7 +34,7 @@ struct FCharacterData
 	FString Id;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FString Name;
+	FText Name;
 };
 
 USTRUCT(BlueprintType)
@@ -64,7 +64,7 @@ struct FVariableData
 	FString Key;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FString Value;
+	int32 Value;
 };
 
 USTRUCT(BlueprintType)
@@ -187,4 +187,42 @@ struct FSmartDialogueBranch
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Branch")
 	TArray<FSmartDialogueVars> Vars;
+};
+
+
+USTRUCT(BlueprintType)
+struct FDialogueProgress
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FString Auto;
+	
+	UPROPERTY()
+	TMap<FString, bool> Hidden;
+};
+
+
+USTRUCT(BlueprintType)
+struct FCharactersVarsProgress
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	TMap<FString, int32> Variable;
+};
+
+USTRUCT(BlueprintType)
+struct FInfoProgress
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	TMap<FString, FCharactersVarsProgress> CharVars;
+	
+	UPROPERTY()
+	TMap<FString, int32> PublicVars;
+
+	UPROPERTY()
+	TMap<FString, FDialogueProgress> Dials;
 };

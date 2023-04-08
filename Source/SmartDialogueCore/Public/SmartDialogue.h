@@ -92,6 +92,7 @@ public:
 	void UpdateEventInfo(const FName& BranchName, const FSmartDialogueEvent& Event);
 	
 	void MakeClean();
+	FString GetDialogueId();
 
 	FOnBranchesChanged OnBranchesChanged;	
 	FOnBranchRenamed OnBranchRenamed;

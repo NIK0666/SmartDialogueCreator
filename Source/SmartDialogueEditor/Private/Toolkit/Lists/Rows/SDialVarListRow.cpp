@@ -31,7 +31,7 @@ void SDialVarListRow::Construct(const FArguments& InArgs)
 		[
 			SNew(SEditableTextBox)
 				.MinDesiredWidth(80.0f)
-				.Text(TAttribute<FText>::Create(TAttribute<FText>::FGetter::CreateLambda([this]() { return FText::FromString(VarValue.Get()); })))
+				.Text(TAttribute<FText>::Create(TAttribute<FText>::FGetter::CreateLambda([this]() { return FText::FromString(FString::FromInt(VarValue.Get())); })))
 				.HintText(FText::FromString("default"))
 		]
 		+ SHorizontalBox::Slot()
