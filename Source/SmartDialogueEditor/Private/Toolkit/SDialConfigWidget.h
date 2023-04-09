@@ -29,10 +29,13 @@ private:
 	
 	void OnCharacterSelected(TSharedPtr<FString> NewSelection);
 	FReply OnAddButtonClicked();
+	FReply OnAddParameterClicked();
 	void OnDeleteButtonClicked(TSharedPtr<FString> CharacterId);	
 	void AddCharacterRow(FString Id = "", FText Name = FText::GetEmpty());
 	void AddGlobalVarRow(const FString& Key = "", const int32& Value = 0, const FString& Desc = "");
 	void AddLocalVarRow(const FString& Key, const int32& Value, const FString& Desc);
+	
+	void AddParameterRow(const FString& Key = "", const FString& Desc = "");
 
 	FReply OnAddPublicVarClicked();
 
@@ -43,6 +46,11 @@ private:
 	void UpdateButtonStyles();
 	void AddTabButton(const FString& ButtonText);
 
+	void AddCharactersTab(TSharedPtr<SVerticalBox> VerticalBoxContent);
+	void AddGlobalVarsTab(TSharedPtr<SVerticalBox> VerticalBoxContent);
+	void AddLocalVarsTab(TSharedPtr<SVerticalBox> VerticalBoxContent);
+	void AddParametersTab(TSharedPtr<SVerticalBox> VerticalBoxContent);
+
 	TSharedPtr<SVerticalBox> ScrollBoxGlobalVarsContent;
 	TArray<TSharedPtr<FString>> PublicVarIds;
 	int32 PublicVarCounter = 0;
@@ -52,6 +60,8 @@ private:
 	int32 LocalVarCounter = 0;
 	
 	TSharedPtr<SVerticalBox> ScrollBoxContent;
+	
+	TSharedPtr<SVerticalBox> ParametersScrollBoxContent;
 
 	TSharedPtr<SWidgetSwitcher> WidgetSwitcher;
 	int32 ActiveTabIndex = 0;

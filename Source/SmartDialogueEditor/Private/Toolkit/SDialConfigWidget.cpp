@@ -10,6 +10,7 @@
 #include "Components/SCharacterComboBox.h"
 #include "Lists/Rows/SCharacterListRow.h"
 #include "Lists/Rows/SDialVarListRow.h"
+#include "Lists/Rows/SParameterListRow.h"
 #include "Widgets/Layout/SWidgetSwitcher.h"
 
 void SDialConfigWidget::Construct(const FArguments& InArgs)
@@ -174,13 +175,38 @@ void SDialConfigWidget::Construct(const FArguments& InArgs)
 				]
 				+ SWidgetSwitcher::Slot()
 				[
-					// Fourth tab (Parameters) content
-					SNew(SBox)
-					.VAlign(VAlign_Center)
-					.HAlign(HAlign_Center)
+					// (Parameters) content
+					SNew(SVerticalBox)
+					+ SVerticalBox::Slot()
+					.AutoHeight()
 					[
-						SNew(STextBlock)
-						.Text(FText::FromString("Parameters content will be here."))
+						SNew(SVerticalBox)
+						+ SVerticalBox::Slot()
+						.AutoHeight()
+						[
+							SNew(SHorizontalBox)
+							+ SHorizontalBox::Slot()
+							.AutoWidth()
+							[
+								SNew(SButton)
+								.ButtonStyle(FAppStyle::Get(), "FlatButton.Success")
+								.ForegroundColor(FSlateColor::UseForeground())
+								.OnClicked(this, &SDialConfigWidget::OnAddParameterClicked)
+								[
+									SNew(SImage)
+									.Image(FAppStyle::Get().GetBrush("Icons.Plus"))
+								]
+							]
+						]
+						+ SVerticalBox::Slot()
+						.FillHeight(1.0f)
+						[
+							SNew(SScrollBox)
+							+ SScrollBox::Slot()
+							[
+								SAssignNew(ParametersScrollBoxContent, SVerticalBox)
+							]
+						]
 					]
 				]
 			]
@@ -196,6 +222,7 @@ void SDialConfigWidget::UpdateData()
 	ScrollBoxContent->ClearChildren();
 	ScrollBoxGlobalVarsContent->ClearChildren();
 	ScrollBoxLocalVarsContent->ClearChildren();
+	ParametersScrollBoxContent->ClearChildren();
 	
 	if (DialConfig)
 	{
@@ -206,7 +233,11 @@ void SDialConfigWidget::UpdateData()
 		for (const auto L_Var : DialConfig->GetVariables())
 		{
 			AddGlobalVarRow(L_Var.Key, L_Var.Value, L_Var.Desc);
-		}		
+		}
+		for (const auto L_Var : DialConfig->GetCustomParameters())
+		{
+			AddParameterRow(L_Var.Key, L_Var.Desc);
+		}
 	}
 
 	if (SmartDialogueEditor->GetDialogue())
@@ -224,6 +255,12 @@ FReply SDialConfigWidget::OnAddButtonClicked()
 {
 	// Add a new character with default values
 	AddCharacterRow();
+	return FReply::Handled();
+}
+
+FReply SDialConfigWidget::OnAddParameterClicked()
+{
+	AddParameterRow();
 	return FReply::Handled();
 }
 
@@ -292,6 +329,24 @@ void SDialConfigWidget::AddLocalVarRow(const FString& Key, const int32& Value, c
 		}))
 	];
 }
+
+void SDialConfigWidget::AddParameterRow(const FString& Key, const FString& Desc)
+{
+	TSharedPtr<FString> SharedId = MakeShared<FString>(Key);
+	ParametersScrollBoxContent->AddSlot()
+		.AutoHeight()
+		.Padding(2.0f)
+		[
+			SNew(SParameterListRow)
+			.Parameter(Key)
+			.Desc(Desc)
+			.OnDeleteButtonClicked(FSimpleDelegate::CreateLambda([this, SharedId]()
+			{
+				this->OnDeleteButtonClicked(SharedId);
+			}))
+		];
+}
+
 
 FReply SDialConfigWidget::OnAddPublicVarClicked()
 {
