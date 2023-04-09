@@ -22,9 +22,6 @@ private:
 
 	TArray<TSharedPtr<FString>> VariableOptions;
 	TArray<TSharedPtr<FString>> OperationOptions;
-
-	FString EnumOperationToString(ESmartDialogueEqualOperation Operation);
-	ESmartDialogueEqualOperation EnumOperationFromString(FString& String);
 	
 	void RefreshList();
 

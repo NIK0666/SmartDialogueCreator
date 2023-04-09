@@ -25,6 +25,55 @@ enum class ESmartDialogueEqualOperation : uint8
 	EEO_Less UMETA(DisplayName = "<"),
 };
 
+class ESmartDialogueEqualOperationHelper
+{
+public:
+	static FString EnumOperationToString(ESmartDialogueEqualOperation Operation)
+	{
+		switch (Operation)
+		{
+		case ESmartDialogueEqualOperation::EEO_Equals:
+			return "==";
+		case ESmartDialogueEqualOperation::EEO_Greater:
+			return ">";
+		case ESmartDialogueEqualOperation::EEO_Less:
+			return "<";
+		case ESmartDialogueEqualOperation::EEO_GreaterOrEquals:
+			return ">=";
+		case ESmartDialogueEqualOperation::EEO_LessOrEquals:
+			return "<=";
+		}
+
+		return "";
+	}
+	static ESmartDialogueEqualOperation EnumOperationFromString(const FString& OperationString)
+	{
+		if (OperationString == "==")
+		{
+			return ESmartDialogueEqualOperation::EEO_Equals;
+		}
+		if (OperationString == ">")
+		{
+			return ESmartDialogueEqualOperation::EEO_Greater;
+		}
+		if (OperationString == "<")
+		{
+			return ESmartDialogueEqualOperation::EEO_Less;
+		}
+		if (OperationString == ">=")
+		{
+			return ESmartDialogueEqualOperation::EEO_GreaterOrEquals;
+		}
+		if (OperationString == "<=")
+		{
+			return ESmartDialogueEqualOperation::EEO_LessOrEquals;
+		}
+
+		UE_LOG(LogTemp, Error, TEXT("Invalid OperationString: %s"), *OperationString);
+		return ESmartDialogueEqualOperation::EEO_Equals;
+	}
+};
+
 USTRUCT(BlueprintType)
 struct FCharacterData
 {

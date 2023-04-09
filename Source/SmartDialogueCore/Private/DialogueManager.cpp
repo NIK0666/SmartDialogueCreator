@@ -40,13 +40,24 @@ void UDialogueManager::ShowNextPhrase()
 {
 	if (CurrentPhraseIndex >= CurrentBranch.Phrases.Num())
 	{
-		return; // Exit if there are no more phrases in the current branch
+		return;
 	}
-	// Implement the logic to show the next phrase
-	// Steps 6 and 7 from your algorithm
+	
 	CurrentPhraseIndex++;
+	
 	if (CurrentPhraseIndex < CurrentBranch.Phrases.Num())
 	{
+		const auto Condition = CurrentBranch.Phrases[CurrentPhraseIndex].If;
+		if (!Condition.Key.IsEmpty())
+		{
+			const bool bIsValid = ValidCondition(Condition);
+			if (!bIsValid)
+			{
+				ShowNextPhrase();
+				return;
+			}			
+		}
+		
 		FSmartDialoguePhrase& CurrentPhrase = CurrentBranch.Phrases[CurrentPhraseIndex];
 		OnShowPhrase.Broadcast(CurrentPhrase.Text, CurrentPhrase.NPC);
 	}
@@ -129,7 +140,6 @@ void UDialogueManager::UpdateDialogueProgress(USmartDialogue* DialogueAsset)
 void UDialogueManager::PlayBranch(const FName& BranchName)
 {
 	// Implement the logic to play a dialogue branch
-	// Steps 5-7 from your algorithm
 	CurrentBranch = CurrentDialogue->GetBranches()[BranchName];
 
 	if (!CurrentBranch.Event.Post)
@@ -149,24 +159,73 @@ void UDialogueManager::PlayBranch(const FName& BranchName)
 
 	ProcessBranchVars(CurrentBranch.Vars);
 
-	if (CurrentBranch.Phrases.Num() > 0)
+	CurrentPhraseIndex = -1;
+	ShowNextPhrase();
+}
+
+bool UDialogueManager::ValidConditions(TArray<FIf> Conditions)
+{
+	for (auto Element : Conditions)
 	{
-		// Implement the logic to play a dialogue branch
-		// Steps 5-7 from your algorithm
-		CurrentPhraseIndex = 0;
-		FSmartDialoguePhrase& CurrentPhrase = CurrentBranch.Phrases[CurrentPhraseIndex];
-		OnShowPhrase.Broadcast(CurrentPhrase.Text, CurrentPhrase.NPC);
+		if (!ValidCondition(Element))
+		{
+			return false;
+		}
 	}
-	else
+	
+	return true;
+}
+
+bool UDialogueManager::ValidCondition(FIf Condition)
+{
+	int32* VarValuePtr = nullptr;
+
+	// Проверяем, есть ли переменная в PublicVars
+	VarValuePtr = DialogueProgress.PublicVars.Find(Condition.Key);
+
+	// Если нет, ищем в CharVars для текущего персонажа
+	if (!VarValuePtr)
 	{
-		ShowNextPhrase(); // If no phrases in branch, move to the next phrase or end the branch
+		FCharactersVarsProgress* CharVarPtr = DialogueProgress.CharVars.Find(CurrentDialogue->GetCharacter());
+		if (CharVarPtr)
+		{
+			VarValuePtr = CharVarPtr->Variable.Find(Condition.Key);
+		}
+	}
+
+	// Если переменная не найдена, условие считается недействительным
+	if (!VarValuePtr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Condition variable not found: %s"), *Condition.Key);
+		return false;
+	}
+	const int32 Value = *VarValuePtr;
+
+	// Сравниваем значение переменной с указанным значением в условии
+	switch (Condition.EqualOperation)
+	{
+	case ESmartDialogueEqualOperation::EEO_Equals:
+		UE_LOG(LogTemp, Log, TEXT("Condition: %s equals %d"), *Condition.Key, Condition.Value);
+		return Value == Condition.Value;
+	case ESmartDialogueEqualOperation::EEO_GreaterOrEquals:
+		UE_LOG(LogTemp, Log, TEXT("Condition: %s greater or equal to %d"), *Condition.Key, Condition.Value);
+		return Value >= Condition.Value;
+	case ESmartDialogueEqualOperation::EEO_LessOrEquals:
+		UE_LOG(LogTemp, Log, TEXT("Condition: %s less or equal to %d"), *Condition.Key, Condition.Value);
+		return Value <= Condition.Value;
+	case ESmartDialogueEqualOperation::EEO_Greater:
+		UE_LOG(LogTemp, Log, TEXT("Condition: %s greater than %d"), *Condition.Key, Condition.Value);
+		return Value > Condition.Value;
+	case ESmartDialogueEqualOperation::EEO_Less:
+		UE_LOG(LogTemp, Log, TEXT("Condition: %s less than %d"), *Condition.Key, Condition.Value);
+		return Value < Condition.Value;
+	default:
+		UE_LOG(LogTemp, Warning, TEXT("Invalid condition operation for variable: %s"), *Condition.Key);
+		return false;
 	}
 }
 
-bool UDialogueManager::ValidConditions(TArray<FIf> IfConditions)
-{
-	return true;
-}
+
 
 void UDialogueManager::ShowBranchOptions()
 {

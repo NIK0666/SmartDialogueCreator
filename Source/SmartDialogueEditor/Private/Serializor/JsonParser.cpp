@@ -79,11 +79,11 @@ bool UJsonParser::ParseJson(const FString& FilePath, USmartDialogue* DialogueAss
                 TSharedPtr<FJsonObject> IfObject = PhraseObject->GetObjectField("If");
                 if (IfObject.IsValid())
                 {
-                    //{"Key":"Silent","Op":"==","Value":"1"}
                     Phrase.If.Key = IfObject->GetStringField("Key");
                     Phrase.If.Value = IfObject->GetIntegerField("Value");
-                    FString Operation = IfObject->GetStringField("Operation");
-                    
+                    FString Operation = IfObject->GetStringField("Op");
+                    Phrase.If.Else = IfObject->GetBoolField("Else");
+
                     if (Operation == "==")
                     {
                         Phrase.If.EqualOperation = ESmartDialogueEqualOperation::EEO_Equals;
@@ -160,7 +160,7 @@ bool UJsonParser::ParseJson(const FString& FilePath, USmartDialogue* DialogueAss
 
                 Vars.Key = VarObject->GetStringField("Key");
                 Vars.Value = VarObject->GetIntegerField("Value");
-                FString Operation = VarObject->GetStringField("Operation");
+                FString Operation = VarObject->GetStringField("Op");
 
                 if (Operation == "=")
                 {

@@ -43,7 +43,8 @@ private:
 	// Helper methods for dialogue processing
 	void UpdateDialogueProgress(USmartDialogue* DialogueAsset);
 	void PlayBranch(const FName& BranchName);
-	bool ValidConditions(TArray<FIf> IfConditions);
+	bool ValidConditions(TArray<FIf> Conditions);
+	bool ValidCondition(FIf Condition);
 	void ShowBranchOptions();
 	void ShowChoiceOptions(const TArray<FString>& ChoicesToShow);
 	void ProcessBranchVars(const TArray<FSmartDialogueVars>& Vars);

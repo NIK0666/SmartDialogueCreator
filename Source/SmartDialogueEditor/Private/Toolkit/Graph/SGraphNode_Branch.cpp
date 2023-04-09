@@ -16,13 +16,6 @@ void SGraphNode_Branch::Construct(const FArguments& InArgs, UBranchNode* InNode)
 
 void SGraphNode_Branch::CreatePinWidgets()
 {
-	// Create Pin widgets for each of the pins.
-	for (int32 PinIndex = 0; PinIndex < GraphNode->Pins.Num(); ++PinIndex)
-	{
-		UEdGraphPin* CurPin = GraphNode->Pins[PinIndex];
-		// CurPin->PinName = FName();
-	}
-
 	SGraphNode::CreatePinWidgets();
 }
 

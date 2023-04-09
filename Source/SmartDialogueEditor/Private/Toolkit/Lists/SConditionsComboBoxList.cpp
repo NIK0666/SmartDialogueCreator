@@ -45,52 +45,6 @@ void SConditionsComboBoxList::UpdateInitialConditions(const TArray<FIf>& NewInit
     RefreshList();
 }
 
-FString SConditionsComboBoxList::EnumOperationToString(ESmartDialogueEqualOperation Operation)
-{
-    switch (Operation)
-    {
-    case ESmartDialogueEqualOperation::EEO_Equals:
-        return "==";
-    case ESmartDialogueEqualOperation::EEO_Greater:
-        return ">";
-    case ESmartDialogueEqualOperation::EEO_Less:
-        return "<";
-    case ESmartDialogueEqualOperation::EEO_GreaterOrEquals:
-        return ">=";
-    case ESmartDialogueEqualOperation::EEO_LessOrEquals:
-        return "<=";
-    }
-    
-    return "";
-}
-
-ESmartDialogueEqualOperation SConditionsComboBoxList::EnumOperationFromString(FString& OperationString)
-{
-    if (OperationString == "==")
-    {
-        return ESmartDialogueEqualOperation::EEO_Equals;
-    }
-    if (OperationString == ">")
-    {
-        return ESmartDialogueEqualOperation::EEO_Greater;
-    }
-    if (OperationString == "<")
-    {
-        return ESmartDialogueEqualOperation::EEO_Less;
-    }
-    if (OperationString == ">=")
-    {
-        return ESmartDialogueEqualOperation::EEO_GreaterOrEquals;
-    }
-    if (OperationString == "<=")
-    {
-        return ESmartDialogueEqualOperation::EEO_LessOrEquals;
-    }
-    
-    UE_LOG(LogTemp, Error, TEXT("Invalid OperationString: %s"), *OperationString);
-    return ESmartDialogueEqualOperation::EEO_Equals;
-}
-
 void SConditionsComboBoxList::RefreshList()
 {
     ListBox->ClearChildren();
@@ -112,7 +66,7 @@ void SConditionsComboBoxList::RefreshList()
         }
         for (auto Element : OperationOptions)
         {
-            if (EnumOperationToString(InitialConditions[Index].EqualOperation) == *Element.Get())
+            if (ESmartDialogueEqualOperationHelper::EnumOperationToString(InitialConditions[Index].EqualOperation) == *Element.Get())
             {
                 SelectedOperationItem = Element;
                 break;
@@ -145,7 +99,7 @@ void SConditionsComboBoxList::RefreshList()
                 .Content()
                 [
                     SNew(STextBlock)
-                    .Text_Lambda([this, Index] { return FText::FromString(EnumOperationToString(InitialConditions[Index].EqualOperation)); })
+                    .Text_Lambda([this, Index] { return FText::FromString(ESmartDialogueEqualOperationHelper::EnumOperationToString(InitialConditions[Index].EqualOperation)); })
                 ]
             ]
             + SHorizontalBox::Slot()
@@ -208,7 +162,7 @@ void SConditionsComboBoxList::OnOperationSelectionChanged(TSharedPtr<FString> Ne
 {
     if (NewValue.IsValid())
     {
-        InitialConditions[Index].EqualOperation = EnumOperationFromString(*NewValue.Get());
+        InitialConditions[Index].EqualOperation = ESmartDialogueEqualOperationHelper::EnumOperationFromString(*NewValue.Get());
         Editor->GetDialogue()->UpdateIfElement(Editor->GetSelectedBranchName(), Index, InitialConditions[Index]);
     }
 }

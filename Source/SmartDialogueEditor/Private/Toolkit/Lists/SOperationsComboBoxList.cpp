@@ -108,11 +108,11 @@ void SOperationsComboBoxList::RefreshList()
                 break;
             }
         }
-        for (auto Element : OperationOptions)
+        for (auto Op : OperationOptions)
         {
-            if (ESmartDialogueOperationToString(InitialVars[Index].Operation) == *Element.Get())
+            if (Op->Equals(ESmartDialogueOperationToString(InitialVars[Index].Operation)))
             {
-                SelectedOperationItem = Element;
+                SelectedOperationItem = Op;
                 break;
             }
         }

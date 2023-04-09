@@ -21,7 +21,16 @@ void SPhraseListRow::Construct(const FArguments& InArgs)
 	VarOptions = SmartDialogueEditor->GetAllVariablesList();
 
 	ComparisonOptions = SmartDialogueEditor->GetOperations(false);
-
+	auto InitOp = ComparisonOptions[0];
+	const auto StringOp = ESmartDialogueEqualOperationHelper::EnumOperationToString(SmartDialoguePhrasePtr->If.EqualOperation);
+	for (auto Op : ComparisonOptions)
+	{
+		if (Op->Equals(StringOp))
+		{
+			InitOp = Op;
+			break;
+		}
+	}
 	
 	ChildSlot
 	[
@@ -63,7 +72,7 @@ void SPhraseListRow::Construct(const FArguments& InArgs)
 				.OnGenerateWidget(this, &SPhraseListRow::GenerateComparisonOption)
 				.OnSelectionChanged(this, &SPhraseListRow::OnComparisonSelected)
 				.Visibility(this, &SPhraseListRow::GetComparisonVisibility)
-				.InitiallySelectedItem(ComparisonOptions[0])
+				.InitiallySelectedItem(InitOp)
 				[
 					SAssignNew(ComparisonTextBlock, STextBlock)
 					.Text(this, &SPhraseListRow::GetCurrentComparisonText)
@@ -193,21 +202,42 @@ void SPhraseListRow::OnOrCheckStateChanged(ECheckBoxState NewState)
 
 void SPhraseListRow::OnParameterChanged(const FText& Text, FString ParamKey)
 {
-	SmartDialoguePhrasePtr->CustomParams[ParamKey] = Text.ToString();
+	if (SmartDialoguePhrasePtr->CustomParams.Contains(ParamKey))
+	{
+		if (Text.IsEmpty())
+		{
+			SmartDialoguePhrasePtr->CustomParams.Remove(ParamKey);
+		}
+		else
+		{
+			SmartDialoguePhrasePtr->CustomParams[ParamKey] = Text.ToString();
+		}
+	}
+	else
+	{
+		if (!Text.IsEmpty())
+		{
+			SmartDialoguePhrasePtr->CustomParams.Add(ParamKey, Text.ToString());
+		}
+	}
 }
 
 void SPhraseListRow::UpdateCustomParamsGrid()
 {
+	TArray<FCustomParameterData> AllCustomParams = SmartDialogueEditor->GetDialogueConfig()->GetCustomParameters();
+	
 	CustomParamsGrid->ClearChildren();
 
 	int32 CurrentColumn = 0;
-	for (const auto& Param : SmartDialoguePhrasePtr->CustomParams)
+	for (auto CustomParam : AllCustomParams)
 	{
+		FString* PhraseParamValue = SmartDialoguePhrasePtr->CustomParams.Find(CustomParam.Key);
+		
 		TSharedRef<SEditableTextBox> EditableTextBox = SNew(SEditableTextBox)
-			.HintText(FText::FromString(Param.Key))
-			.ToolTipText(FText::FromString(Param.Key))
-			.Text(FText::FromString(Param.Value))
-			.OnTextChanged(this, &SPhraseListRow::OnParameterChanged, Param.Key);
+			.HintText(FText::FromString(CustomParam.Key))
+			.ToolTipText(FText::FromString(CustomParam.Key))
+			.Text(FText::FromString(PhraseParamValue != nullptr ? *PhraseParamValue : ""))
+			.OnTextChanged(this, &SPhraseListRow::OnParameterChanged, CustomParam.Key);
 
 		CustomParamsGrid->AddSlot(CurrentColumn, 0)
 			.HAlign(HAlign_Fill)
