@@ -8,6 +8,7 @@
 #include "Widgets/Layout/SScrollBox.h"
 #include "Widgets/Layout/SBox.h"
 #include "Widgets/Layout/SBorder.h"
+#include "Widgets/Layout/SWidgetSwitcher.h"
 
 
 class SAnswerButtonRow;
@@ -38,6 +39,7 @@ void SDialoguePlayerTab::Construct(const FArguments& InArgs)
                 SNew(SButton)
                 .ButtonStyle(FAppStyle::Get(), "FlatButton")
                 .OnClicked(this, &SDialoguePlayerTab::OnPlayClicked)
+                .IsFocusable(false)
                 .ContentPadding(FMargin(2, 2))
                 [
                     SNew(SBox)
@@ -54,6 +56,7 @@ void SDialoguePlayerTab::Construct(const FArguments& InArgs)
             [
                 SNew(SButton)
                 .ButtonStyle(FAppStyle::Get(), "FlatButton")
+                .IsFocusable(false)
                 .OnClicked(this, &SDialoguePlayerTab::OnStopClicked)
                 .ContentPadding(FMargin(2, 2))
                 [
@@ -71,6 +74,7 @@ void SDialoguePlayerTab::Construct(const FArguments& InArgs)
             [
                 SNew(SButton)
                 .ButtonStyle(FAppStyle::Get(), "FlatButton")
+                .IsFocusable(false)
                 .OnClicked(this, &SDialoguePlayerTab::OnSwitchLocaleClicked)
                 .ContentPadding(FMargin(2, 2))
                 [
@@ -83,15 +87,53 @@ void SDialoguePlayerTab::Construct(const FArguments& InArgs)
                     ]
                 ]
             ]
+            + SHorizontalBox::Slot()
+            .AutoWidth()
+            [
+                SNew(SButton)
+                .ButtonStyle(FAppStyle::Get(), "FlatButton")
+                .IsFocusable(false)
+                .OnClicked(this, &SDialoguePlayerTab::OnClearClicked)
+                .ContentPadding(FMargin(2, 2))
+                [
+                    SNew(SBox)
+                    .WidthOverride(32)
+                    .HeightOverride(32)
+                    [
+                        SNew(SImage)
+                        .Image(FAppStyle::GetBrush("Icons.Delete"))
+                    ]
+                ]
+            ]
         ]
+        // + SVerticalBox::Slot()
+        // .AutoHeight()
+        // [
+        //     SAssignNew(NextPhraseButton, SButton)
+        //    .HAlign(HAlign_Fill)
+        //    .VAlign(VAlign_Fill)
+        //    .Text(FText::FromString(TEXT("Next Phrase")))
+        //    .OnClicked(this, &SDialoguePlayerTab::OnNextPhraseClicked)
+        // ]
         + SVerticalBox::Slot()
         .AutoHeight()
         [
             SNew(SBox)
             .HeightOverride(300)
             [
-                SAssignNew(AnswerScrollBox, SScrollBox)
-                .Style(FAppStyle::Get(), "ScrollBox")
+                SAssignNew(AnswerSwitcher, SWidgetSwitcher)
+                +SWidgetSwitcher::Slot()
+                [
+                    SAssignNew(AnswerScrollBox, SScrollBox)
+                    .Style(FAppStyle::Get(), "ScrollBox")
+                ]
+                + SWidgetSwitcher::Slot()
+                [
+                    SAssignNew(NextPhraseButton, SButton)
+                    .HAlign(HAlign_Fill)
+                    .VAlign(VAlign_Fill)
+                    .OnClicked(this, &SDialoguePlayerTab::OnNextPhraseClicked)
+                ]
             ]
         ]
     ];
@@ -120,8 +162,20 @@ FReply SDialoguePlayerTab::OnPlayClicked()
         DialManager->OnEventTriggered.AddRaw(this, &SDialoguePlayerTab::OnEventTriggeredHandler);
         DialManager->OnVariableChanged.AddRaw(this, &SDialoguePlayerTab::OnVariableChanged);
     }
-    DialManager->InitializeDialogueProgress(Editor->GetDialogueConfig());
+    DialManager->InitializeDialogueProgress(Editor->GetDialogueConfig());    
+    AnswerSwitcher->SetActiveWidgetIndex(1);    
     DialManager->StartDialogue(Editor->GetDialogue());
+    
+    return FReply::Handled();
+}
+
+FReply SDialoguePlayerTab::OnClearClicked()
+{
+    DialogueElements.Empty();
+    DialogueListView->RequestListRefresh();
+
+    AnswerScrollBox->ClearChildren();
+    AnswerSwitcher->SetActiveWidgetIndex(0);
     
     return FReply::Handled();
 }
@@ -176,6 +230,8 @@ void SDialoguePlayerTab::OnCloseDialogueHandler()
 
     DialogueListView->RequestListRefresh();
     DialogueListView->ScrollToBottom();
+
+    AnswerSwitcher->SetActiveWidgetIndex(0);
 }
 
 void SDialoguePlayerTab::OnEventTriggeredHandler(const FString& EventName, const FString& EventParam)
@@ -209,9 +265,15 @@ void SDialoguePlayerTab::OnVariableChanged(bool bisPublic, const FString& VarNam
     DialogueListView->ScrollToBottom();
 }
 
-FReply SDialoguePlayerTab::OnStopClicked()
+FReply SDialoguePlayerTab::OnNextPhraseClicked()
 {
     DialManager->ShowNextPhrase();
+    
+    return FReply::Handled();
+}
+
+FReply SDialoguePlayerTab::OnStopClicked()
+{
     return FReply::Handled();
 }
 
@@ -234,10 +296,22 @@ void SDialoguePlayerTab::UpdateAnswers(const TArray<FText>& Answers)
             .OnSelectedAnswer(this, &SDialoguePlayerTab::OnAnswerSelected)
         ];
     }
+
+    AnswerSwitcher->SetActiveWidgetIndex(Answers.Num() > 0 ? 0 : 1);
+
 }
 
 
 void SDialoguePlayerTab::OnAnswerSelected(int32 AnswerIndex)
 {
     DialManager->SelectBranch(AnswerIndex);
+}
+
+FReply SDialoguePlayerTab::OnKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent)
+{
+    if (InKeyEvent.GetKey() == EKeys::SpaceBar)
+    {
+        return OnStopClicked();
+    }
+    return FReply::Unhandled();
 }

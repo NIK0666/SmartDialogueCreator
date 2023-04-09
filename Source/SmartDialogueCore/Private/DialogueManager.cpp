@@ -55,7 +55,7 @@ void UDialogueManager::ShowNextPhrase()
 		// 7.1 Check HideSelf
 		if (CurrentBranch.HideSelf)
 		{
-			DialogueProgress.Dials[CurrentDialogue->GetDialogueId()].Hidden.Add(CurrentBranch.Name.ToString(), true);
+			DialogueProgress.Dials[CurrentDialogue->GetDialogueId()].Hidden.Add(CurrentBranch.Name.ToString());
 		}
 
 		// 7.2 Trigger event if needed
@@ -113,7 +113,11 @@ void UDialogueManager::UpdateDialogueProgress(USmartDialogue* DialogueAsset)
 	}
 	for (auto Element : DialogueAsset->GetBranches())
 	{
-		DialogueProg.Hidden.Add(Element.Key.ToString(), Element.Value.Hidden);
+		if (Element.Value.Hidden)
+		{
+			DialogueProg.Hidden.Add(Element.Key.ToString());
+		}
+		
 	}
 
 	for (const FVariableData& VarData : DialogueAsset->GetVariables())
@@ -131,7 +135,17 @@ void UDialogueManager::PlayBranch(const FName& BranchName)
 	if (!CurrentBranch.Event.Post)
 	{
 		TriggerEventIfValid(CurrentBranch.Event);
-	}	
+	}
+
+	
+	if  (!CurrentBranch.Choice && CurrentBranch.Show.Num() > 0)
+	{
+		FDialogueProgress& DialogueProg = DialogueProgress.Dials.FindOrAdd(CurrentDialogue->GetDialogueId());
+		for (auto L_ShowBranch : CurrentBranch.Show)
+		{
+			DialogueProg.Hidden.Remove(L_ShowBranch);
+		}
+	}
 
 	ProcessBranchVars(CurrentBranch.Vars);
 
@@ -165,7 +179,7 @@ void UDialogueManager::ShowBranchOptions()
 	int32 i = 0;
 	for (auto Element : CurrentDialogue->GetBranches())
 	{
-		if (!(Hidden.Contains(Element.Key.ToString()) && Hidden[Element.Key.ToString()]) && ValidConditions(Element.Value.If))
+		if (!Hidden.Contains(Element.Key.ToString()) && ValidConditions(Element.Value.If))
 		{
 			CurrentBranchTexts.Add(Element.Value.Text);
 			CurrentBranchIndices.Add(i);

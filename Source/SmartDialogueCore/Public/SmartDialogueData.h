@@ -199,7 +199,7 @@ struct FDialogueProgress
 	FString Auto;
 	
 	UPROPERTY()
-	TMap<FString, bool> Hidden;
+	TArray<FString> Hidden;
 };
 
 

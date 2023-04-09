@@ -30,6 +30,7 @@ protected:
 
 	
 	FReply OnPlayClicked();
+	FReply OnClearClicked();
 	FReply OnStopClicked();
 	FReply OnSwitchLocaleClicked();
 
@@ -44,7 +45,8 @@ protected:
 
 	TArray<TSharedPtr<FDialogueElementData>> DialogueElements;
 	TSharedPtr<SListView<TSharedPtr<FDialogueElementData>>> DialogueListView;
-
+	TSharedPtr<SButton> NextPhraseButton;
+	TSharedPtr<SWidgetSwitcher> AnswerSwitcher;
 
 	void OnShowBranchOptionsHandler(const TArray<FText>& BranchTexts, const TArray<int32>& BranchIndices);
 	void OnHideBranchOptionsHandler();
@@ -52,4 +54,10 @@ protected:
 	void OnCloseDialogueHandler();
 	void OnEventTriggeredHandler(const FString& EventName, const FString& EventParam);
 	void OnVariableChanged(bool bisPublic, const FString& VarName, int OldValue, int NewValue);
+
+	FReply OnNextPhraseClicked();
+
+	
+	virtual FReply OnKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent) override;
+
 };
