@@ -9,6 +9,7 @@
 #include "EdGraph/EdGraph.h"
 #include "Framework/MultiBox/MultiBoxBuilder.h"
 #include "ToolMenus.h"
+#include "BranchesConnectionDrawingPolicy.h"
 #include "Toolkit/FSmartDialogueEditor.h"
 #include "Toolkit/FSmartDialogueEditorCommands.h"
 
@@ -163,13 +164,23 @@ void USmartDialogueGraphSchema::BreakPinLinks(UEdGraphPin& TargetPin, bool bSend
 	UE_LOG(LogTemp, Log, TEXT("PIN NAME TargetPin: %s"), *TargetPin.PinName.ToString());
 	if (USmartDialogueGraph* Graph = Cast<USmartDialogueGraph>(TargetPin.GetOwningNode()->GetGraph()))
 	{
-		for (UEdGraphPin* L_LinkedPin : TargetPin.LinkedTo)
+		// Make a copy of the LinkedTo array
+		TArray<UEdGraphPin*> LinkedPinsCopy = TargetPin.LinkedTo;
+
+		// Iterate through the copied array
+		for (UEdGraphPin* L_LinkedPin : LinkedPinsCopy)
 		{
 			Graph->OnUserDisconnectPins(L_LinkedPin, &TargetPin);
 		}
 	}
 	UEdGraphSchema::BreakPinLinks(TargetPin, bSendsNodeNotifcation);
 }
+
+FConnectionDrawingPolicy* USmartDialogueGraphSchema::CreateConnectionDrawingPolicy(int32 InBackLayerID, int32 InFrontLayerID, float InZoomFactor, const FSlateRect& InClippingRect, FSlateWindowElementList& InDrawElements, UEdGraph* InGraphObj) const
+{
+	return new FBranchesConnectionDrawingPolicy(InBackLayerID, InFrontLayerID, InZoomFactor, InClippingRect, InDrawElements);
+}
+
 
 
 #undef LOCTEXT_NAMESPACE
