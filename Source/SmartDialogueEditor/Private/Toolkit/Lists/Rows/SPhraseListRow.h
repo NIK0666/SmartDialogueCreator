@@ -10,6 +10,7 @@ class SVarComboBox;
 class SCharacterComboBox;
 class SMultiLineEditableTextBox;
 class FSmartDialogueEditor;
+class SGridPanel;
 
 class SPhraseListRow : public SCompoundWidget
 {
@@ -30,6 +31,7 @@ private:
 	TArray<TSharedPtr<FString>> ComparisonOptions;
 
 	TSharedPtr<SCharacterComboBox> CharacterComboBox;
+	TSharedPtr<SGridPanel> CustomParamsGrid;
 	TSharedPtr<SVarComboBox> VarComboBox;
 	TSharedPtr<SComboBox<TSharedPtr<FString>>> ComparisonComboBox;
 	TSharedPtr<STextBlock> ComparisonTextBlock;
@@ -43,7 +45,8 @@ private:
 	void OnVarSelected(TSharedPtr<FString> NewSelection);
 	void OnComparisonSelected(TSharedPtr<FString> NewSelection, ESelectInfo::Type SelectInfo);
 	void OnOrCheckStateChanged(ECheckBoxState NewState);
-	FReply OnSettingsButtonClicked();
+	void OnParameterChanged(const FText& Text, FString ParamKey);
+	void UpdateCustomParamsGrid();
 	FReply OnHandButtonClicked();
 	FReply OnDeleteButtonClicked();
 	void OnMultiLineTextChanged(const FText& InText);

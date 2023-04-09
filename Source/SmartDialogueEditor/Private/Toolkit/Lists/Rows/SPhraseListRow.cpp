@@ -3,11 +3,11 @@
 
 #include "SPhraseListRow.h"
 
-#include "EditorStyleSet.h"
 #include "Toolkit/FSmartDialogueEditor.h"
 #include "Toolkit/Components/SCharacterComboBox.h"
 #include "Toolkit/Components/SVarComboBox.h"
 #include "Widgets/Input/SMultiLineEditableTextBox.h"
+#include "Widgets/Layout/SGridPanel.h"
 
 
 void SPhraseListRow::Construct(const FArguments& InArgs)
@@ -98,16 +98,8 @@ void SPhraseListRow::Construct(const FArguments& InArgs)
 			+ SHorizontalBox::Slot()
 			.AutoWidth()
 			[
-				SNew(SButton)
-				.ButtonStyle(FAppStyle::Get(), "FlatButton")
-				.HAlign(HAlign_Center)
-				.VAlign(VAlign_Center)
-				.Content()
-				[
-					SNew(SImage)
-					.Image(FAppStyle::GetBrush("Icons.Settings"))
-				]
-				.OnClicked(this, &SPhraseListRow::OnSettingsButtonClicked)
+				SAssignNew(CustomParamsGrid, SGridPanel)
+				
 			]
 			+ SHorizontalBox::Slot()
 			.AutoWidth()
@@ -152,10 +144,13 @@ void SPhraseListRow::Construct(const FArguments& InArgs)
 			]
 		]
 	];
+
+	UpdateCustomParamsGrid();
 }
 
 FSmartDialoguePhrase* SPhraseListRow::GetPhrasePtr() const
 {
+	
 	return SmartDialoguePhrasePtr;
 }
 
@@ -196,10 +191,33 @@ void SPhraseListRow::OnOrCheckStateChanged(ECheckBoxState NewState)
 	// Обработка изменения состояния чекбокса "Or?"
 }
 
-FReply SPhraseListRow::OnSettingsButtonClicked()
+void SPhraseListRow::OnParameterChanged(const FText& Text, FString ParamKey)
 {
-	// Обработка нажатия на кнопку настроек
-	return FReply::Handled();
+	SmartDialoguePhrasePtr->CustomParams[ParamKey] = Text.ToString();
+}
+
+void SPhraseListRow::UpdateCustomParamsGrid()
+{
+	CustomParamsGrid->ClearChildren();
+
+	int32 CurrentColumn = 0;
+	for (const auto& Param : SmartDialoguePhrasePtr->CustomParams)
+	{
+		TSharedRef<SEditableTextBox> EditableTextBox = SNew(SEditableTextBox)
+			.HintText(FText::FromString(Param.Key))
+			.ToolTipText(FText::FromString(Param.Key))
+			.Text(FText::FromString(Param.Value))
+			.OnTextChanged(this, &SPhraseListRow::OnParameterChanged, Param.Key);
+
+		CustomParamsGrid->AddSlot(CurrentColumn, 0)
+			.HAlign(HAlign_Fill)
+			.VAlign(VAlign_Center)
+			[
+				EditableTextBox
+			];
+
+		CurrentColumn++;
+	}
 }
 
 FReply SPhraseListRow::OnHandButtonClicked()

@@ -107,30 +107,22 @@ bool UJsonParser::ParseJson(const FString& FilePath, USmartDialogue* DialogueAss
                 }
                 
                 // Parse Custom_params
-                // TSharedPtr<FJsonObject> CustomParamsObject = PhraseObject->GetObjectField("Custom_params");
-                // if (CustomParamsObject.IsValid())
-                // {
-                //     FString ScreenImage, Sound;
-                //     if (CustomParamsObject->TryGetStringField("ScreenImage", ScreenImage))
-                //     {
-                //         Phrase.CustomParams.Add("ScreenImage", ScreenImage);
-                //     }
-                //     if (CustomParamsObject->TryGetStringField("Sound", Sound))
-                //     {
-                //         Phrase.CustomParams.Add("Sound", Sound);
-                //     }
-                // }
+                TSharedPtr<FJsonObject> CustomParamsObject = PhraseObject->GetObjectField("Custom_params");
+                if (CustomParamsObject.IsValid())
+                {
+                    // Iterate over all keys in the CustomParamsObject
+                    for (const auto& Pair : CustomParamsObject->Values)
+                    {
+                        // Extract key and value as FString
+                        FString Key = Pair.Key;
+                        FString Value = Pair.Value->AsString();
 
-                // Parse Loc
-                // TSharedPtr<FJsonObject> LocObject = PhraseObject->GetObjectField("Loc");
-                // if (LocObject.IsValid())
-                // {
-                //     for (const auto& Pair : LocObject->Values)
-                //     {
-                //         Phrase.Text = FText::FromString(Pair.Value->AsString());
-                //     }
-                // }
+                        // Insert key-value pair into CustomParams
+                        Phrase.CustomParams.Add(Key, Value);
+                    }
+                }
 
+                
                 Branch.Phrases.Add(Phrase);
             }
 
