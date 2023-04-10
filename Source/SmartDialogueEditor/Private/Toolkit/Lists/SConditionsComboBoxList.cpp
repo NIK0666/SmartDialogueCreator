@@ -77,6 +77,7 @@ void SConditionsComboBoxList::RefreshList()
         [
             SNew(SHorizontalBox)
             + SHorizontalBox::Slot()
+            .FillWidth(1.f)
             [
                 SNew(SComboBox<TSharedPtr<FString>>)
                 .OptionsSource(&VariableOptions)
@@ -90,6 +91,7 @@ void SConditionsComboBoxList::RefreshList()
                 ]
             ]
             + SHorizontalBox::Slot()
+            .AutoWidth()
             [
                 SNew(SComboBox<TSharedPtr<FString>>)
                 .OptionsSource(&OperationOptions)
@@ -103,6 +105,7 @@ void SConditionsComboBoxList::RefreshList()
                 ]
             ]
             + SHorizontalBox::Slot()
+			.AutoWidth()
             [
                 SNew(SEditableTextBox)
                 .Text(FText::AsNumber(InitialConditions[Index].Value))

@@ -14,6 +14,7 @@
 #include "SDialConfigWidget.h"
 #include "SSmartDialogueGraph.h"
 #include "UMGStyle.h"
+#include "Components/SBranchComboBox.h"
 #include "Components/SCharacterComboBox.h"
 #include "Graph/BranchNode.h"
 #include "Graph/SmartDialogueGraph.h"
@@ -121,18 +122,28 @@ TSharedPtr<FExtender> FSmartDialogueEditor::GetToolbarExtender()
 			ToolbarBuilder.AddToolBarButton(FSmartDialogueEditorCommands::Get().ShowConfig, NAME_None, FText::GetEmpty(), TAttribute<FText>(), FSlateIcon(FAppStyle::Get().GetStyleSetName(), "Icons.Settings"));
 			ToolbarBuilder.AddSeparator();
 			ToolbarBuilder.AddToolBarButton(FSmartDialogueEditorCommands::Get().ImportJSON, NAME_None, FText::GetEmpty(), TAttribute<FText>(), FSlateIcon(FAppStyle::GetAppStyleSetName(), "Icons.Import"));
-
+			
 
 			ToolbarBuilder.AddToolBarWidget(
-				SNew(SHorizontalBox) 
+				SNew(SHorizontalBox)
 				+ SHorizontalBox::Slot()
 				.AutoWidth()
-				.VAlign(VAlign_Center)
 				[
 					SAssignNew(CharacterComboBox, SCharacterComboBox)
 					.SmartDialogueEditor(this)
 					.OnItemSelected(this, &FSmartDialogueEditor::OnHeroCharacterSelected)
 					.DefaultText(GetDialogue()->GetCharacter())
+				]
+				+ SHorizontalBox::Slot() // Добавление слота для SBranchComboBox
+				.AutoWidth()
+				[
+					SAssignNew(StartBranchComboBox, SBranchComboBox)
+					.SmartDialogueEditor(this)
+					.OnItemSelected_Lambda([this](TSharedPtr<FString> NewSelection)
+					{
+						GetDialogue()->SetAutoBranch(*NewSelection);
+					})
+					.DefaultText(GetDialogue()->GetAutoBranch())
 				]
 			);
 			

@@ -162,7 +162,12 @@ FReply SDialoguePlayerTab::OnPlayClicked()
         DialManager->OnEventTriggered.AddRaw(this, &SDialoguePlayerTab::OnEventTriggeredHandler);
         DialManager->OnVariableChanged.AddRaw(this, &SDialoguePlayerTab::OnVariableChanged);
     }
-    DialManager->InitializeDialogueProgress(Editor->GetDialogueConfig());    
+    
+    if (!DialManager->IsDialogueProgressInitialized())
+    {
+        DialManager->InitializeDialogueProgress(Editor->GetDialogueConfig());    
+    }
+    
     AnswerSwitcher->SetActiveWidgetIndex(1);    
     DialManager->StartDialogue(Editor->GetDialogue());
     
@@ -274,6 +279,7 @@ FReply SDialoguePlayerTab::OnNextPhraseClicked()
 
 FReply SDialoguePlayerTab::OnStopClicked()
 {
+    DialManager->InitializeDialogueProgress(Editor->GetDialogueConfig());
     return FReply::Handled();
 }
 

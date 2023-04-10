@@ -14,6 +14,7 @@ void UDialogueManager::InitializeDialogueProgress(USmartDialConfig* InDialConfig
 	{
 		DialogueProgress.PublicVars.Add(Element.Key, Element.Value);
 	}
+	bDialogueProgressInitialized = true;
 }
 
 void UDialogueManager::StartDialogue(USmartDialogue* DialogueAsset)
@@ -21,14 +22,20 @@ void UDialogueManager::StartDialogue(USmartDialogue* DialogueAsset)
 	// Implement the dialogue starting logic
 	// Steps 1-4 from your algorithm
 	CurrentDialogue = DialogueAsset;
-	UpdateDialogueProgress(DialogueAsset);
-
+	if (!DialogueProgress.Dials.Find(DialogueAsset->GetDialogueId()))
+	{
+		UpdateDialogueProgress(DialogueAsset);
+	}
+	
+	bNeedDialogueClose = false;
+	
 	FDialogueProgress& DialogueProg = DialogueProgress.Dials.FindOrAdd(DialogueAsset->GetDialogueId());
 	OnHideBranchOptions.Broadcast();
 	if (!DialogueProg.Auto.IsEmpty())
 	{
-		PlayBranch(FName(*DialogueProg.Auto)); 
+		const FName AutoBranch = FName(*DialogueProg.Auto);
 		DialogueProg.Auto = "";
+		PlayBranch(AutoBranch); 
 	}
 	else
 	{
@@ -36,61 +43,97 @@ void UDialogueManager::StartDialogue(USmartDialogue* DialogueAsset)
 	}
 }
 
-void UDialogueManager::ShowNextPhrase()
-{
-	if (CurrentPhraseIndex >= CurrentBranch.Phrases.Num())
-	{
+void UDialogueManager::ShowNextPhrase() {
+	if (bNeedDialogueClose)
+	{		
+		OnCloseDialogue.Broadcast();
+		bNeedDialogueClose = false;
 		return;
 	}
 	
-	CurrentPhraseIndex++;
-	
-	if (CurrentPhraseIndex < CurrentBranch.Phrases.Num())
-	{
+	if (CurrentBranch.Queue) {
+		FDialogueProgress& DialogueProg = DialogueProgress.Dials.FindOrAdd(CurrentDialogue->GetDialogueId());
+		int32& QueueIndex = DialogueProg.Queue.FindOrAdd(CurrentBranch.Name);
+
+		if (QueueIndex >= CurrentBranch.Phrases.Num()) {
+			QueueIndex = 0;
+		}
+
+		CurrentPhraseIndex = QueueIndex;
+		QueueIndex++;
+
+		// Обновляем значение индекса очереди в DialogueProg.Queue
+		DialogueProg.Queue[CurrentBranch.Name] = QueueIndex;
+
 		const auto Condition = CurrentBranch.Phrases[CurrentPhraseIndex].If;
-		if (!Condition.Key.IsEmpty())
-		{
+		if (!Condition.Key.IsEmpty()) {
 			const bool bIsValid = ValidCondition(Condition);
-			if (!bIsValid)
-			{
+			if (!bIsValid) {
 				ShowNextPhrase();
 				return;
-			}			
+			}
 		}
-		
+
 		FSmartDialoguePhrase& CurrentPhrase = CurrentBranch.Phrases[CurrentPhraseIndex];
 		OnShowPhrase.Broadcast(CurrentPhrase.Text, CurrentPhrase.NPC);
+		PerformPostPhraseActions();
+		return;
 	}
-	else
-	{
-		// 7.1 Check HideSelf
-		if (CurrentBranch.HideSelf)
-		{
-			DialogueProgress.Dials[CurrentDialogue->GetDialogueId()].Hidden.Add(CurrentBranch.Name.ToString());
-		}
+	
+    CurrentPhraseIndex++;
 
-		// 7.2 Trigger event if needed
-		if (CurrentBranch.Event.Post)
-		{
-			TriggerEventIfValid(CurrentBranch.Event);
-		}
+    if (CurrentPhraseIndex < CurrentBranch.Phrases.Num()) {
+        const auto Condition = CurrentBranch.Phrases[CurrentPhraseIndex].If;
+        if (!Condition.Key.IsEmpty()) {
+            const bool bIsValid = ValidCondition(Condition);
+            if (!bIsValid) {
+                ShowNextPhrase();
+                return;
+            }
+        }
 
-		// 7.3 Close the dialogue if needed
-		if (CurrentBranch.Closed)
-		{
-			OnCloseDialogue.Broadcast();
-		}
-		// Check for Choice
-		else if (CurrentBranch.Choice)
-		{
-			ShowChoiceOptions(CurrentBranch.Show);
-		}
-		else
-		{
-			// 7.4 Show branch options again
-			ShowBranchOptions();
+        FSmartDialoguePhrase& CurrentPhrase = CurrentBranch.Phrases[CurrentPhraseIndex];
+        OnShowPhrase.Broadcast(CurrentPhrase.Text, CurrentPhrase.NPC);
+    }
+    
+    if (CurrentPhraseIndex >= CurrentBranch.Phrases.Num() || !HasValidRemainingPhrases()) {
+        PerformPostPhraseActions();
+    }
+}
+
+void UDialogueManager::PerformPostPhraseActions() {
+	// 7.1 Check HideSelf
+	if (CurrentBranch.HideSelf) {
+		DialogueProgress.Dials[CurrentDialogue->GetDialogueId()].Hidden.Add(CurrentBranch.Name.ToString());
+	}
+
+	// 7.2 Trigger event if needed
+	if (CurrentBranch.Event.Post) {
+		TriggerEventIfValid(CurrentBranch.Event);
+	}
+
+	// 7.3 Close the dialogue if needed
+	if (CurrentBranch.Closed) {
+		bNeedDialogueClose = true;
+	}
+	// Check for Choice
+	else if (CurrentBranch.Choice) {
+		ShowChoiceOptions(CurrentBranch.Show);
+	} else {
+		// 7.4 Show branch options again
+		ShowBranchOptions();
+	}
+}
+
+bool UDialogueManager::HasValidRemainingPhrases() {
+	for (int32 i = CurrentPhraseIndex + 1; i < CurrentBranch.Phrases.Num(); ++i) {
+		const auto Condition = CurrentBranch.Phrases[i].If;
+		if (Condition.Key.IsEmpty() || ValidCondition(Condition)) {
+			return true;
 		}
 	}
+
+	return false;
 }
 
 void UDialogueManager::SelectBranch(int32 BranchIndex)
@@ -126,7 +169,7 @@ void UDialogueManager::UpdateDialogueProgress(USmartDialogue* DialogueAsset)
 	{
 		if (Element.Value.Hidden)
 		{
-			DialogueProg.Hidden.Add(Element.Key.ToString());
+			DialogueProg.Hidden.AddUnique(Element.Key.ToString());
 		}
 		
 	}
@@ -156,7 +199,15 @@ void UDialogueManager::PlayBranch(const FName& BranchName)
 			DialogueProg.Hidden.Remove(L_ShowBranch);
 		}
 	}
-
+	
+	if (!CurrentBranch.ChangeStarted.IsEmpty())
+	{
+		if (auto DialogueProg = DialogueProgress.Dials.Find(CurrentDialogue->GetDialogueId()))
+		{
+			DialogueProg->Auto = CurrentBranch.ChangeStarted;
+		}
+	}
+	
 	ProcessBranchVars(CurrentBranch.Vars);
 
 	CurrentPhraseIndex = -1;

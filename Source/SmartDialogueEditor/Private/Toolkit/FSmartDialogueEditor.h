@@ -10,6 +10,7 @@
 #include "Toolkits/AssetEditorToolkit.h"
 
 class SCharacterComboBox;
+class SBranchComboBox;
 class SBranchInfoWidget;
 class SBranchesWidget;
 class SBranchPhrasesWidget;
@@ -119,6 +120,7 @@ private:
 	TSharedPtr<IDetailsView> DialoguePhrasesDetailsView;
 
 	TSharedPtr<SCharacterComboBox> CharacterComboBox;
+	TSharedPtr<SBranchComboBox> StartBranchComboBox;
 	TSharedPtr<SBranchesWidget> BranchesWidget;
 	TSharedPtr<SBranchPhrasesWidget> PhrasesWidget;
 	TSharedPtr<SDialConfigWidget> DialConfigWidget;

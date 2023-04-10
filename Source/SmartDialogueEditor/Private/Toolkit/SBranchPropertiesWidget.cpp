@@ -146,6 +146,31 @@ TSharedRef<SWidget> SBranchPropertiesWidget::GetContentWidget()
 					.Text(LOCTEXT("ShowChoiceLabel", "Show Choice"))
 				]
 			]
+			
+			// "QueuePhrases"
+			+ SHorizontalBox::Slot()
+			.AutoWidth()
+			.Padding(4.f, 0.f)
+			.VAlign(VAlign_Center)
+			[
+				SAssignNew(QueueCheckBox, SCheckBox)
+				.HAlign(HAlign_Left)
+				.IsChecked(GetBranchDataPtr()->Queue ? ECheckBoxState::Checked : ECheckBoxState::Unchecked)
+				.OnCheckStateChanged_Lambda([this](ECheckBoxState NewState)
+				{
+					GetBranchDataPtr()->Queue = NewState == ECheckBoxState::Checked;
+					if (SmartDialogueEditor->GetSelectedBranch())
+					{
+						SmartDialogueEditor->GetSelectedBranch()->Queue = NewState == ECheckBoxState::Checked;
+					}
+				})
+				.Content()
+				[
+					SNew(STextBlock)
+					.Margin(FMargin(4.f, 0.f))
+					.Text(LOCTEXT("QueuePhrasesLabel", "Queue"))
+				]
+			]
 
 			// "Check as OR"
 			+ SHorizontalBox::Slot()
@@ -422,6 +447,7 @@ void SBranchPropertiesWidget::UpdateWidgets()
 	HideSelfCheckBox->SetIsChecked(GetBranchDataPtr()->HideSelf ? ECheckBoxState::Checked : ECheckBoxState::Unchecked);
 	ClosedCheckBox->SetIsChecked(GetBranchDataPtr()->Closed ? ECheckBoxState::Checked : ECheckBoxState::Unchecked);
 	ShowChoiceCheckBox->SetIsChecked(GetBranchDataPtr()->Choice ? ECheckBoxState::Checked : ECheckBoxState::Unchecked);
+	QueueCheckBox->SetIsChecked(GetBranchDataPtr()->Queue ? ECheckBoxState::Checked : ECheckBoxState::Unchecked);
 	CheckAsORCheckBox->SetIsChecked(GetBranchDataPtr()->OrCond ? ECheckBoxState::Checked : ECheckBoxState::Unchecked);
 
 	EventNameTextBox->SetText(FText::FromString(GetBranchDataPtr()->Event.Name));

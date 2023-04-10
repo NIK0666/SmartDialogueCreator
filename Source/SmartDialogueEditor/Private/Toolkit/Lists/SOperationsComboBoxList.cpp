@@ -121,6 +121,7 @@ void SOperationsComboBoxList::RefreshList()
         [
             SNew(SHorizontalBox)
             + SHorizontalBox::Slot()
+            .FillWidth(1.f)
             [
                 SNew(SComboBox<TSharedPtr<FString>>)
                 .OptionsSource(&VariableOptions)
@@ -134,6 +135,7 @@ void SOperationsComboBoxList::RefreshList()
                 ]
             ]
             + SHorizontalBox::Slot()
+            .AutoWidth()
             [
                 SNew(SComboBox<TSharedPtr<FString>>)
                 .OptionsSource(&OperationOptions)
@@ -146,6 +148,7 @@ void SOperationsComboBoxList::RefreshList()
                     .Text_Lambda([this, Index] { return FText::FromString(ESmartDialogueOperationToString(InitialVars[Index].Operation)); })
                 ]
             ]
+            .AutoWidth()
             + SHorizontalBox::Slot()
             [
                 SNew(SEditableTextBox)

@@ -205,22 +205,25 @@ struct FSmartDialogueBranch
 	TArray<FSmartDialoguePhrase> Phrases;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Branch")
-	bool Choice;
+	bool Choice = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Branch")
-	bool Closed;
+	bool Queue = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Branch")
-	bool OrCond;
+	bool Closed = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Branch")
+	bool OrCond = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Branch")
 	TArray<FIf> If;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Branch")
-	bool Hidden;
+	bool Hidden = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Branch")
-	bool HideSelf;
+	bool HideSelf = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Branch")
 	TArray<FString> Show;
@@ -249,6 +252,9 @@ struct FDialogueProgress
 	
 	UPROPERTY()
 	TArray<FString> Hidden;
+	
+	UPROPERTY()
+	TMap<FName, int32> Queue;
 };
 
 

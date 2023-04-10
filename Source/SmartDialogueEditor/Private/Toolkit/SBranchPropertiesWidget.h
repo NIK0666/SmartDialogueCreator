@@ -49,6 +49,7 @@ private:
 	TSharedPtr<SCheckBox> HideSelfCheckBox;
 	TSharedPtr<SCheckBox> ClosedCheckBox;
 	TSharedPtr<SCheckBox> ShowChoiceCheckBox;
+	TSharedPtr<SCheckBox> QueueCheckBox;
 	TSharedPtr<SCheckBox> CheckAsORCheckBox;
 	TSharedPtr<SBranchComboBox> StartBranchComboBox;
 	TSharedPtr<SEditableTextBox> EventNameTextBox;

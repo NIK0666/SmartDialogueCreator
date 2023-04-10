@@ -29,7 +29,11 @@ public:
 
 	// Methods to control dialogue playback
 	void ShowNextPhrase();
+	void PerformPostPhraseActions();
+	bool HasValidRemainingPhrases();
 	void SelectBranch(int32 BranchIndex);
+
+	bool IsDialogueProgressInitialized() { return bDialogueProgressInitialized; }
 
 	// Delegates for handling dialogue events
 	FOnShowBranchOptionsDelegate OnShowBranchOptions;
@@ -38,6 +42,7 @@ public:
 	FOnCloseDialogueDelegate OnCloseDialogue;
 	FOnEventTriggeredDelegate OnEventTriggered;
 	FOnVariableChangedDelegate OnVariableChanged;
+	bool bNeedDialogueClose = false;
 
 private:
 	// Helper methods for dialogue processing
@@ -59,4 +64,5 @@ private:
 	TArray<int32> CurrentBranchIndices;
 	int32 CurrentPhraseIndex;
 	FSmartDialogueBranch CurrentBranch;
+	bool bDialogueProgressInitialized = false;
 };
