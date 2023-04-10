@@ -51,6 +51,8 @@ void UDialogueManager::ShowNextPhrase() {
 		return;
 	}
 	
+	bCanShowOneChoice = true;
+	
 	if (CurrentBranch.Queue) {
 		FDialogueProgress& DialogueProg = DialogueProgress.Dials.FindOrAdd(CurrentDialogue->GetDialogueId());
 		int32& QueueIndex = DialogueProg.Queue.FindOrAdd(CurrentBranch.Name);
@@ -81,7 +83,7 @@ void UDialogueManager::ShowNextPhrase() {
 	}
 	
     CurrentPhraseIndex++;
-
+	
     if (CurrentPhraseIndex < CurrentBranch.Phrases.Num()) {
         const auto Condition = CurrentBranch.Phrases[CurrentPhraseIndex].If;
         if (!Condition.Key.IsEmpty()) {
@@ -94,6 +96,7 @@ void UDialogueManager::ShowNextPhrase() {
 
         FSmartDialoguePhrase& CurrentPhrase = CurrentBranch.Phrases[CurrentPhraseIndex];
         OnShowPhrase.Broadcast(CurrentPhrase.Text, CurrentPhrase.NPC);
+    	bCanShowOneChoice = false;
     }
     
     if (CurrentPhraseIndex >= CurrentBranch.Phrases.Num() || !HasValidRemainingPhrases()) {
@@ -335,7 +338,10 @@ void UDialogueManager::ShowChoiceOptions(const TArray<FString>& ChoicesToShow)
 	// If there is only one option, automatically play it without broadcasting the delegate
 	if (CurrentBranchIndices.Num() == 1)
 	{
-		SelectBranch(0);
+		if (bCanShowOneChoice)
+		{
+			SelectBranch(0);
+		}		
 	}
 	// If there are no options, log an error and call ShowBranchOptions()
 	else if (CurrentBranchIndices.Num() == 0)

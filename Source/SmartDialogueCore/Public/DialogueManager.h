@@ -65,4 +65,5 @@ private:
 	int32 CurrentPhraseIndex;
 	FSmartDialogueBranch CurrentBranch;
 	bool bDialogueProgressInitialized = false;
+	bool bCanShowOneChoice = true;
 };
