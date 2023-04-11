@@ -140,3 +140,52 @@ void SBranchesWidget::BranchItemAdded(FSmartDialogueBranch& AddedBranch)
 		BranchesList->RequestListRefresh();
 	}
 }
+
+void SBranchesWidget::DragEndBranchInfo(TSharedPtr<SBranchInfoWidget> DraggedWidget, const FVector2D& MousePosition)
+{
+	DraggedWidget->DraggedState(false);
+
+	if (CurrentlyHighlightedWidget.IsValid())
+	{
+		CurrentlyHighlightedWidget->UnderDragState(false);
+		
+		SmartDialogueEditor->GetDialogue()->MoveBranch(DraggedWidget->GetBranchName(), CurrentlyHighlightedWidget->GetBranchName());
+		UpdateBranchesList();
+	}
+}
+
+void SBranchesWidget::DragProcessBranchInfo(TSharedPtr<SBranchInfoWidget> DraggedWidget, const FVector2D& MousePosition)
+{
+	TSharedPtr<SBranchInfoWidget> NewHighlightedWidget = nullptr;
+
+	for (const TSharedPtr<SBranchInfoWidget>& BranchInfoWidget : BranchesInfoWidgets)
+	{
+		if (BranchInfoWidget == DraggedWidget) // Пропустите DraggedWidget в списке
+			{
+			continue;
+			}
+
+		FGeometry WidgetGeometry = BranchInfoWidget->GetCachedGeometry();
+		if (WidgetGeometry.IsUnderLocation(MousePosition))
+		{
+			NewHighlightedWidget = BranchInfoWidget;
+			break;
+		}
+	}
+
+	if (NewHighlightedWidget != CurrentlyHighlightedWidget)
+	{
+		if (CurrentlyHighlightedWidget.IsValid())
+		{
+			CurrentlyHighlightedWidget->UnderDragState(false);
+		}
+
+		CurrentlyHighlightedWidget = NewHighlightedWidget;
+
+		if (CurrentlyHighlightedWidget.IsValid())
+		{
+			CurrentlyHighlightedWidget->UnderDragState(true);
+		}
+	}
+}
+

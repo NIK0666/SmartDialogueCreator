@@ -118,6 +118,40 @@ FString USmartDialogue::GetDialogueId()
 	return GetName();
 }
 
+void USmartDialogue::MoveBranch(const FName& DraggedBranchName, const FName& TargetBranchName)
+{
+	if (Branches.Contains(DraggedBranchName) && Branches.Contains(TargetBranchName))
+	{
+		TMap<FName, FSmartDialogueBranch> TempBranches;
+		bool bInserted = false;
+
+		for (const auto& Entry : Branches)
+		{
+			if (Entry.Key == DraggedBranchName)
+			{
+				continue;
+			}
+
+			if (Entry.Key == TargetBranchName && !bInserted)
+			{
+				TempBranches.Add(DraggedBranchName, Branches[DraggedBranchName]);
+				bInserted = true;
+			}
+
+			TempBranches.Add(Entry.Key, Entry.Value);
+		}
+
+		// Если DraggedBranchName находился после TargetBranchName, его необходимо добавить в конец
+		if (!bInserted)
+		{
+			TempBranches.Add(DraggedBranchName, Branches[DraggedBranchName]);
+		}
+
+		Branches = TempBranches;
+	}
+}
+
+
 bool USmartDialogue::RenameBranch(FName OldName, FName NewName)
 {
 	if (Branches.Contains(OldName) && !Branches.Contains(NewName))

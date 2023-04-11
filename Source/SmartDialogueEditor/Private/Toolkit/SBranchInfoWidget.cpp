@@ -8,12 +8,21 @@
 #include "Widgets/Images/SImage.h"
 #include "Widgets/Input/SButton.h"
 #include "SBranchesWidget.h"
+#include "DragDrop/BranchDragDropOperation.h"
 
 #define LOCTEXT_NAMESPACE "SmartDialogueEditor"
 
 FSlateColor SBranchInfoWidget::GetBackgroundColor() const
 {
-
+	if (bUnderDrag)
+	{
+		return FLinearColor(0.88f, 0.88f, 0.0f, 1.f);
+	}
+	if (bDragged)
+	{
+		return FLinearColor(0.88f, 0.88f, 0.88f, 1.f);
+	}
+	
 	if (Editor->GetSelectedBranchName() == BranchName)
 	{
 		return FLinearColor(0.25f, 0.88f, 0.82f, 0.5f);
@@ -79,8 +88,8 @@ void SBranchInfoWidget::Construct(const FArguments& InArgs)
 				.ButtonStyle(FAppStyle::Get(), "FlatButton")
 				.HAlign(HAlign_Center)
 				.VAlign(VAlign_Center)
-				.OnPressed(this, &SBranchInfoWidget::OnGrabButtonPressed)
-				.OnReleased(this, &SBranchInfoWidget::OnGrabButtonReleased)
+				.IsFocusable(false)
+				.Visibility(EVisibility::HitTestInvisible)
 				.Content()
 				[
 					SNew(SImage)
@@ -209,18 +218,40 @@ FReply SBranchInfoWidget::OnRemoveBranchButtonClicked()
 	return FReply::Handled();
 }
 
-
-void SBranchInfoWidget::OnGrabButtonPressed()
+FReply SBranchInfoWidget::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
 {
-	TSharedPtr<SWidget> ButtonContent = GrabButton->GetContent();
-	TSharedPtr<SImage> ButtonImage = StaticCastSharedPtr<SImage>(ButtonContent);
+	if (MouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
+	{
+		FGeometry GrabButtonGeometry = FindChildGeometry(MyGeometry, GrabButton.ToSharedRef());
+
+		if (GrabButtonGeometry.IsUnderLocation(MouseEvent.GetScreenSpacePosition()))
+		{
+			const TSharedRef<FBranchDragDropOperation> DragDropOp = FBranchDragDropOperation::New(SharedThis(this), Editor->GetBranchesListPanel());
+			DraggedState(true);
+			return FReply::Handled().BeginDragDrop(DragDropOp);
+		}
+	}
+
+	return SCompoundWidget::OnMouseButtonDown(MyGeometry, MouseEvent);
 }
 
-void SBranchInfoWidget::OnGrabButtonReleased()
+TSharedPtr<SBranchInfoWidget> SBranchInfoWidget::GetParentBranchInfoWidget(const TSharedPtr<SWidget>& Widget)
 {
-	TSharedPtr<SWidget> ButtonContent = GrabButton->GetContent();
-	TSharedPtr<SImage> ButtonImage = StaticCastSharedPtr<SImage>(ButtonContent);
+	if (!Widget.IsValid())
+	{
+		return nullptr;
+	}
+
+	TSharedPtr<SBranchInfoWidget> BranchInfoWidget = StaticCastSharedPtr<SBranchInfoWidget>(Widget);
+
+	if (BranchInfoWidget.IsValid())
+	{
+		return BranchInfoWidget;
+	}
+
+	return GetParentBranchInfoWidget(Widget->GetParentWidget());
 }
+
 
 void SBranchInfoWidget::SetIsFocused(bool bNewValue)
 {
@@ -275,6 +306,16 @@ void SBranchInfoWidget::MoveFocusToNextTextBox(int32 Direction)
 	{
 		Editor->GetBranchesListPanel()->FocusPreviousBranchWidget(SharedThis(this), BranchTextTextBox->HasKeyboardFocus());
 	}
+}
+
+void SBranchInfoWidget::UnderDragState(bool bIsUnderDrag)
+{
+	bUnderDrag = bIsUnderDrag;
+}
+
+void SBranchInfoWidget::DraggedState(bool bIsDragged)
+{
+	bDragged = bIsDragged;
 }
 
 #undef LOCTEXT_NAMESPACE

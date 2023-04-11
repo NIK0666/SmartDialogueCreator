@@ -25,6 +25,8 @@ public:
 	void RemoveRow(SBranchInfoWidget* BranchInfoWidget);
 	void FocusNextBranchWidget(TSharedPtr<SBranchInfoWidget> CurrentWidget, bool bIsTextFocused);
 	void FocusPreviousBranchWidget(TSharedPtr<SBranchInfoWidget> CurrentWidget, bool bIsTextFocused);
+	void DragEndBranchInfo(TSharedPtr<SBranchInfoWidget> DraggedWidget, const FVector2D& MousePosition);
+	void DragProcessBranchInfo(TSharedPtr<SBranchInfoWidget> DraggedWidget, const FVector2D& MousePosition);
 
 protected:
 	// Добавляет новый элемент в список веток и обновляет его отображение
@@ -42,4 +44,7 @@ private:
 
 	// Виджет SListView для отображения веток диалога
 	TSharedPtr<SListView<TSharedPtr<SBranchInfoWidget>>> BranchesList;
+
+	TSharedPtr<SBranchInfoWidget> CurrentlyHighlightedWidget;
+
 };

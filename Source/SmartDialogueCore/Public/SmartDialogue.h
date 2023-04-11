@@ -93,6 +93,7 @@ public:
 	
 	void MakeClean();
 	FString GetDialogueId();
+	void MoveBranch(const FName& DraggedBranchName, const FName& TargetBranchName);
 
 	FOnBranchesChanged OnBranchesChanged;	
 	FOnBranchRenamed OnBranchRenamed;

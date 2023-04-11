@@ -27,6 +27,8 @@ public:
 	FText GetBranchNameAsText() const;
 	
 	void SetEditableTextFocus(bool bIsTextFocused);
+	void UnderDragState(bool bIsUnderDrag);
+	void DraggedState(bool bIsDragged);
 
 private:
 	virtual void Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime) override;
@@ -41,8 +43,10 @@ private:
 	void OnBranchTextTextCommitted(const FText& NewText, ETextCommit::Type CommitType);
 	FReply OnRemoveBranchButtonClicked();
 
-	void OnGrabButtonPressed();
-	void OnGrabButtonReleased();
+	virtual FReply OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
+	TSharedPtr<SBranchInfoWidget> GetParentBranchInfoWidget(const TSharedPtr<SWidget>& Widget);
+
+	
 	void SetIsFocused(bool bCond);
 	FText GetPlaceholderText() const;
 	FReply OnBranchNameTextBoxKeyDown(const FGeometry& MyGeometry, const FKeyEvent& KeyEvent);
@@ -59,4 +63,6 @@ private:
 	
 	USmartDialogue* DialoguePtr = nullptr;
 	bool bIsFocused = false;
+	bool bUnderDrag = false;
+	bool bDragged = false;
 };
