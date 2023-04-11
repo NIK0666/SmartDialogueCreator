@@ -214,9 +214,7 @@ UBranchNode* USmartDialogueGraph::CreateBranchNode(const FName& BranchName)
 						Editor->GetDialogue()->AddHideBranchElement(OwnBranchNode->GetBranchName(), BranchName.ToString());
 					}
 				}
-				
-				//Проверить пин, еshow или hide и добавить новый элемент show или hide
-			}			
+			}
 		}
 		LastFromPin = nullptr;
 	}

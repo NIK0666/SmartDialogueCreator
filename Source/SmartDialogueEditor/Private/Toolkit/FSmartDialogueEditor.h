@@ -88,6 +88,7 @@ private:
 	TSharedRef<SDockTab> SpawnTab_Config(const FSpawnTabArgs& Args);
 	TSharedRef<SDockTab> SpawnTab_Player(const FSpawnTabArgs& Args);
 	TSharedRef<SDockTab> SpawnTab_Graph(const FSpawnTabArgs& SpawnTabArgs);
+	TSharedRef<SDockTab> SpawnTab_AssetBrowser(const FSpawnTabArgs& Args);
 
 	TSharedRef<SWidget> CreateSelectedBranchPropertiesWidget();
 	TSharedRef<FTabManager::FLayout> GetDefaultTabContents();

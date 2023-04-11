@@ -32,6 +32,8 @@ static const FName SmartDialogue_SelectedBranchPhrasesTabId(TEXT("SmartDialogue_
 static const FName SmartDialogue_ConfigTabId(TEXT("SmartDialogue_Config"));
 static const FName SmartDialogue_PlayerTabId(TEXT("SmartDialogue_Player"));
 static const FName SmartDialogue_GraphTabId(TEXT("SmartDialogue_GraphTab"));
+static const FName SmartDialogue_AssetBrowserTabId(TEXT("SmartDialogue_AssetBrowserTab"));
+
 
 
 void FSmartDialogueEditor::InitSmartDialogueEditor(EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, USmartDialogue* SmartDialogue)
@@ -311,6 +313,11 @@ void FSmartDialogueEditor::RegisterTabSpawners(const TSharedRef<FTabManager>& In
 	TabManager->RegisterTabSpawner(SmartDialogue_GraphTabId, FOnSpawnTab::CreateSP(this, &FSmartDialogueEditor::SpawnTab_Graph))
 		.SetDisplayName(LOCTEXT("GraphTabTitle", "Graph"))
 		.SetTooltipText(LOCTEXT("GraphTabTooltip", "Open the Dialogue Graph tab."));
+
+	TabManager->RegisterTabSpawner(SmartDialogue_AssetBrowserTabId, FOnSpawnTab::CreateSP(this, &FSmartDialogueEditor::SpawnTab_AssetBrowser))
+		.SetDisplayName(LOCTEXT("AssetBrowserTabTitle", "Asset Browser"))
+		.SetTooltipText(LOCTEXT("AssetBrowserTabTooltip", "Open the Asset Browser tab."));
+
 }
 
 void FSmartDialogueEditor::UnregisterTabSpawners(const TSharedRef<FTabManager>& InTabManager)
@@ -399,6 +406,19 @@ TSharedRef<SDockTab> FSmartDialogueEditor::SpawnTab_Graph(const FSpawnTabArgs& A
 		];
 }
 
+TSharedRef<SDockTab> FSmartDialogueEditor::SpawnTab_AssetBrowser(const FSpawnTabArgs& Args)
+{
+	check(Args.GetTabId() == SmartDialogue_AssetBrowserTabId);
+	
+	return SNew(SDockTab)
+		.TabRole(ETabRole::NomadTab)
+		[
+			SNew(SSmartDialogueAssetBrowser)
+			.SmartDialogueEditor(this)
+		];
+}
+
+
 TSharedRef<SWidget> FSmartDialogueEditor::CreateSelectedBranchPropertiesWidget()
 {
 	return SNew(SBranchPropertiesWidget)
@@ -424,6 +444,7 @@ TSharedRef<FTabManager::FLayout> FSmartDialogueEditor::GetDefaultTabContents()
 					->AddTab(SmartDialogue_ConfigTabId, ETabState::ClosedTab)
 					->AddTab(SmartDialogue_PlayerTabId, ETabState::ClosedTab)
 					->AddTab(SmartDialogue_GraphTabId, ETabState::ClosedTab)
+					
 				)
 			)
 			->Split
@@ -440,11 +461,10 @@ TSharedRef<FTabManager::FLayout> FSmartDialogueEditor::GetDefaultTabContents()
 				(
 					FTabManager::NewStack()
 					->AddTab(SmartDialogue_SelectedBranchPhrasesTabId, ETabState::OpenedTab)
+					->AddTab(SmartDialogue_AssetBrowserTabId, ETabState::ClosedTab)
 				)
 			)
 		);
-
-	// GetTabManager()->RestoreFrom(DefaultLayout, TSharedPtr<SWindow>());
 }
 
 void FSmartDialogueEditor::OnHeroCharacterSelected(TSharedPtr<FString> NewSelection)
