@@ -15,6 +15,11 @@ FVector2D UBranchNode::GetNodeSize()
 
 FLinearColor UBranchNode::GetNodeTitleColor() const
 {
+	if (GetBranchPtr() == nullptr)
+	{
+		return FLinearColor::Transparent;
+	}
+	
     if (GetBranchPtr()->Closed)
     {
         return FLinearColor::Yellow;

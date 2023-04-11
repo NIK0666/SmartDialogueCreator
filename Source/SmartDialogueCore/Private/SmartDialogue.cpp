@@ -252,6 +252,9 @@ bool USmartDialogue::RemoveBranch(FName BranchName)
 		RemoveShowBranchByString(BranchKeys[i], BranchNameString);
 	}
 	Branches.Remove(BranchName);
+
+	OnBranchRemoved.Broadcast(BranchName);
+
 	return true;
 }
 

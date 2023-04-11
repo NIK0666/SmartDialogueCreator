@@ -13,6 +13,7 @@ UEdGraphNode* FEdGraphSchemaAction_AddBranchNode::PerformAction(UEdGraph* Parent
 	if (DialogueGraph && DialogueGraph->GetEditor())
 	{
 		DialogueGraph->LastNodePos = Location;
+		DialogueGraph->LastFromPin = FromPin;
 		DialogueGraph->GetEditor()->AddNewBranch();
 	}
 	return nullptr;

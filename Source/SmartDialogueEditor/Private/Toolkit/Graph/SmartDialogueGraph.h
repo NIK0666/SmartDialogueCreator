@@ -16,13 +16,13 @@ class SMARTDIALOGUEEDITOR_API USmartDialogueGraph : public UEdGraph
 
 public:
 	USmartDialogueGraph();
-
+	
 	void SetEditor(FSmartDialogueEditor* InEditor);
 	void LoadNodesFromAsset();
 	FSmartDialogueEditor* GetEditor() const { return Editor; }
 
 	UFUNCTION(BlueprintCallable, Category = "Dialogue")
-	UBranchNode* CreateBranchNode(const FName& BranchName) const;
+	UBranchNode* CreateBranchNode(const FName& BranchName);
 	void AddBranchNode(FSmartDialogueBranch& SmartDialogueBranch);
 	FString GetNodesInformation();
 
@@ -34,8 +34,9 @@ public:
 	void SortNodes();
 
 	FVector2D LastNodePos;
+	UEdGraphPin* LastFromPin = nullptr;
+	
 	bool bIsInitializeGraph = false;
-
 
 protected:	
 	UFUNCTION()
@@ -50,6 +51,8 @@ protected:
 	void OnShowBranchUpdated(FName BranchName, int32 Index, FString OldValue, FString NewValue);
 	UFUNCTION()
 	void OnHideBranchUpdated(FName BranchName, int32 Index, FString OldValue, FString NewValue);
+	UFUNCTION()
+	void OnBranchRemoved(FName BranchName);
 
 	
 private:

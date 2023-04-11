@@ -30,6 +30,7 @@ void USmartDialogueGraph::SetEditor(FSmartDialogueEditor* InEditor)
 		Editor->GetDialogue()->OnShowBranchRemoved.AddUObject(this, &USmartDialogueGraph::OnShowBranchRemoved);
 		Editor->GetDialogue()->OnShowBranchUpdated.AddUObject(this, &USmartDialogueGraph::OnShowBranchUpdated);
 		Editor->GetDialogue()->OnHideBranchUpdated.AddUObject(this, &USmartDialogueGraph::OnHideBranchUpdated);
+		Editor->GetDialogue()->OnBranchRemoved.AddUObject(this, &USmartDialogueGraph::OnBranchRemoved);
 	}
 }
 
@@ -179,7 +180,7 @@ UBranchNode* USmartDialogueGraph::GetBranchNodeByName(FName BranchName) const
 }
 
 
-UBranchNode* USmartDialogueGraph::CreateBranchNode(const FName& BranchName) const
+UBranchNode* USmartDialogueGraph::CreateBranchNode(const FName& BranchName)
 {
     UBranchNode* ResultNode = NewObject<UBranchNode>(const_cast<USmartDialogueGraph*>(this));
     ResultNode->Initialize(BranchName, Editor);
@@ -191,6 +192,35 @@ UBranchNode* USmartDialogueGraph::CreateBranchNode(const FName& BranchName) cons
 	ResultNode->PostPlacedNewNode();
 	ResultNode->AutowireNewNode(nullptr);
 	ResultNode->SnapToGrid(GetDefault<UEditorStyleSettings>()->GridSnapSize);
+
+	// Соединяем пины, если FromPin был предоставлен
+	if (LastFromPin)
+	{
+		if (LastFromPin->Direction == EGPD_Output)
+		{
+			UEdGraphPin* ToPin = ResultNode->FindPin(UEdGraphSchema_K2::PN_Execute);
+			if (ToPin)
+			{
+				LastFromPin->MakeLinkTo(ToPin);
+				ResultNode->PinConnectionListChanged(ToPin);
+				if (auto OwnBranchNode = Cast<UBranchNode>(LastFromPin->GetOwningNode()))
+				{
+					if (LastFromPin->PinName == UEdGraphSchema_K2::PN_Then)
+					{
+						Editor->GetDialogue()->AddShowBranchElement(OwnBranchNode->GetBranchName(), BranchName.ToString());
+					}
+					else if (LastFromPin->PinName == UEdGraphSchema_K2::PN_Else)
+					{
+						Editor->GetDialogue()->AddHideBranchElement(OwnBranchNode->GetBranchName(), BranchName.ToString());
+					}
+				}
+				
+				//Проверить пин, еshow или hide и добавить новый элемент show или hide
+			}			
+		}
+		LastFromPin = nullptr;
+	}
+	
     return ResultNode;
 }
 
@@ -412,4 +442,12 @@ void USmartDialogueGraph::OnHideBranchUpdated(FName BranchName, int32 Index, FSt
 {
 	OnHideBranchRemoved(BranchName, Index, OldValue);
 	OnHideBranchAdded(BranchName, NewValue);
+}
+
+void USmartDialogueGraph::OnBranchRemoved(FName BranchName)
+{
+	if (UBranchNode* L_Node = GetBranchNodeByName(BranchName))
+	{
+		RemoveNode(L_Node);
+	}	
 }

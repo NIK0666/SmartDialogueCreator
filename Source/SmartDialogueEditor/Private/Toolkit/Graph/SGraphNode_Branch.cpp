@@ -42,6 +42,11 @@ TSharedRef<SWidget> SGraphNode_Branch::CreateNodeContentArea()
                     SNew(SInlineEditableTextBlock)
                     .Text_Lambda([this, BranchNode]()
                     {
+                    	if (BranchNode->GetBranchPtr() == nullptr)
+                    	{
+                    		return FText::GetEmpty();
+                    	}
+                    	
                         if (!bIsEditing && BranchNode->GetBranchPtr()->Text.IsEmpty())
                         {
                             if (BranchNode->GetBranchPtr()->Phrases.Num() > 0)
@@ -57,6 +62,10 @@ TSharedRef<SWidget> SGraphNode_Branch::CreateNodeContentArea()
                     })                    
                     .ColorAndOpacity_Lambda([this, BranchNode]() -> FSlateColor
                     {
+                    	if (BranchNode->GetBranchPtr() == nullptr)
+                    	{
+							return FLinearColor::Transparent;
+						}
                         if (!bIsEditing && BranchNode->GetBranchPtr()->Text.IsEmpty())
                         {
                             return FSlateColor(FLinearColor(1.f, 1.f, 1.f, 0.5f));
@@ -65,6 +74,10 @@ TSharedRef<SWidget> SGraphNode_Branch::CreateNodeContentArea()
                     })
                     .OnTextCommitted_Lambda([this, BranchNode](const FText& InText, ETextCommit::Type CommitInfo)
                     {
+                    	if (BranchNode->GetBranchPtr() == nullptr)
+                    	{
+							return;
+						}
                         BranchNode->GetBranchPtr()->Text = InText;
                     	bIsEditing = false;
                     })

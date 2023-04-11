@@ -8,6 +8,7 @@
 
 DECLARE_EVENT(USmartDialogue, FOnBranchesChanged);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnBranchRenamed, FName /*OldName*/, FName /*NewName*/);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnBranchRemoved, FName /*BranchName*/);
 
 
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnShowBranchAdded, FName BranchName, FString Value);
@@ -98,6 +99,7 @@ public:
 
 	FOnBranchesChanged OnBranchesChanged;	
 	FOnBranchRenamed OnBranchRenamed;
+	FOnBranchRemoved OnBranchRemoved;
 	
 	FOnShowBranchAdded OnShowBranchAdded;
 	FOnHideBranchAdded OnHideBranchAdded;
