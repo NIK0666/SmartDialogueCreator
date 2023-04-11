@@ -31,51 +31,51 @@ TSharedPtr<FEdGraphSchemaAction> USmartDialogueGraphSchema::GetCreateCommentActi
 
 void USmartDialogueGraphSchema::GetContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const
 {
-	if (Context->Node)
-	{		
-		FToolMenuSection& Section = Menu->AddSection("SmartDialogueGraphSchemaNodeActions", LOCTEXT("NodeActionsMenuHeader", "Node Actions"));
-        
-		// Добавляем действие "Удалить ноду"
-		Section.AddMenuEntry(
-			"DeleteNode",
-			LOCTEXT("DeleteNodeAction", "Delete"),
-			LOCTEXT("DeleteNodeTooltip", "Delete selected node."),
-			FSlateIcon(),
-			FUIAction(
-				FExecuteAction::CreateLambda([Context]()
-				{
-					UBranchNode* OriginalNode = Cast<UBranchNode>(Context->Node);
-					OriginalNode->Modify();
-					OriginalNode->DestroyNode();
-				}),
-				FCanExecuteAction()
-			)
-		);
-
-		// Добавляем действие "Дублировать ноду"
-		Section.AddMenuEntry(
-			"DuplicateNode",
-			LOCTEXT("DuplicateNodeAction", "Duplicate"),
-			LOCTEXT("DuplicateNodeTooltip", "Duplicate selected node."),
-			FSlateIcon(),
-			FUIAction(
-				FExecuteAction::CreateLambda([Context]()
-				{
-					UEdGraph* Graph = const_cast<UEdGraph*>(Context->Graph.Get());
-					UBranchNode* OriginalNode = Cast<UBranchNode>(Context->Node);
-					UBranchNode* DuplicatedNode = DuplicateObject<UBranchNode>(OriginalNode, Graph);
-					DuplicatedNode->SetFlags(RF_Transactional);
-					Graph->AddNode(DuplicatedNode, true, false);
-
-					DuplicatedNode->CreateNewGuid();
-					DuplicatedNode->PostPasteNode();
-					DuplicatedNode->NodePosX += 100;
-					DuplicatedNode->NodePosY += 10;
-				}),
-				FCanExecuteAction::CreateLambda([Context]() { return Context->Node->CanDuplicateNode(); })
-			)
-		);
-	}
+	// if (Context->Node)
+	// {		
+	// 	FToolMenuSection& Section = Menu->AddSection("SmartDialogueGraphSchemaNodeActions", LOCTEXT("NodeActionsMenuHeader", "Node Actions"));
+ //        
+	// 	// Добавляем действие "Удалить ноду"
+	// 	Section.AddMenuEntry(
+	// 		"DeleteNode",
+	// 		LOCTEXT("DeleteNodeAction", "Delete"),
+	// 		LOCTEXT("DeleteNodeTooltip", "Delete selected node."),
+	// 		FSlateIcon(),
+	// 		FUIAction(
+	// 			FExecuteAction::CreateLambda([Context]()
+	// 			{
+	// 				UBranchNode* OriginalNode = Cast<UBranchNode>(Context->Node);
+	// 				OriginalNode->Modify();
+	// 				OriginalNode->DestroyNode();
+	// 			}),
+	// 			FCanExecuteAction()
+	// 		)
+	// 	);
+	//
+	// 	// Добавляем действие "Дублировать ноду"
+	// 	Section.AddMenuEntry(
+	// 		"DuplicateNode",
+	// 		LOCTEXT("DuplicateNodeAction", "Duplicate"),
+	// 		LOCTEXT("DuplicateNodeTooltip", "Duplicate selected node."),
+	// 		FSlateIcon(),
+	// 		FUIAction(
+	// 			FExecuteAction::CreateLambda([Context]()
+	// 			{
+	// 				UEdGraph* Graph = const_cast<UEdGraph*>(Context->Graph.Get());
+	// 				UBranchNode* OriginalNode = Cast<UBranchNode>(Context->Node);
+	// 				UBranchNode* DuplicatedNode = DuplicateObject<UBranchNode>(OriginalNode, Graph);
+	// 				DuplicatedNode->SetFlags(RF_Transactional);
+	// 				Graph->AddNode(DuplicatedNode, true, false);
+	//
+	// 				DuplicatedNode->CreateNewGuid();
+	// 				DuplicatedNode->PostPasteNode();
+	// 				DuplicatedNode->NodePosX += 100;
+	// 				DuplicatedNode->NodePosY += 10;
+	// 			}),
+	// 			FCanExecuteAction::CreateLambda([Context]() { return Context->Node->CanDuplicateNode(); })
+	// 		)
+	// 	);
+	// }
 }
 
 const FPinConnectionResponse USmartDialogueGraphSchema::CanCreateConnection(const UEdGraphPin* A, const UEdGraphPin* B) const

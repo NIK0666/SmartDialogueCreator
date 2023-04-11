@@ -25,7 +25,7 @@ void SBranchPropertiesWidget::Construct(const FArguments& InArgs)
 	SmartDialogueEditor->GetDialogue()->OnShowBranchAdded.AddSP(this, &SBranchPropertiesWidget::OnShowBranchAdded);
 	SmartDialogueEditor->GetDialogue()->OnHideBranchRemoved.AddSP(this, &SBranchPropertiesWidget::OnHideBranchRemoved);
 	SmartDialogueEditor->GetDialogue()->OnHideBranchAdded.AddSP(this, &SBranchPropertiesWidget::OnHideBranchAdded);
-
+	SmartDialogueEditor->GetDialogue()->OnBranchRenamed.AddSP(this, &SBranchPropertiesWidget::OnBranchRenamed);
 	
 	if (GetBranchDataPtr() != nullptr)
 	{
@@ -437,6 +437,12 @@ void SBranchPropertiesWidget::OnHideBranchAdded(FName BranchName, FString String
 	{
 		HideBranchesList->UpdateInitialStrings(GetBranchDataPtr()->Hide);
 	}
+}
+
+void SBranchPropertiesWidget::OnBranchRenamed(FName OldName, FName NewName)
+{
+	ShowBranchesList->UpdateInitialStrings(GetBranchDataPtr()->Show);
+	HideBranchesList->UpdateInitialStrings(GetBranchDataPtr()->Hide);
 }
 
 

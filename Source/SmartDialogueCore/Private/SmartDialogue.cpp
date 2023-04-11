@@ -124,21 +124,34 @@ void USmartDialogue::MoveBranch(const FName& DraggedBranchName, const FName& Tar
 	{
 		TMap<FName, FSmartDialogueBranch> TempBranches;
 		bool bInserted = false;
+		bool bDraggedBranchFound = false;
 
 		for (const auto& Entry : Branches)
 		{
 			if (Entry.Key == DraggedBranchName)
 			{
+				bDraggedBranchFound = true;
 				continue;
 			}
 
 			if (Entry.Key == TargetBranchName && !bInserted)
 			{
-				TempBranches.Add(DraggedBranchName, Branches[DraggedBranchName]);
+				if (bDraggedBranchFound)
+				{
+					TempBranches.Add(Entry.Key, Entry.Value);
+					TempBranches.Add(DraggedBranchName, Branches[DraggedBranchName]);
+				}
+				else
+				{
+					TempBranches.Add(DraggedBranchName, Branches[DraggedBranchName]);
+					TempBranches.Add(Entry.Key, Entry.Value);
+				}
 				bInserted = true;
 			}
-
-			TempBranches.Add(Entry.Key, Entry.Value);
+			else
+			{
+				TempBranches.Add(Entry.Key, Entry.Value);
+			}
 		}
 
 		// Если DraggedBranchName находился после TargetBranchName, его необходимо добавить в конец
@@ -152,6 +165,36 @@ void USmartDialogue::MoveBranch(const FName& DraggedBranchName, const FName& Tar
 }
 
 
+void USmartDialogue::MovePhrase(const FName& BranchName, int32 DraggedIndex, int32 TargetIndex)
+{
+	if (Branches.Contains(BranchName))
+	{
+		FSmartDialogueBranch* Branch = &Branches[BranchName];
+		TArray<FSmartDialoguePhrase>& Phrases = Branch->Phrases;
+
+		if (Phrases.IsValidIndex(DraggedIndex) && Phrases.IsValidIndex(TargetIndex))
+		{
+			FSmartDialoguePhrase DraggedPhrase = Phrases[DraggedIndex];
+
+			// Если индекс DraggedIndex больше, чем TargetIndex, смещаем элементы вниз
+			if (DraggedIndex > TargetIndex)
+			{
+				Phrases.Insert(DraggedPhrase, TargetIndex);
+				Phrases.RemoveAt(DraggedIndex + 1);
+			}
+			// Если индекс DraggedIndex меньше, чем TargetIndex, смещаем элементы вверх
+			else if (DraggedIndex < TargetIndex)
+			{
+				Phrases.Insert(DraggedPhrase, TargetIndex + 1);
+				Phrases.RemoveAt(DraggedIndex);
+			}
+			// Если индексы равны, ничего не делаем
+		}
+	}
+}
+
+
+
 bool USmartDialogue::RenameBranch(FName OldName, FName NewName)
 {
 	if (Branches.Contains(OldName) && !Branches.Contains(NewName))
@@ -162,6 +205,30 @@ bool USmartDialogue::RenameBranch(FName OldName, FName NewName)
 		Branches.Add(NewName, BranchToRename);
 		LastBranchName = NewName;
 		MarkAsDirty();
+
+		for (auto Element : Branches)
+		{
+			auto HideIndex  = Element.Value.Hide.Find(OldName.ToString());
+			if (HideIndex != INDEX_NONE)
+			{
+				Branches[Element.Key].Hide[HideIndex] = NewName.ToString();
+			}
+			auto ShowIndex  = Element.Value.Show.Find(OldName.ToString());
+			if (ShowIndex != INDEX_NONE)
+			{
+				Branches[Element.Key].Show[ShowIndex] = NewName.ToString();
+			}
+			
+			if (Element.Value.ChangeStarted == OldName.ToString())
+			{
+				Branches[Element.Key].ChangeStarted = NewName.ToString();
+			}
+		}
+
+		if (AutoBranch == OldName.ToString())
+		{
+			AutoBranch = NewName.ToString();
+		}
 
 		OnBranchRenamed.Broadcast(OldName, NewName);
 

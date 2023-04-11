@@ -70,6 +70,7 @@ public:
 	void AddNewBranch();
 
 	TSharedPtr<SBranchesWidget> GetBranchesListPanel() { return BranchesWidget; }
+	TSharedPtr<SBranchPhrasesWidget> GetPhrasesListPanel() { return PhrasesWidget; }
 
 
 	virtual void RegisterTabSpawners(const TSharedRef<FTabManager>& TabManager) override;

@@ -20,7 +20,8 @@ void SBranchPhrasesWidget::Construct(const FArguments& InArgs)
 	UpdatePhrases();
 
 	ChildSlot
-	[    SNew(SVerticalBox)
+	[
+		SNew(SVerticalBox)
 		+ SVerticalBox::Slot()
 		.AutoHeight()
 		.Padding(FMargin(0.0f, 4.0f))
@@ -87,6 +88,54 @@ void SBranchPhrasesWidget::RemovePhraseRow(int32 PhraseIndex)
 	UpdatePhrases();
 }
 
+void SBranchPhrasesWidget::DragProcess(TSharedPtr<SPhraseListRow> DraggedWidget, const FVector2D& MousePosition)
+{
+	TSharedPtr<SPhraseListRow> NewHighlightedWidget = nullptr;
+
+	for (const TSharedPtr<SPhraseListRow>& PhraseListRow : PhrasesWidgets)
+	{
+		if (PhraseListRow == DraggedWidget)
+		{
+			continue;
+		}
+
+		FGeometry WidgetGeometry = PhraseListRow->GetCachedGeometry();
+		if (WidgetGeometry.IsUnderLocation(MousePosition))
+		{
+			NewHighlightedWidget = PhraseListRow;
+			break;
+		}
+	}
+
+	if (NewHighlightedWidget != CurrentlyHighlightedWidget)
+	{
+		if (CurrentlyHighlightedWidget.IsValid())
+		{
+			CurrentlyHighlightedWidget->UnderDragState(false);
+		}
+
+		CurrentlyHighlightedWidget = NewHighlightedWidget;
+
+		if (CurrentlyHighlightedWidget.IsValid())
+		{
+			CurrentlyHighlightedWidget->UnderDragState(true);
+		}
+	}}
+
+void SBranchPhrasesWidget::DragEnd(TSharedPtr<SPhraseListRow> DraggedWidget, const FVector2D& MousePosition)
+{
+	DraggedWidget->DraggedState(false);
+	
+	if (CurrentlyHighlightedWidget.IsValid())
+	{
+		CurrentlyHighlightedWidget->UnderDragState(false);
+		
+		SmartDialogueEditor->GetDialogue()->MovePhrase(SmartDialogueEditor->GetSelectedBranchName(), DraggedWidget->GetPhraseIndex(), CurrentlyHighlightedWidget->GetPhraseIndex());
+		
+		UpdatePhrases();
+	}
+}
+
 void SBranchPhrasesWidget::OnBranchSelected(FSmartDialogueBranch& SmartDialogueBranch)
 {
 	UpdatePhrases();
@@ -108,6 +157,8 @@ void SBranchPhrasesWidget::UpdatePhrases()
 		PhrasesVBox->ClearChildren();
 	}
 
+	PhrasesWidgets.Reset();
+
 	if (SmartDialogueEditor->GetSelectedBranch() == nullptr)
 	{
 		return;
@@ -121,14 +172,18 @@ void SBranchPhrasesWidget::UpdatePhrases()
 	
 	for (int32 Index = 0; Index < SmartDialogueEditor->GetSelectedBranch()->Phrases.Num(); Index++)
 	{
+		TSharedPtr<SPhraseListRow> NewWidget = SNew(SPhraseListRow)
+			.PhraseIndex(Index)
+			.SmartDialogueEditor(SmartDialogueEditor);
+
 		PhrasesVBox->AddSlot()
-		           .AutoHeight()
-		           .Padding(FMargin(0.0f, 2.0f))
-			[
-				SNew(SPhraseListRow)
-				.PhraseIndex(Index)
-				.SmartDialogueEditor(SmartDialogueEditor)
-			];
+				   .AutoHeight()
+				   .Padding(FMargin(0.0f, 2.0f))
+		[
+			NewWidget.ToSharedRef()
+		];
+
+		PhrasesWidgets.Add(NewWidget); // Добавьте новый виджет в массив
 	}
 }
 

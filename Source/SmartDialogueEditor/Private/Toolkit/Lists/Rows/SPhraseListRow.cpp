@@ -6,6 +6,7 @@
 #include "Toolkit/FSmartDialogueEditor.h"
 #include "Toolkit/Components/SCharacterComboBox.h"
 #include "Toolkit/Components/SVarComboBox.h"
+#include "Toolkit/DragDrop/PhraseDragDropOperation.h"
 #include "Widgets/Input/SMultiLineEditableTextBox.h"
 #include "Widgets/Layout/SGridPanel.h"
 
@@ -14,15 +15,13 @@ void SPhraseListRow::Construct(const FArguments& InArgs)
 {
 	SmartDialogueEditor = InArgs._SmartDialogueEditor;
 	PhraseIndex = InArgs._PhraseIndex;
-
-	SmartDialoguePhrasePtr = &SmartDialogueEditor->GetSelectedBranch()->Phrases[PhraseIndex];
 	
 	CharacterOptions = SmartDialogueEditor->GetAllCharactersList();
 	VarOptions = SmartDialogueEditor->GetAllVariablesList();
 
 	ComparisonOptions = SmartDialogueEditor->GetOperations(false);
 	auto InitOp = ComparisonOptions[0];
-	const auto StringOp = ESmartDialogueEqualOperationHelper::EnumOperationToString(SmartDialoguePhrasePtr->If.EqualOperation);
+	const auto StringOp = ESmartDialogueEqualOperationHelper::EnumOperationToString(GetPhrasePtr()->If.EqualOperation);
 	for (auto Op : ComparisonOptions)
 	{
 		if (Op->Equals(StringOp))
@@ -34,122 +33,129 @@ void SPhraseListRow::Construct(const FArguments& InArgs)
 	
 	ChildSlot
 	[
-		SNew(SVerticalBox)
-		+ SVerticalBox::Slot()
-		.AutoHeight()
+		SNew(SBorder)
+		.Padding(2.f)
+		.BorderImage(FCoreStyle::Get().GetBrush("WhiteTexture"))
+		.BorderBackgroundColor(this, &SPhraseListRow::GetBackgroundColor)
 		[
-			SNew(SHorizontalBox)
-			+ SHorizontalBox::Slot()
-			.AutoWidth()
+			SNew(SVerticalBox)
+			+ SVerticalBox::Slot()
+			.AutoHeight()
 			[
-				SAssignNew(CharacterComboBox, SCharacterComboBox)
-				.SmartDialogueEditor(SmartDialogueEditor)
-				.OnItemSelected(this, &SPhraseListRow::OnCharacterSelected)
-				.DefaultText(SmartDialoguePhrasePtr->NPC)
-			]
-			+ SHorizontalBox::Slot()
-			.AutoWidth()
-			[
-				SNew(SEditableTextBox)
-				.HintText(NSLOCTEXT("SPhraseListRow", "Animation", "Animation"))
-				.Text(this, &SPhraseListRow::GetAnimationText)
-				.OnTextChanged(this, &SPhraseListRow::OnAnimationTextChanged)
-			]
-			+ SHorizontalBox::Slot()
-			.AutoWidth()
-			[
-				SAssignNew(VarComboBox, SVarComboBox)
-				.SmartDialogueEditor(SmartDialogueEditor)
-				.OnItemSelected(this, &SPhraseListRow::OnVarSelected)
-				.DefaultText(SmartDialoguePhrasePtr->If.Key)
-			]
-			+ SHorizontalBox::Slot()
-			.AutoWidth()
-			[
-				SAssignNew(ComparisonComboBox, SComboBox<TSharedPtr<FString>>)
-				.ContentPadding(FMargin(2.0f))
-				.OptionsSource(&ComparisonOptions)
-				.OnGenerateWidget(this, &SPhraseListRow::GenerateComparisonOption)
-				.OnSelectionChanged(this, &SPhraseListRow::OnComparisonSelected)
-				.Visibility(this, &SPhraseListRow::GetComparisonVisibility)
-				.InitiallySelectedItem(InitOp)
+				SNew(SHorizontalBox)
+				+ SHorizontalBox::Slot()
+				.AutoWidth()
 				[
-					SAssignNew(ComparisonTextBlock, STextBlock)
-					.Text(this, &SPhraseListRow::GetCurrentComparisonText)
+					SAssignNew(CharacterComboBox, SCharacterComboBox)
+					.SmartDialogueEditor(SmartDialogueEditor)
+					.OnItemSelected(this, &SPhraseListRow::OnCharacterSelected)
+					.DefaultText(GetPhrasePtr()->NPC)
+				]
+				+ SHorizontalBox::Slot()
+				.AutoWidth()
+				[
+					SNew(SEditableTextBox)
+					.HintText(NSLOCTEXT("SPhraseListRow", "Animation", "Animation"))
+					.Text(this, &SPhraseListRow::GetAnimationText)
+					.OnTextChanged(this, &SPhraseListRow::OnAnimationTextChanged)
+				]
+				+ SHorizontalBox::Slot()
+				.AutoWidth()
+				[
+					SAssignNew(VarComboBox, SVarComboBox)
+					.SmartDialogueEditor(SmartDialogueEditor)
+					.OnItemSelected(this, &SPhraseListRow::OnVarSelected)
+					.DefaultText(GetPhrasePtr()->If.Key)
+				]
+				+ SHorizontalBox::Slot()
+				.AutoWidth()
+				[
+					SAssignNew(ComparisonComboBox, SComboBox<TSharedPtr<FString>>)
+					.ContentPadding(FMargin(2.0f))
+					.OptionsSource(&ComparisonOptions)
+					.OnGenerateWidget(this, &SPhraseListRow::GenerateComparisonOption)
+					.OnSelectionChanged(this, &SPhraseListRow::OnComparisonSelected)
+					.Visibility(this, &SPhraseListRow::GetComparisonVisibility)
+					.InitiallySelectedItem(InitOp)
+					[
+						SAssignNew(ComparisonTextBlock, STextBlock)
+						.Text(this, &SPhraseListRow::GetCurrentComparisonText)
+					]
+				]
+				+ SHorizontalBox::Slot()
+				.AutoWidth()
+				[
+					SNew(SEditableTextBox)
+					.HintText(NSLOCTEXT("SPhraseListRow", "Value", "Value"))
+					.Text(this, &SPhraseListRow::GetCompareValueText)
+					.Visibility(this, &SPhraseListRow::GetComparisonVisibility)
+					.OnTextChanged(this, &SPhraseListRow::OnCompareValueTextChanged)
+				]
+				+ SHorizontalBox::Slot()
+				.AutoWidth()
+				[
+					SNew(SCheckBox)
+					.OnCheckStateChanged(this, &SPhraseListRow::OnOrCheckStateChanged)
+					.Visibility(this, &SPhraseListRow::GetComparisonVisibility)
+					.Content()
+					[
+						SNew(STextBlock)
+						.Text(NSLOCTEXT("SPhraseListRow", "Or", "Or?"))
+					]
+				]
+				+ SHorizontalBox::Slot()
+				.FillWidth(1.0f)
+				[
+					SNew(SBox)
+				]
+				+ SHorizontalBox::Slot()
+				.AutoWidth()
+				[
+					SAssignNew(CustomParamsGrid, SGridPanel)
+					
+				]
+				+ SHorizontalBox::Slot()
+				.AutoWidth()
+				[
+					SAssignNew(GrabButton, SButton)
+					.ButtonStyle(FAppStyle::Get(), "FlatButton")
+					.HAlign(HAlign_Center)
+					.VAlign(VAlign_Center)
+					.IsFocusable(false)
+					.Visibility(EVisibility::HitTestInvisible)
+					.Content()
+					[
+						SNew(SImage)
+						.Image(FAppStyle::GetBrush("SoftwareCursor_Grab"))
+					]
+				]
+				+ SHorizontalBox::Slot()
+				.AutoWidth()
+				[
+					SNew(SButton)
+					.ButtonStyle(FAppStyle::Get(), "FlatButton")
+					.HAlign(HAlign_Center)
+					.VAlign(VAlign_Center)
+					.Content()
+					[
+						SNew(SImage)
+						.Image(FAppStyle::GetBrush("Cross"))
+					]
+					.OnClicked(this, &SPhraseListRow::OnDeleteButtonClicked)
 				]
 			]
-			+ SHorizontalBox::Slot()
-			.AutoWidth()
-			[
-				SNew(SEditableTextBox)
-				.HintText(NSLOCTEXT("SPhraseListRow", "Value", "Value"))
-				.Text(this, &SPhraseListRow::GetCompareValueText)
-				.Visibility(this, &SPhraseListRow::GetComparisonVisibility)
-				.OnTextChanged(this, &SPhraseListRow::OnCompareValueTextChanged)
-			]
-			+ SHorizontalBox::Slot()
-			.AutoWidth()
-			[
-				SNew(SCheckBox)
-				.OnCheckStateChanged(this, &SPhraseListRow::OnOrCheckStateChanged)
-				.Visibility(this, &SPhraseListRow::GetComparisonVisibility)
-				.Content()
-				[
-					SNew(STextBlock)
-					.Text(NSLOCTEXT("SPhraseListRow", "Or", "Or?"))
-				]
-			]
-			+ SHorizontalBox::Slot()
-			.FillWidth(1.0f)
+			+ SVerticalBox::Slot()
+			.AutoHeight()
 			[
 				SNew(SBox)
-			]
-			+ SHorizontalBox::Slot()
-			.AutoWidth()
-			[
-				SAssignNew(CustomParamsGrid, SGridPanel)
-				
-			]
-			+ SHorizontalBox::Slot()
-			.AutoWidth()
-			[
-				SNew(SButton)
-				.ButtonStyle(FAppStyle::Get(), "FlatButton")
-				.HAlign(HAlign_Center)
-				.VAlign(VAlign_Center)
-				.Content()
+				.WidthOverride(300.0f)
 				[
-					SNew(SImage)
-					.Image(FAppStyle::GetBrush("SoftwareCursor_Grab"))
+				SAssignNew(MultiLineEditableTextBox, SMultiLineEditableTextBox)
+				.AutoWrapText(true)
+				.Text(this, &SPhraseListRow::GetCurrentText)
+				.OnTextChanged(this, &SPhraseListRow::OnMultiLineTextChanged)
+				.OnKeyDownHandler(this, &SPhraseListRow::OnMultiLineKeyDown) // Добавляем обработчик клавиш
 				]
-				.OnClicked(this, &SPhraseListRow::OnHandButtonClicked)
-			]
-			+ SHorizontalBox::Slot()
-			.AutoWidth()
-			[
-				SNew(SButton)
-				.ButtonStyle(FAppStyle::Get(), "FlatButton")
-				.HAlign(HAlign_Center)
-				.VAlign(VAlign_Center)
-				.Content()
-				[
-					SNew(SImage)
-					.Image(FAppStyle::GetBrush("Cross"))
-				]
-				.OnClicked(this, &SPhraseListRow::OnDeleteButtonClicked)
-			]
-		]
-		+ SVerticalBox::Slot()
-		.AutoHeight()
-		[
-			SNew(SBox)
-			.WidthOverride(300.0f)
-			[
-			SAssignNew(MultiLineEditableTextBox, SMultiLineEditableTextBox)
-			.AutoWrapText(true)
-			.Text(this, &SPhraseListRow::GetCurrentText)
-			.OnTextChanged(this, &SPhraseListRow::OnMultiLineTextChanged)
-			.OnKeyDownHandler(this, &SPhraseListRow::OnMultiLineKeyDown) // Добавляем обработчик клавиш
 			]
 		]
 	];
@@ -158,9 +164,18 @@ void SPhraseListRow::Construct(const FArguments& InArgs)
 }
 
 FSmartDialoguePhrase* SPhraseListRow::GetPhrasePtr() const
+{	
+	return &SmartDialogueEditor->GetSelectedBranch()->Phrases[PhraseIndex];
+}
+
+void SPhraseListRow::UnderDragState(bool bIsNewState)
 {
-	
-	return SmartDialoguePhrasePtr;
+	bUnderDrag = bIsNewState;
+}
+
+void SPhraseListRow::DraggedState(bool bIsNewState)
+{
+	bDragged = bIsNewState;
 }
 
 
@@ -181,13 +196,13 @@ TSharedRef<SWidget> SPhraseListRow::GenerateComparisonOption(TSharedPtr<FString>
 
 void SPhraseListRow::OnCharacterSelected(TSharedPtr<FString> NewSelection)
 {
-    SmartDialoguePhrasePtr->NPC = *NewSelection;
+    GetPhrasePtr()->NPC = *NewSelection;
 }
 
 void SPhraseListRow::OnVarSelected(TSharedPtr<FString> NewSelection)
 {
 	
-    SmartDialoguePhrasePtr->If.Key = *NewSelection;
+    GetPhrasePtr()->If.Key = *NewSelection;
 }
 
 void SPhraseListRow::OnComparisonSelected(TSharedPtr<FString> NewSelection, ESelectInfo::Type SelectInfo)
@@ -202,22 +217,22 @@ void SPhraseListRow::OnOrCheckStateChanged(ECheckBoxState NewState)
 
 void SPhraseListRow::OnParameterChanged(const FText& Text, FString ParamKey)
 {
-	if (SmartDialoguePhrasePtr->CustomParams.Contains(ParamKey))
+	if (GetPhrasePtr()->CustomParams.Contains(ParamKey))
 	{
 		if (Text.IsEmpty())
 		{
-			SmartDialoguePhrasePtr->CustomParams.Remove(ParamKey);
+			GetPhrasePtr()->CustomParams.Remove(ParamKey);
 		}
 		else
 		{
-			SmartDialoguePhrasePtr->CustomParams[ParamKey] = Text.ToString();
+			GetPhrasePtr()->CustomParams[ParamKey] = Text.ToString();
 		}
 	}
 	else
 	{
 		if (!Text.IsEmpty())
 		{
-			SmartDialoguePhrasePtr->CustomParams.Add(ParamKey, Text.ToString());
+			GetPhrasePtr()->CustomParams.Add(ParamKey, Text.ToString());
 		}
 	}
 }
@@ -231,7 +246,7 @@ void SPhraseListRow::UpdateCustomParamsGrid()
 	int32 CurrentColumn = 0;
 	for (auto CustomParam : AllCustomParams)
 	{
-		FString* PhraseParamValue = SmartDialoguePhrasePtr->CustomParams.Find(CustomParam.Key);
+		FString* PhraseParamValue = GetPhrasePtr()->CustomParams.Find(CustomParam.Key);
 		
 		TSharedRef<SEditableTextBox> EditableTextBox = SNew(SEditableTextBox)
 			.HintText(FText::FromString(CustomParam.Key))
@@ -250,12 +265,6 @@ void SPhraseListRow::UpdateCustomParamsGrid()
 	}
 }
 
-FReply SPhraseListRow::OnHandButtonClicked()
-{
-	// Обработка нажатия на кнопку с иконкой руки
-	return FReply::Handled();
-}
-
 FReply SPhraseListRow::OnDeleteButtonClicked()
 {
 	SmartDialogueEditor->RemovePhrase(PhraseIndex);
@@ -264,22 +273,22 @@ FReply SPhraseListRow::OnDeleteButtonClicked()
 
 void SPhraseListRow::OnMultiLineTextChanged(const FText& InText)
 {
-	SmartDialoguePhrasePtr->Text = InText;
+	GetPhrasePtr()->Text = InText;
 }
 
 FText SPhraseListRow::GetCurrentText() const
 {
-	return SmartDialoguePhrasePtr->Text;
+	return GetPhrasePtr()->Text;
 }
 
 FText SPhraseListRow::GetCurrentCharacterText() const
 {
-	return FText::FromString(SmartDialoguePhrasePtr->NPC);
+	return FText::FromString(GetPhrasePtr()->NPC);
 }
 
 FText SPhraseListRow::GetCurrentVarText() const
 {
-	return FText::FromString(SmartDialoguePhrasePtr->If.Key);
+	return FText::FromString(GetPhrasePtr()->If.Key);
 }
 
 FText SPhraseListRow::GetCurrentComparisonText() const
@@ -289,22 +298,22 @@ FText SPhraseListRow::GetCurrentComparisonText() const
 
 FText SPhraseListRow::GetAnimationText() const
 {
-	return FText::FromString(*SmartDialoguePhrasePtr->Anim);
+	return FText::FromString(*GetPhrasePtr()->Anim);
 }
 
 void SPhraseListRow::OnAnimationTextChanged(const FText& Text)
 {
-	SmartDialoguePhrasePtr->Anim = Text.ToString();
+	GetPhrasePtr()->Anim = Text.ToString();
 }
 
 FText SPhraseListRow::GetCompareValueText() const
 {
-	return FText::FromString(FString::FromInt(SmartDialoguePhrasePtr->If.Value));
+	return FText::FromString(FString::FromInt(GetPhrasePtr()->If.Value));
 }
 
 void SPhraseListRow::OnCompareValueTextChanged(const FText& Text)
 {
-	FIf* ComparePtr = &SmartDialoguePhrasePtr->If;
+	FIf* ComparePtr = &GetPhrasePtr()->If;
 	ComparePtr->Value = FCString::Atoi(*Text.ToString());
 }
 
@@ -329,5 +338,36 @@ FReply SPhraseListRow::OnMultiLineKeyDown(const FGeometry& MyGeometry, const FKe
 
 EVisibility SPhraseListRow::GetComparisonVisibility() const
 {
-	return SmartDialoguePhrasePtr->If.Key.IsEmpty() ? EVisibility::Collapsed : EVisibility::Visible;
+	return GetPhrasePtr()->If.Key.IsEmpty() ? EVisibility::Collapsed : EVisibility::Visible;
+}
+
+FSlateColor SPhraseListRow::GetBackgroundColor() const
+{
+	if (bUnderDrag)
+	{
+		return FLinearColor(0.34f, 0.34f, 0.34f, 1.f);
+	}
+	if (bDragged)
+	{
+		return FLinearColor(0.88f, 0.88f, 0.88f, 1.f);
+	}
+
+	return FLinearColor::Transparent;
+}
+
+FReply SPhraseListRow::OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+{
+	if (MouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
+	{
+		FGeometry GrabButtonGeometry = FindChildGeometry(MyGeometry, GrabButton.ToSharedRef());
+
+		if (GrabButtonGeometry.IsUnderLocation(MouseEvent.GetScreenSpacePosition()))
+		{
+			const TSharedRef<FPhraseDragDropOperation> DragDropOp = FPhraseDragDropOperation::New(SharedThis(this), SmartDialogueEditor->GetPhrasesListPanel());
+			DraggedState(true);
+			return FReply::Handled().BeginDragDrop(DragDropOp);
+		}
+	}
+
+	return SCompoundWidget::OnMouseButtonDown(MyGeometry, MouseEvent);
 }

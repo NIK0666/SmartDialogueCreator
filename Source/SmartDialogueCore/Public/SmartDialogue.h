@@ -94,6 +94,7 @@ public:
 	void MakeClean();
 	FString GetDialogueId();
 	void MoveBranch(const FName& DraggedBranchName, const FName& TargetBranchName);
+	void MovePhrase(const FName& BranchName, int32 DraggedIndex, int32 TargetIndex);
 
 	FOnBranchesChanged OnBranchesChanged;	
 	FOnBranchRenamed OnBranchRenamed;

@@ -18,4 +18,6 @@ public:
 
 protected:
 	virtual TArray<TSharedPtr<FString>> GetOptionsList() override;
+	void OnRenamedBranch(FName OldName, FName NewName);
+
 };

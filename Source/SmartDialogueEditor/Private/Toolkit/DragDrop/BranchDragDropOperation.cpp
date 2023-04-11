@@ -17,7 +17,6 @@ void FBranchDragDropOperation::OnDragged(const FDragDropEvent& DragDropEvent)
 {
 	if (BranchesWidget)
 	{
-		UE_LOG(LogTemp, Log, TEXT("!!!"));
 		BranchesWidget->DragProcessBranchInfo(SourceBranchWidget, DragDropEvent.GetScreenSpacePosition());
 	}
 

@@ -24,6 +24,9 @@ public:
 	void Construct(const FArguments& InArgs);
 
 	FSmartDialoguePhrase* GetPhrasePtr() const;
+	int32 GetPhraseIndex() { return PhraseIndex; }
+	void UnderDragState(bool bIsNewState);
+	void DraggedState(bool bIsNewState);
 
 private:
 	TArray<TSharedPtr<FString>> CharacterOptions;
@@ -36,6 +39,8 @@ private:
 	TSharedPtr<SComboBox<TSharedPtr<FString>>> ComparisonComboBox;
 	TSharedPtr<STextBlock> ComparisonTextBlock;
 	TSharedPtr<SMultiLineEditableTextBox> MultiLineEditableTextBox;
+	TSharedPtr<SButton> GrabButton;
+
 
 	TSharedRef<SWidget> GenerateCharacterOption(TSharedPtr<FString> Option);
 	TSharedRef<SWidget> GenerateVarOption(TSharedPtr<FString> Option);
@@ -47,7 +52,6 @@ private:
 	void OnOrCheckStateChanged(ECheckBoxState NewState);
 	void OnParameterChanged(const FText& Text, FString ParamKey);
 	void UpdateCustomParamsGrid();
-	FReply OnHandButtonClicked();
 	FReply OnDeleteButtonClicked();
 	void OnMultiLineTextChanged(const FText& InText);
 	
@@ -57,6 +61,7 @@ private:
 
 	FReply OnMultiLineKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent);
 	EVisibility GetComparisonVisibility() const;
+	FSlateColor GetBackgroundColor() const;
 	FText GetCurrentText() const;
 	
 	FText GetAnimationText() const;
@@ -64,8 +69,12 @@ private:
 	FText GetCompareValueText() const;
 	void OnCompareValueTextChanged(const FText& Text);
 
+	virtual FReply OnMouseButtonDown(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
+
 
 	FSmartDialogueEditor* SmartDialogueEditor = nullptr;
-	FSmartDialoguePhrase* SmartDialoguePhrasePtr = nullptr;
 	int32 PhraseIndex = -1;
+
+	bool bUnderDrag = false;
+	bool bDragged = false;
 };

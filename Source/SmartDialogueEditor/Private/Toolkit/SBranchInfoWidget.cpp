@@ -16,7 +16,7 @@ FSlateColor SBranchInfoWidget::GetBackgroundColor() const
 {
 	if (bUnderDrag)
 	{
-		return FLinearColor(0.88f, 0.88f, 0.0f, 1.f);
+		return FLinearColor(0.34f, 0.34f, 0.34f, 1.f);
 	}
 	if (bDragged)
 	{
@@ -54,7 +54,6 @@ void SBranchInfoWidget::Construct(const FArguments& InArgs)
 	ChildSlot
 	[
 		SNew(SBorder)
-		// .Visibility(EVisibility::HitTestInvisible)
 		.Padding(2.f)
 		.BorderImage(FCoreStyle::Get().GetBrush("WhiteTexture"))
 		.BorderBackgroundColor(this, &SBranchInfoWidget::GetBackgroundColor)
