@@ -57,7 +57,10 @@ protected:
 	
 private:
 	void CreateConnections();
-	void PositionNode(UEdGraphNode* Node, int32 X, int32 Y, TSet<UEdGraphNode*>& ProcessedNodes, int32& MaxY);
+	int32 ComputeOffsetY(UEdGraphNode* Node, TMap<UEdGraphNode*, int32>& OffsetYCache, TSet<UEdGraphNode*>& UsedNodes);
+	void PositionNode(UEdGraphNode* Node, int32 X, int32 Y, TSet<UEdGraphNode*>& ProcessedNodes, int32& MaxY,
+		TMap<UEdGraphNode*, int32>& OffsetYCache);
+
 	UBranchNode* GetBranchNodeByName(FName BranchName) const;
 	void ClearGraph();
 

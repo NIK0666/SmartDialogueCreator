@@ -103,7 +103,61 @@ void USmartDialogueGraph::CreateConnections()
 	}
 }
 
-void USmartDialogueGraph::PositionNode(UEdGraphNode* Node, int32 X, int32 Y, TSet<UEdGraphNode*>& ProcessedNodes, int32& MaxY)
+int32 USmartDialogueGraph::ComputeOffsetY(UEdGraphNode* Node, TMap<UEdGraphNode*, int32>& OffsetYCache, TSet<UEdGraphNode*>& UsedNodes)
+{
+	if (Node == nullptr)
+	{
+		UE_LOG(LogTemp, Log, TEXT("ComputeOffsetY: Node is nullptr, returning 0"));
+		return 0;
+	}
+
+	if (OffsetYCache.Contains(Node))
+	{
+		int32 CachedOffsetY = OffsetYCache[Node];
+		UE_LOG(LogTemp, Log, TEXT("ComputeCachedY: %s: %d"), *Cast<UBranchNode>(Node)->GetBranchName().ToString(), CachedOffsetY);
+		return CachedOffsetY;
+	}
+
+	int32 OffsetY = 0;
+	TArray<int32> ChildOffsets;
+	for (UEdGraphPin* OutputPin : Node->GetAllPins())
+	{
+		if (OutputPin->Direction == EGPD_Output && OutputPin->LinkedTo.Num() > 0)
+		{
+			int32 TotalChildOffsetY = 0;
+			for (UEdGraphPin* LinkedPin : OutputPin->LinkedTo)
+			{
+				UEdGraphNode* ChildNode = LinkedPin->GetOwningNode();
+				if (!UsedNodes.Contains(ChildNode))
+				{
+					UsedNodes.Add(ChildNode);
+					TotalChildOffsetY += ComputeOffsetY(ChildNode, OffsetYCache, UsedNodes);
+				}
+			}
+			ChildOffsets.Add(TotalChildOffsetY);
+		}
+	}
+
+	if (ChildOffsets.Num() > 0)
+	{
+		OffsetY = FMath::Max(1, FMath::Max<int32>(ChildOffsets));
+	}
+	else
+	{
+		OffsetY = 1;
+	}
+
+	OffsetYCache.Add(Node, OffsetY);
+	UE_LOG(LogTemp, Log, TEXT("ComputeOffsetY: %s: %d"), *Cast<UBranchNode>(Node)->GetBranchName().ToString(), OffsetY);
+	return OffsetY;
+}
+
+
+
+int32 GRID_X = 384;
+int32 GRID_Y = 128;
+
+void USmartDialogueGraph::PositionNode(UEdGraphNode* Node, int32 X, int32 Y, TSet<UEdGraphNode*>& ProcessedNodes, int32& MaxY, TMap<UEdGraphNode*, int32>& OffsetYCache)
 {
 	if (ProcessedNodes.Contains(Node))
 	{
@@ -111,33 +165,51 @@ void USmartDialogueGraph::PositionNode(UEdGraphNode* Node, int32 X, int32 Y, TSe
 	}
 	ProcessedNodes.Add(Node);
 
-	Node->NodePosX = X * 384;
-	Node->NodePosY = Y * 128;
+	Node->NodePosX = X * GRID_X;
+	Node->NodePosY = Y * GRID_Y;
+	UE_LOG(LogTemp, Log, TEXT("PositionNode: %s (%d, %d)"), *Cast<UBranchNode>(Node)->GetBranchName().ToString(), X, Y);
 
 	MaxY = FMath::Max(MaxY, Y);
 
-	int32 ChildY = Y;
+	TArray<UEdGraphNode*> ChildNodes;
+
+	int32 NextChildY = Y;
 	for (UEdGraphPin* OutputPin : Node->GetAllPins())
 	{
 		if (OutputPin->Direction == EGPD_Output && OutputPin->LinkedTo.Num() > 0)
 		{
 			for (UEdGraphPin* LinkedPin : OutputPin->LinkedTo)
 			{
-				if (!ProcessedNodes.Contains(LinkedPin->GetOwningNode()))
+				UEdGraphNode* ChildNode = LinkedPin->GetOwningNode();
+				if (!ProcessedNodes.Contains(ChildNode))
 				{
-					PositionNode(LinkedPin->GetOwningNode(), X + 1, ChildY, ProcessedNodes, MaxY);
-					ChildY++;
+					ChildNodes.Add(ChildNode);
 				}
 			}
 		}
 	}
+	
+	TSet<UEdGraphNode*> UsedNodes;
+	for (UEdGraphNode* ChildNode : ChildNodes)
+	{
+		int32 OffsetY = ComputeOffsetY(ChildNode, OffsetYCache, UsedNodes);
+		PositionNode(ChildNode, X + 1, NextChildY, ProcessedNodes, MaxY, OffsetYCache);
+		NextChildY += OffsetY;
+	}
 }
+
+
+
+
 
 void USmartDialogueGraph::SortNodes()
 {
 	TSet<UEdGraphNode*> ProcessedNodes;
 	int32 CurrentY = 0;
 	int32 MaxY = -1;
+
+	bool bIsFirstNode = true;
+	TMap<UEdGraphNode*, int32> OffsetYCache;
 
 	while (ProcessedNodes.Num() != Nodes.Num())
 	{
@@ -155,8 +227,15 @@ void USmartDialogueGraph::SortNodes()
 
 		if (StartNode)
 		{
-			CurrentY = MaxY + 1;
-			PositionNode(StartNode, 0, CurrentY, ProcessedNodes, MaxY);
+			if (bIsFirstNode)
+			{
+				bIsFirstNode = false;
+			}
+			else
+			{
+				CurrentY = MaxY + 1;
+			}
+			PositionNode(StartNode, 0, CurrentY, ProcessedNodes, MaxY, OffsetYCache);
 		}
 		else
 		{
@@ -164,6 +243,7 @@ void USmartDialogueGraph::SortNodes()
 		}
 	}
 }
+
 
 void USmartDialogueGraph::ClearGraph()
 {
@@ -291,7 +371,7 @@ FString USmartDialogueGraph::GetNodesInformation()
 
 			NodesInfo += FString::Printf(
 				TEXT("{Name: \"%s\",Pos: (%d, %.d),In: [%s],Out: [%s]}\n"),
-				*NodeName.ToString(), int32(NodePosition.X), int32(NodePosition.Y), *InNodes, *OutNodes);
+				*NodeName.ToString(), int32(NodePosition.X / GRID_X), int32(NodePosition.Y / GRID_Y), *InNodes, *OutNodes);
 		}
 	}
 
