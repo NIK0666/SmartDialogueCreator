@@ -31,6 +31,7 @@ public:
 	
 	void InitSmartDialogueEditor(EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost >& InitToolkitHost, USmartDialogue* SmartDialogue);
 	void SetDialogue(USmartDialogue* InDialogue);
+	void OpenNewAssetIntoEditor(USmartDialogue* InDialogue);
 	USmartDialogue* GetDialogue();
 	void BindCommands();
 	TSharedPtr<FExtender> GetToolbarExtender();

@@ -13,15 +13,8 @@ public:
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs);
+	void OnAssetDoubleClicked(const FAssetData& AssetData);
 
 private:
 	FSmartDialogueEditor* SmartDialogueEditorPtr = nullptr;
-	TArray<TSharedPtr<FAssetData>> AssetList;
-	TSharedPtr<SListView<TSharedPtr<FAssetData>>> AssetListView;
-	TSharedPtr<STextBlock> AssetCountTextBlock;
-
-	void UpdateAssetList();
-	TSharedRef<ITableRow> OnGenerateRowForList(TSharedPtr<FAssetData> Item, const TSharedRef<STableViewBase>& OwnerTable);
-	void OnAssetSelected(TSharedPtr<FAssetData> AssetData, ESelectInfo::Type SelectInfo);
 };
-

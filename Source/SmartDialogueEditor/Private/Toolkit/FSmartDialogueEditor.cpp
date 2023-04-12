@@ -16,9 +16,8 @@
 #include "UMGStyle.h"
 #include "Components/SBranchComboBox.h"
 #include "Components/SCharacterComboBox.h"
-#include "Graph/BranchNode.h"
 #include "Graph/SmartDialogueGraph.h"
-#include "Graph/SmartDialogueGraphSchema.h"
+#include "AssetBrowser/SSmartDialogueAssetBrowser.h"
 #include "PlayPanel/SDialoguePlayerTab.h"
 #include "Serializor/JsonParser.h"
 #include "SmartDialogueCore/Private/SmartDialogueSettings.h"
@@ -42,6 +41,7 @@ void FSmartDialogueEditor::InitSmartDialogueEditor(EToolkitMode::Type Mode, cons
 
 	DialogueGraph = NewObject<USmartDialogueGraph>();
 	DialogueGraph->SetEditor(this);
+	DialogueGraph->LoadNodesFromAsset();
 	DialogueGraph->SetFlags(RF_Transactional);
 	
 	FSmartDialogueEditorCommands::Register();
@@ -63,6 +63,15 @@ void FSmartDialogueEditor::InitSmartDialogueEditor(EToolkitMode::Type Mode, cons
 void FSmartDialogueEditor::SetDialogue(USmartDialogue* InDialogue)
 {
 	Dialogue = InDialogue;
+}
+
+void FSmartDialogueEditor::OpenNewAssetIntoEditor(USmartDialogue* InDialogue)
+{
+	ResetSelectedBranch();
+	SetDialogue(InDialogue);
+	GetBranchesListPanel()->UpdateBranchesList();
+	DialogueGraph->LoadNodesFromAsset();
+	RegenerateMenusAndToolbars();
 }
 
 USmartDialogue* FSmartDialogueEditor::GetDialogue()

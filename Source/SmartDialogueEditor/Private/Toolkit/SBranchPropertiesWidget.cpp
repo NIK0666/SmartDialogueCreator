@@ -10,6 +10,7 @@
 #include "Lists/SShowBranchesComboBoxList.h"
 #include "Lists/SConditionsComboBoxList.h"
 #include "Lists/SOperationsComboBoxList.h"
+#include "Widgets/Layout/SWrapBox.h"
 
 #define LOCTEXT_NAMESPACE "SmartDialogueEditor"
 
@@ -53,165 +54,161 @@ TSharedRef<SWidget> SBranchPropertiesWidget::GetContentWidget()
 		[
 			SNew(SHorizontalBox)
 			+ SHorizontalBox::Slot()
-			.AutoWidth()
+			.FillWidth(1.f)
 			.Padding(4.f, 0.f)
 			.VAlign(VAlign_Center)
 			[
-				SAssignNew(HiddenCheckBox, SCheckBox)
-				.HAlign(HAlign_Left)
-				.IsChecked(GetBranchDataPtr()->Hidden ? ECheckBoxState::Checked : ECheckBoxState::Unchecked)
-				.OnCheckStateChanged_Lambda([this](ECheckBoxState NewState)
-				{					
-					GetBranchDataPtr()->Hidden = NewState == ECheckBoxState::Checked;
-					if (SmartDialogueEditor->GetSelectedBranch())
-					{
-						SmartDialogueEditor->GetSelectedBranch()->Hidden = NewState == ECheckBoxState::Checked;
-					}					
-				})
-				.Content()
+				SNew(SWrapBox)
+				.UseAllottedSize(true)
+				+ SWrapBox::Slot()
+				.Padding(4.f, 0.f)
 				[
-					SNew(STextBlock)
-					.Text(LOCTEXT("HiddenLabel", "Hidden"))
-				]
-			]
-
-			+ SHorizontalBox::Slot()
-			.AutoWidth()
-			.Padding(4.f, 0.f)
-			.VAlign(VAlign_Center)
-			[
-				SAssignNew(HideSelfCheckBox, SCheckBox)
-				.HAlign(HAlign_Left)
-				.IsChecked(GetBranchDataPtr()->HideSelf ? ECheckBoxState::Checked : ECheckBoxState::Unchecked)
-				.OnCheckStateChanged_Lambda([this](ECheckBoxState NewState)
-				{
-					GetBranchDataPtr()->HideSelf = NewState == ECheckBoxState::Checked;
-					if (SmartDialogueEditor->GetSelectedBranch())
-					{
-						SmartDialogueEditor->GetSelectedBranch()->HideSelf = NewState == ECheckBoxState::Checked;
-					}
-				})
-				.Content()
-				[
-					SNew(STextBlock)
-					.Margin(FMargin(4.f, 0.f))
-					.Text(LOCTEXT("HideSelfLabel", "Hide Self"))
-				]
-			]
-
-			+ SHorizontalBox::Slot()
-			.AutoWidth()
-			.Padding(4.f, 0.f)
-			.VAlign(VAlign_Center)
-			[
-				SAssignNew(ClosedCheckBox, SCheckBox)
-				.HAlign(HAlign_Left)
-				.IsChecked(GetBranchDataPtr()->Closed ? ECheckBoxState::Checked : ECheckBoxState::Unchecked)
-				.OnCheckStateChanged_Lambda([this](ECheckBoxState NewState)
-					{
-						GetBranchDataPtr()->Closed = NewState == ECheckBoxState::Checked;
+					SAssignNew(HiddenCheckBox, SCheckBox)
+					.HAlign(HAlign_Left)
+					.IsChecked(GetBranchDataPtr()->Hidden ? ECheckBoxState::Checked : ECheckBoxState::Unchecked)
+					.OnCheckStateChanged_Lambda([this](ECheckBoxState NewState)
+					{					
+						GetBranchDataPtr()->Hidden = NewState == ECheckBoxState::Checked;
 						if (SmartDialogueEditor->GetSelectedBranch())
 						{
-							SmartDialogueEditor->GetSelectedBranch()->Closed = NewState == ECheckBoxState::Checked;
+							SmartDialogueEditor->GetSelectedBranch()->Hidden = NewState == ECheckBoxState::Checked;
+						}					
+					})
+					.Content()
+					[
+						SNew(STextBlock)
+						.Text(LOCTEXT("HiddenLabel", "Hidden"))
+					]
+				]
+				+ SWrapBox::Slot()
+				.Padding(4.f, 0.f)
+				.VAlign(VAlign_Center)
+				[
+					SAssignNew(HideSelfCheckBox, SCheckBox)
+					.HAlign(HAlign_Left)
+					.IsChecked(GetBranchDataPtr()->HideSelf ? ECheckBoxState::Checked : ECheckBoxState::Unchecked)
+					.OnCheckStateChanged_Lambda([this](ECheckBoxState NewState)
+					{
+						GetBranchDataPtr()->HideSelf = NewState == ECheckBoxState::Checked;
+						if (SmartDialogueEditor->GetSelectedBranch())
+						{
+							SmartDialogueEditor->GetSelectedBranch()->HideSelf = NewState == ECheckBoxState::Checked;
 						}
 					})
-				.Content()
-				[
-					SNew(STextBlock)
-					.Margin(FMargin(4.f, 0.f))
-					.Text(LOCTEXT("EndOfDialogueLabel", "End of Dialogue"))
+					.Content()
+					[
+						SNew(STextBlock)
+						.Margin(FMargin(4.f, 0.f))
+						.Text(LOCTEXT("HideSelfLabel", "Hide Self"))
+					]
 				]
-			]
-			// "Show choice"
-			+ SHorizontalBox::Slot()
-			.AutoWidth()
-			.Padding(4.f, 0.f)
-			.VAlign(VAlign_Center)
-			[
-				SAssignNew(ShowChoiceCheckBox, SCheckBox)
-				.HAlign(HAlign_Left)
-				.IsChecked(GetBranchDataPtr()->Choice ? ECheckBoxState::Checked : ECheckBoxState::Unchecked)
-				.OnCheckStateChanged_Lambda([this](ECheckBoxState NewState)
-				{
-					GetBranchDataPtr()->Choice = NewState == ECheckBoxState::Checked;
-					if (SmartDialogueEditor->GetSelectedBranch())
-					{
-						SmartDialogueEditor->GetSelectedBranch()->Choice = NewState == ECheckBoxState::Checked;
-					}
-				})
-				.Content()
-				[
-					SNew(STextBlock)
-					.Margin(FMargin(4.f, 0.f))
-					.Text(LOCTEXT("ShowChoiceLabel", "Show Choice"))
-				]
-			]
-			
-			// "QueuePhrases"
-			+ SHorizontalBox::Slot()
-			.AutoWidth()
-			.Padding(4.f, 0.f)
-			.VAlign(VAlign_Center)
-			[
-				SAssignNew(QueueCheckBox, SCheckBox)
-				.HAlign(HAlign_Left)
-				.IsChecked(GetBranchDataPtr()->Queue ? ECheckBoxState::Checked : ECheckBoxState::Unchecked)
-				.OnCheckStateChanged_Lambda([this](ECheckBoxState NewState)
-				{
-					GetBranchDataPtr()->Queue = NewState == ECheckBoxState::Checked;
-					if (SmartDialogueEditor->GetSelectedBranch())
-					{
-						SmartDialogueEditor->GetSelectedBranch()->Queue = NewState == ECheckBoxState::Checked;
-					}
-				})
-				.Content()
-				[
-					SNew(STextBlock)
-					.Margin(FMargin(4.f, 0.f))
-					.Text(LOCTEXT("QueuePhrasesLabel", "Queue"))
-				]
-			]
 
-			// "Check as OR"
-			+ SHorizontalBox::Slot()
-			.AutoWidth()
-			.Padding(4.f, 0.f)
-			.VAlign(VAlign_Center)
-			[
-				SAssignNew(CheckAsORCheckBox, SCheckBox)
-				.HAlign(HAlign_Left)
-				.IsChecked(GetBranchDataPtr()->OrCond ? ECheckBoxState::Checked : ECheckBoxState::Unchecked)
-				.OnCheckStateChanged_Lambda([this](ECheckBoxState NewState)
-				{
-					GetBranchDataPtr()->OrCond = NewState == ECheckBoxState::Checked;
-					if (SmartDialogueEditor->GetSelectedBranch())
-					{
-						SmartDialogueEditor->GetSelectedBranch()->OrCond = NewState == ECheckBoxState::Checked;
-					}
-				})
-				.Content()
+				+ SWrapBox::Slot()
+				.Padding(4.f, 0.f)
+				.VAlign(VAlign_Center)
 				[
-					SNew(STextBlock)
-					.Margin(FMargin(4.f, 0.f))
-					.Text(LOCTEXT("CheckAsORLabel", "Check as OR"))
+					SAssignNew(ClosedCheckBox, SCheckBox)
+					.HAlign(HAlign_Left)
+					.IsChecked(GetBranchDataPtr()->Closed ? ECheckBoxState::Checked : ECheckBoxState::Unchecked)
+					.OnCheckStateChanged_Lambda([this](ECheckBoxState NewState)
+						{
+							GetBranchDataPtr()->Closed = NewState == ECheckBoxState::Checked;
+							if (SmartDialogueEditor->GetSelectedBranch())
+							{
+								SmartDialogueEditor->GetSelectedBranch()->Closed = NewState == ECheckBoxState::Checked;
+							}
+						})
+					.Content()
+					[
+						SNew(STextBlock)
+						.Margin(FMargin(4.f, 0.f))
+						.Text(LOCTEXT("EndOfDialogueLabel", "End of Dialogue"))
+					]
 				]
-			]
+				// "Show choice"
+				+ SWrapBox::Slot()
+				.Padding(4.f, 0.f)
+				.VAlign(VAlign_Center)
+				[
+					SAssignNew(ShowChoiceCheckBox, SCheckBox)
+					.HAlign(HAlign_Left)
+					.IsChecked(GetBranchDataPtr()->Choice ? ECheckBoxState::Checked : ECheckBoxState::Unchecked)
+					.OnCheckStateChanged_Lambda([this](ECheckBoxState NewState)
+					{
+						GetBranchDataPtr()->Choice = NewState == ECheckBoxState::Checked;
+						if (SmartDialogueEditor->GetSelectedBranch())
+						{
+							SmartDialogueEditor->GetSelectedBranch()->Choice = NewState == ECheckBoxState::Checked;
+						}
+					})
+					.Content()
+					[
+						SNew(STextBlock)
+						.Margin(FMargin(4.f, 0.f))
+						.Text(LOCTEXT("ShowChoiceLabel", "Show Choice"))
+					]
+				]
+				
+				// "QueuePhrases"
+				+ SWrapBox::Slot()
+				.Padding(4.f, 0.f)
+				.VAlign(VAlign_Center)
+				[
+					SAssignNew(QueueCheckBox, SCheckBox)
+					.HAlign(HAlign_Left)
+					.IsChecked(GetBranchDataPtr()->Queue ? ECheckBoxState::Checked : ECheckBoxState::Unchecked)
+					.OnCheckStateChanged_Lambda([this](ECheckBoxState NewState)
+					{
+						GetBranchDataPtr()->Queue = NewState == ECheckBoxState::Checked;
+						if (SmartDialogueEditor->GetSelectedBranch())
+						{
+							SmartDialogueEditor->GetSelectedBranch()->Queue = NewState == ECheckBoxState::Checked;
+						}
+					})
+					.Content()
+					[
+						SNew(STextBlock)
+						.Margin(FMargin(4.f, 0.f))
+						.Text(LOCTEXT("QueuePhrasesLabel", "Queue"))
+					]
+				]
 
-			// Started Brahcn
-			+ SHorizontalBox::Slot()
-			.AutoWidth()
-			[
-				SAssignNew(StartBranchComboBox, SBranchComboBox)
-				.SmartDialogueEditor(SmartDialogueEditor)
-				.OnItemSelected_Lambda([this](TSharedPtr<FString> NewSelection)
-				{
-					GetBranchDataPtr()->ChangeStarted = *NewSelection;
-				})
-				.DefaultText(SmartDialogueEditor->GetSelectedBranch()->ChangeStarted)
-			]			
-			+ SHorizontalBox::Slot()
-			.FillWidth(1.f)
-			
+				// "Check as OR"
+				+ SWrapBox::Slot()
+				.Padding(4.f, 0.f)
+				.VAlign(VAlign_Center)
+				[
+					SAssignNew(CheckAsORCheckBox, SCheckBox)
+					.HAlign(HAlign_Left)
+					.IsChecked(GetBranchDataPtr()->OrCond ? ECheckBoxState::Checked : ECheckBoxState::Unchecked)
+					.OnCheckStateChanged_Lambda([this](ECheckBoxState NewState)
+					{
+						GetBranchDataPtr()->OrCond = NewState == ECheckBoxState::Checked;
+						if (SmartDialogueEditor->GetSelectedBranch())
+						{
+							SmartDialogueEditor->GetSelectedBranch()->OrCond = NewState == ECheckBoxState::Checked;
+						}
+					})
+					.Content()
+					[
+						SNew(STextBlock)
+						.Margin(FMargin(4.f, 0.f))
+						.Text(LOCTEXT("CheckAsORLabel", "Check as OR"))
+					]
+				]
+
+				// Started Brahcn
+				+ SWrapBox::Slot()
+				[
+					SAssignNew(StartBranchComboBox, SBranchComboBox)
+					.SmartDialogueEditor(SmartDialogueEditor)
+					.OnItemSelected_Lambda([this](TSharedPtr<FString> NewSelection)
+					{
+						GetBranchDataPtr()->ChangeStarted = *NewSelection;
+					})
+					.DefaultText(SmartDialogueEditor->GetSelectedBranch()->ChangeStarted)
+				]					
+			]	
 			+ SHorizontalBox::Slot()
 			.AutoWidth()
 			.HAlign(HAlign_Right)
@@ -315,18 +312,27 @@ TSharedRef<SWidget> SBranchPropertiesWidget::GetContentWidget()
 				.Editor(SmartDialogueEditor)
 				.Title(LOCTEXT("ShowBranchesLabel", "Show Branches:"))
 			]
-			+ SHorizontalBox::Slot()
-			.AutoWidth()
+		]
+		+ SVerticalBox::Slot()
+		  .AutoHeight()
+		  .HAlign(HAlign_Fill)
+		  .VAlign(VAlign_Top)
+		  .Padding(FMargin(0.0f, 0.0f))
+		[
+			SNew(SBox)
+			.HeightOverride(2.f)
 			[
-				SNew(SBox)
-				.WidthOverride(2.f)
-				.HeightOverride(100.f)
-				[
-					SNew(SBorder)
-					.BorderImage(FAppStyle::GetBrush("WhiteTexture"))
-					.BorderBackgroundColor(FLinearColor(1.f, 1.f, 1.f, 0.2f))
-				]
+				SNew(SBorder)
+				.BorderImage(FAppStyle::GetBrush("WhiteTexture"))
+				.BorderBackgroundColor(FLinearColor(1.f, 1.f, 1.f, 0.2f))
 			]
+		]
+		+ SVerticalBox::Slot()
+		  .AutoHeight()
+		  .VAlign(VAlign_Top)
+		  .Padding(FMargin(0.0f, 4.0f))
+		[
+			SNew(SHorizontalBox)			
 			+ SHorizontalBox::Slot()
 				.FillWidth(1.0f)
 				.Padding(4.f, 0.f)

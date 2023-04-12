@@ -21,8 +21,6 @@ void USmartDialogueGraph::SetEditor(FSmartDialogueEditor* InEditor)
 	if (Editor)
 	{
 		Editor->OnBranchItemAdded.AddUObject(this, &USmartDialogueGraph::AddBranchNode);
-
-		LoadNodesFromAsset();
 		
 		Editor->GetDialogue()->OnShowBranchAdded.AddUObject(this, &USmartDialogueGraph::OnShowBranchAdded);
 		Editor->GetDialogue()->OnHideBranchAdded.AddUObject(this, &USmartDialogueGraph::OnHideBranchAdded);
@@ -44,6 +42,9 @@ void USmartDialogueGraph::LoadNodesFromAsset()
 	USmartDialogue* Dialogue = Editor->GetDialogue();
 	if (Dialogue)
 	{
+
+		ClearGraph();
+		
 		bIsInitializeGraph = true;
 		for (const TPair<FName, FSmartDialogueBranch>& Pair : Dialogue->GetBranches())
 		{
@@ -163,6 +164,17 @@ void USmartDialogueGraph::SortNodes()
 		}
 	}
 }
+
+void USmartDialogueGraph::ClearGraph()
+{
+	TArray<UEdGraphNode*> NodesToRemove = Nodes;
+
+	for (UEdGraphNode* Node : NodesToRemove)
+	{
+		RemoveNode(Node);
+	}
+}
+
 
 
 UBranchNode* USmartDialogueGraph::GetBranchNodeByName(FName BranchName) const

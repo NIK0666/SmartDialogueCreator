@@ -59,6 +59,7 @@ private:
 	void CreateConnections();
 	void PositionNode(UEdGraphNode* Node, int32 X, int32 Y, TSet<UEdGraphNode*>& ProcessedNodes, int32& MaxY);
 	UBranchNode* GetBranchNodeByName(FName BranchName) const;
+	void ClearGraph();
 
 	FSmartDialogueEditor* Editor;
 };
