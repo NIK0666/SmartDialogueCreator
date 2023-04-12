@@ -66,9 +66,20 @@ void FSmartDialogueEditor::SetDialogue(USmartDialogue* InDialogue)
 }
 
 void FSmartDialogueEditor::OpenNewAssetIntoEditor(USmartDialogue* InDialogue)
-{
+{	
+	if (InDialogue)
+	{
+		AddEditingObject(InDialogue);
+	}
+	
+	if (Dialogue)
+	{
+		RemoveEditingAsset(Dialogue);
+	}
+	
 	ResetSelectedBranch();
 	SetDialogue(InDialogue);
+	
 	GetBranchesListPanel()->UpdateBranchesList();
 	DialogueGraph->LoadNodesFromAsset();
 	RegenerateMenusAndToolbars();
