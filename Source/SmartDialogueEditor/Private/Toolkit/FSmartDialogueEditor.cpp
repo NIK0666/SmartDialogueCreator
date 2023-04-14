@@ -516,7 +516,11 @@ void FSmartDialogueEditor::RefreshEditor()
 	SelectedBranchPtr = nullptr;
 	GetBranchesListPanel()->UpdateBranchesList();
 	CharacterComboBox->SetItemValue(GetDialogue()->GetCharacter());
-	DialConfigWidget->UpdateData();
+	if (DialConfigWidget)
+	{
+		DialConfigWidget->UpdateData();
+	}
+	
 }
 
 void FSmartDialogueEditor::ImportJson()
@@ -583,7 +587,7 @@ void FSmartDialogueEditor::SortNodes()
 {
 	if (DialogueGraph)
 	{
-		DialogueGraph->SortNodes();
+		DialogueGraph->ArrangeNodes();
 	}
 }
 

@@ -94,6 +94,35 @@ TSharedRef<SWidget> SGraphNode_Branch::CreateNodeContentArea()
                     .ModiferKeyForNewLine(EModifierKey::Shift) // Установка модификатора клавиши для создания новой строки на Shift
                 ]
             ]
+            + SVerticalBox::Slot()
+		    .AutoHeight()
+		    .Padding(16.f, 8.f, 32.f, 8.f)
+		    [
+		        SNew(SBox)
+		        .Padding(0.f)
+		        .HeightOverride(32.f)
+		        .Visibility_Lambda([this, BranchNode]() -> EVisibility
+		        {
+		            if (BranchNode->GetBranchPtr() == nullptr || BranchNode->GetBranchPtr()->Phrases.Num() <= 1)
+		            {
+		                return EVisibility::Collapsed;
+		            }
+		            return EVisibility::Visible;
+		        })
+		        [
+		            SNew(STextBlock)
+		            .Text_Lambda([this, BranchNode]()
+		            {
+		                if (BranchNode->GetBranchPtr() == nullptr)
+		                {
+		                    return FText::GetEmpty();
+		                }
+		                return BranchNode->GetBranchPtr()->Phrases.Last().Text;
+		            })
+		            .WrapTextAt(MaxNodeWidth)
+		            .AutoWrapText(true)
+		        ]
+		    ]
         ];
 }
 

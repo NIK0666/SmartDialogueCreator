@@ -30,8 +30,8 @@ public:
 	void OnUserDisconnectPins(UEdGraphPin* A, UEdGraphPin* B);
 	void HandleSelectedNodesChanged(const TSet<UObject*>& NewSelection);
 
-
-	void SortNodes();
+	bool FindCollisions(const TMap<UEdGraphNode*, FVector2D>& NodePositions);
+	void ArrangeNodes();
 
 	FVector2D LastNodePos;
 	UEdGraphPin* LastFromPin = nullptr;
@@ -56,10 +56,9 @@ protected:
 
 	
 private:
+	void SetNodePos(UEdGraphNode* Node, const FVector2D& Position);
+
 	void CreateConnections();
-	int32 ComputeOffsetY(UEdGraphNode* Node, TMap<UEdGraphNode*, int32>& OffsetYCache, TSet<UEdGraphNode*>& UsedNodes);
-	void PositionNode(UEdGraphNode* Node, int32 X, int32 Y, TSet<UEdGraphNode*>& ProcessedNodes, int32& MaxY,
-		TMap<UEdGraphNode*, int32>& OffsetYCache);
 
 	UBranchNode* GetBranchNodeByName(FName BranchName) const;
 	void ClearGraph();

@@ -16,7 +16,7 @@ void FBranchesConnectionDrawingPolicy::DrawSplineWithArrow(const FVector2D& Star
 	UEdGraphPin* StartPin = Params.AssociatedPin1;
 	if (UBranchNode* StartNode = Cast<UBranchNode>(StartPin->GetOwningNode()))
 	{
-		if (StartPin->PinName == UEdGraphSchema_K2::PN_Else)
+		if (StartPin->PinName == FName(""))
 		{
 			ModifiedParams.WireColor.R = 1.f;
 			ModifiedParams.WireColor.G = 0.f;

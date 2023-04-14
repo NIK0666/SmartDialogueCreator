@@ -3,6 +3,7 @@
 
 #include "SmartDialogueGraph.h"
 #include "BranchNode.h"
+#include "NodeArranger.h"
 #include "SmartDialogue.h"
 
 #include "SmartDialogueGraphSchema.h"
@@ -55,7 +56,7 @@ void USmartDialogueGraph::LoadNodesFromAsset()
 		bIsInitializeGraph = false;
 		
 		CreateConnections();
-		SortNodes();
+		ArrangeNodes();
 	}
 }
 
@@ -77,7 +78,7 @@ void USmartDialogueGraph::CreateConnections()
 			if (SourceNode)
 			{
 				UEdGraphPin* ShowPin = SourceNode->FindPin(UEdGraphSchema_K2::PN_Then);
-				UEdGraphPin* HidePin = SourceNode->FindPin(UEdGraphSchema_K2::PN_Else);
+				UEdGraphPin* HidePin = SourceNode->FindPin(FName(""));
 
 				for (const FString& TargetBranchName : Branch.Show)
 				{
@@ -103,144 +104,45 @@ void USmartDialogueGraph::CreateConnections()
 	}
 }
 
-int32 USmartDialogueGraph::ComputeOffsetY(UEdGraphNode* Node, TMap<UEdGraphNode*, int32>& OffsetYCache, TSet<UEdGraphNode*>& UsedNodes)
-{
-	if (Node == nullptr)
-	{
-		UE_LOG(LogTemp, Log, TEXT("ComputeOffsetY: Node is nullptr, returning 0"));
-		return 0;
-	}
-
-	if (OffsetYCache.Contains(Node))
-	{
-		int32 CachedOffsetY = OffsetYCache[Node];
-		UE_LOG(LogTemp, Log, TEXT("ComputeCachedY: %s: %d"), *Cast<UBranchNode>(Node)->GetBranchName().ToString(), CachedOffsetY);
-		return CachedOffsetY;
-	}
-
-	int32 OffsetY = 0;
-	TArray<int32> ChildOffsets;
-	for (UEdGraphPin* OutputPin : Node->GetAllPins())
-	{
-		if (OutputPin->Direction == EGPD_Output && OutputPin->LinkedTo.Num() > 0)
-		{
-			int32 TotalChildOffsetY = 0;
-			for (UEdGraphPin* LinkedPin : OutputPin->LinkedTo)
-			{
-				UEdGraphNode* ChildNode = LinkedPin->GetOwningNode();
-				if (!UsedNodes.Contains(ChildNode))
-				{
-					UsedNodes.Add(ChildNode);
-					TotalChildOffsetY += ComputeOffsetY(ChildNode, OffsetYCache, UsedNodes);
-				}
-			}
-			ChildOffsets.Add(TotalChildOffsetY);
-		}
-	}
-
-	if (ChildOffsets.Num() > 0)
-	{
-		OffsetY = FMath::Max(1, FMath::Max<int32>(ChildOffsets));
-	}
-	else
-	{
-		OffsetY = 1;
-	}
-
-	OffsetYCache.Add(Node, OffsetY);
-	UE_LOG(LogTemp, Log, TEXT("ComputeOffsetY: %s: %d"), *Cast<UBranchNode>(Node)->GetBranchName().ToString(), OffsetY);
-	return OffsetY;
-}
-
-
 
 int32 GRID_X = 384;
 int32 GRID_Y = 128;
 
-void USmartDialogueGraph::PositionNode(UEdGraphNode* Node, int32 X, int32 Y, TSet<UEdGraphNode*>& ProcessedNodes, int32& MaxY, TMap<UEdGraphNode*, int32>& OffsetYCache)
+bool USmartDialogueGraph::FindCollisions(const TMap<UEdGraphNode*, FVector2D>& NodePositions)
 {
-	if (ProcessedNodes.Contains(Node))
+	for (const auto& Entry1 : NodePositions)
 	{
-		return;
-	}
-	ProcessedNodes.Add(Node);
-
-	Node->NodePosX = X * GRID_X;
-	Node->NodePosY = Y * GRID_Y;
-	UE_LOG(LogTemp, Log, TEXT("PositionNode: %s (%d, %d)"), *Cast<UBranchNode>(Node)->GetBranchName().ToString(), X, Y);
-
-	MaxY = FMath::Max(MaxY, Y);
-
-	TArray<UEdGraphNode*> ChildNodes;
-
-	int32 NextChildY = Y;
-	for (UEdGraphPin* OutputPin : Node->GetAllPins())
-	{
-		if (OutputPin->Direction == EGPD_Output && OutputPin->LinkedTo.Num() > 0)
+		for (const auto& Entry2 : NodePositions)
 		{
-			for (UEdGraphPin* LinkedPin : OutputPin->LinkedTo)
+			if (Entry1.Key != Entry2.Key && Entry1.Value == Entry2.Value)
 			{
-				UEdGraphNode* ChildNode = LinkedPin->GetOwningNode();
-				if (!ProcessedNodes.Contains(ChildNode))
-				{
-					ChildNodes.Add(ChildNode);
-				}
+				return true;
 			}
 		}
 	}
-	
-	TSet<UEdGraphNode*> UsedNodes;
-	for (UEdGraphNode* ChildNode : ChildNodes)
-	{
-		int32 OffsetY = ComputeOffsetY(ChildNode, OffsetYCache, UsedNodes);
-		PositionNode(ChildNode, X + 1, NextChildY, ProcessedNodes, MaxY, OffsetYCache);
-		NextChildY += OffsetY;
-	}
+	return false;
 }
 
 
 
-
-
-void USmartDialogueGraph::SortNodes()
+void USmartDialogueGraph::SetNodePos(UEdGraphNode* Node, const FVector2D& Position)
 {
-	TSet<UEdGraphNode*> ProcessedNodes;
-	int32 CurrentY = 0;
-	int32 MaxY = -1;
+	Node->NodePosX = Position.X;
+	Node->NodePosY = Position.Y;
+}
 
-	bool bIsFirstNode = true;
-	TMap<UEdGraphNode*, int32> OffsetYCache;
 
-	while (ProcessedNodes.Num() != Nodes.Num())
+
+void USmartDialogueGraph::ArrangeNodes()
+{
+	UNodeArranger* Arranger = NewObject<UNodeArranger>();
+	TMap<UEdGraphNode*, FVector2D> NodePositions = Arranger->ArrangeNodes(Nodes);
+
+	for (auto& Pair : NodePositions)
 	{
-		UEdGraphNode* StartNode = nullptr;
-		for (UEdGraphNode* Node : Nodes)
-		{
-			if (!ProcessedNodes.Contains(Node) && Node->GetAllPins().FindByPredicate([](UEdGraphPin* Pin) {
-				return Pin->Direction == EGPD_Input && Pin->LinkedTo.Num() > 0;
-			}) == nullptr)
-			{
-				StartNode = Node;
-				break;
-			}
-		}
-
-		if (StartNode)
-		{
-			if (bIsFirstNode)
-			{
-				bIsFirstNode = false;
-			}
-			else
-			{
-				CurrentY = MaxY + 1;
-			}
-			PositionNode(StartNode, 0, CurrentY, ProcessedNodes, MaxY, OffsetYCache);
-		}
-		else
-		{
-			break;
-		}
+		UEdGraphNode* Node = Pair.Key;
+		FVector2D Position = Pair.Value;
+		SetNodePos(Node, Position * FVector2D(GRID_X, GRID_Y));
 	}
 }
 
@@ -301,7 +203,7 @@ UBranchNode* USmartDialogueGraph::CreateBranchNode(const FName& BranchName)
 					{
 						Editor->GetDialogue()->AddShowBranchElement(OwnBranchNode->GetBranchName(), BranchName.ToString());
 					}
-					else if (LastFromPin->PinName == UEdGraphSchema_K2::PN_Else)
+					else if (LastFromPin->PinName == FName(""))
 					{
 						Editor->GetDialogue()->AddHideBranchElement(OwnBranchNode->GetBranchName(), BranchName.ToString());
 					}
@@ -493,7 +395,7 @@ void USmartDialogueGraph::OnHideBranchRemoved(FName BranchName, int32 Index, FSt
 
 	if (SourceNode && TargetNode)
 	{
-		UEdGraphPin* HidePin = SourceNode->FindPin(UEdGraphSchema_K2::PN_Else);
+		UEdGraphPin* HidePin = SourceNode->FindPin(FName(""));
 		UEdGraphPin* InputPin = TargetNode->FindPin(UEdGraphSchema_K2::PN_Execute);
 
 		if (HidePin->LinkedTo.Contains(InputPin))
@@ -512,7 +414,7 @@ void USmartDialogueGraph::OnHideBranchAdded(FName BranchName, FString String)
 
 	if (SourceNode && TargetNode)
 	{
-		UEdGraphPin* ShowPin = SourceNode->FindPin(UEdGraphSchema_K2::PN_Else);
+		UEdGraphPin* ShowPin = SourceNode->FindPin(FName(""));
 		UEdGraphPin* InputPin = TargetNode->FindPin(UEdGraphSchema_K2::PN_Execute);
 
 		if (!ShowPin->LinkedTo.Contains(InputPin))

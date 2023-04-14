@@ -45,10 +45,6 @@ FText UBranchNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 
 UBranchNode::~UBranchNode()
 {
-	if (Editor)
-	{
-		Editor->GetDialogue()->OnBranchRenamed.Remove(BranchRenamedHandle);
-	}
 }
 
 void UBranchNode::AllocateDefaultPins()
@@ -89,7 +85,7 @@ void UBranchNode::CreateInputPin()
 void UBranchNode::CreateOutputPins()
 {
 	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, UEdGraphSchema_K2::PN_Then);
-	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, UEdGraphSchema_K2::PN_Else);
+	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, FName(""));
 }
 
 FSmartDialogueBranch* UBranchNode::GetBranchPtr() const
