@@ -5,6 +5,7 @@
 
 #include "EditorStyleSet.h"
 #include "Toolkit/SDialConfigWidget.h"
+#include "Widgets/Input/SNumericEntryBox.h"
 
 void SDialVarListRow::Construct(const FArguments& InArgs)
 {
@@ -12,6 +13,7 @@ void SDialVarListRow::Construct(const FArguments& InArgs)
 	VarValue = InArgs._VarValue;
 	VarDesc = InArgs._VarDesc;
 	OnDeleteButtonClicked = InArgs._OnDeleteButtonClicked;
+	OnChanged = InArgs._OnChanged;
 
 	ChildSlot
 	[
@@ -20,26 +22,38 @@ void SDialVarListRow::Construct(const FArguments& InArgs)
 		  .AutoWidth()
 		  .Padding(0.0f, 0.0f, 4.0f, 0.0f)
 		[
-			SNew(SEditableTextBox)
-				.MinDesiredWidth(100.0f)
-                .Text(TAttribute<FText>::Create(TAttribute<FText>::FGetter::CreateLambda([this]() { return FText::FromString(VarKey.Get()); })))
-				.HintText(FText::FromString("variable"))
+			SAssignNew(KeyEditableTextBox, SEditableTextBox)
+			.MinDesiredWidth(100.0f)
+            .Text(FText::FromString(VarKey.Get()))
+			.HintText(FText::FromString("variable"))
+			.OnTextCommitted_Lambda([this](const FText&, ETextCommit::Type)
+			{
+				OnChanged.ExecuteIfBound({DescriptionEditableTextBox->GetText().ToString(), KeyEditableTextBox->GetText().ToString(), VarValue.Get()});
+			})
 		]
 		+ SHorizontalBox::Slot()
 		  .AutoWidth()
 		  .Padding(0.0f, 0.0f, 4.0f, 0.0f)
 		[
-			SNew(SEditableTextBox)
-				.MinDesiredWidth(80.0f)
-				.Text(TAttribute<FText>::Create(TAttribute<FText>::FGetter::CreateLambda([this]() { return FText::FromString(FString::FromInt(VarValue.Get())); })))
-				.HintText(FText::FromString("default"))
+			SAssignNew(DefaultValueNumericEntryBox, SNumericEntryBox<int32>)
+			.MinDesiredValueWidth(80.0f)
+			.Value_Lambda( [this] { return VarValue.Get(); } ) 
+			.OnValueChanged_Lambda([this](int32 InValue)
+			{
+				VarValue = InValue;
+				OnChanged.ExecuteIfBound({DescriptionEditableTextBox->GetText().ToString(), KeyEditableTextBox->GetText().ToString(), VarValue.Get()});
+			})
 		]
 		+ SHorizontalBox::Slot()
 		.FillWidth(1.0f)
 		[
-			SNew(SEditableTextBox)
-			.Text(TAttribute<FText>::Create(TAttribute<FText>::FGetter::CreateLambda([this]() { return FText::FromString(VarDesc.Get()); })))
+			SAssignNew(DescriptionEditableTextBox, SEditableTextBox)
+			.Text(FText::FromString(VarDesc.Get()))
 			.HintText(FText::FromString("description"))
+			.OnTextCommitted_Lambda([this](const FText&, ETextCommit::Type)
+			{
+				OnChanged.ExecuteIfBound({DescriptionEditableTextBox->GetText().ToString(), KeyEditableTextBox->GetText().ToString(), VarValue.Get()});
+			})
 		]
 		+ SHorizontalBox::Slot()
 		.AutoWidth()
@@ -57,9 +71,4 @@ void SDialVarListRow::Construct(const FArguments& InArgs)
 			]
 		]
 	];
-}
-
-FString SDialVarListRow::GetVarKey()
-{
-	return VarKey.Get();
 }

@@ -23,18 +23,21 @@ public:
 	void OnPublicVarDeleted(TSharedPtr<FString> VarId);
 	void OnLocalVarDeleted(TSharedPtr<FString> VarId);
 	
-	void UpdateData();
+	void UpdateData(bool bCharacters = true, bool bGlobalVars = true, bool bLocalVars = true, bool bParameters = true);
 
 private:
 	
 	void OnCharacterSelected(TSharedPtr<FString> NewSelection);
-	FReply OnAddButtonClicked();
+	FReply OnAddCharacterButtonClicked();
 	FReply OnAddParameterClicked();
-	void OnDeleteButtonClicked(TSharedPtr<FString> CharacterId);	
+
+	void OnCharacterChanged(const FCharacterData& CharacterData, int32 RowIndex);
+	void OnCustomParameterChanged(const FCustomParameterData& CustomParameterData, int32 RowIndex);
+	void OnGlobalVarChanged(const FVariableData& VariableData, int32 RowIndex);
+
 	void AddCharacterRow(FString Id = "", FText Name = FText::GetEmpty());
 	void AddGlobalVarRow(const FString& Key = "", const int32& Value = 0, const FString& Desc = "");
-	void AddLocalVarRow(const FString& Key, const int32& Value, const FString& Desc);
-	
+	void AddLocalVarRow(const FString& Key = "", const int32& Value = 0, const FString& Desc = "");
 	void AddParameterRow(const FString& Key = "", const FString& Desc = "");
 
 	FReply OnAddPublicVarClicked();
@@ -45,11 +48,6 @@ private:
 	FReply OnTabButtonClicked(int32 TabIndex);
 	void UpdateButtonStyles();
 	void AddTabButton(const FString& ButtonText);
-
-	void AddCharactersTab(TSharedPtr<SVerticalBox> VerticalBoxContent);
-	void AddGlobalVarsTab(TSharedPtr<SVerticalBox> VerticalBoxContent);
-	void AddLocalVarsTab(TSharedPtr<SVerticalBox> VerticalBoxContent);
-	void AddParametersTab(TSharedPtr<SVerticalBox> VerticalBoxContent);
 
 	TSharedPtr<SVerticalBox> ScrollBoxGlobalVarsContent;
 	TArray<TSharedPtr<FString>> PublicVarIds;

@@ -1,6 +1,8 @@
 // SDialConfigWidget.cpp continued
 
 #include "SDialConfigWidget.h"
+
+#include "ConfigDataHelper.h"
 #include "SmartDialogueCore/Private/SmartDialogueSettings.h"
 #include "Widgets/Layout/SScrollBox.h"
 #include "Widgets/Text/STextBlock.h"
@@ -75,7 +77,7 @@ void SDialConfigWidget::Construct(const FArguments& InArgs)
 								SNew(SButton)
 								.ButtonStyle(FAppStyle::Get(), "FlatButton.Success")
 								.ForegroundColor(FSlateColor::UseForeground())
-								.OnClicked(this, &SDialConfigWidget::OnAddButtonClicked)
+								.OnClicked(this, &SDialConfigWidget::OnAddCharacterButtonClicked)
 								[
 									SNew(SImage)
 									.Image(FAppStyle::Get().GetBrush("Icons.Plus"))
@@ -217,31 +219,40 @@ void SDialConfigWidget::Construct(const FArguments& InArgs)
 	UpdateData();
 }
 
-void SDialConfigWidget::UpdateData()
+void SDialConfigWidget::UpdateData(bool bCharacters, bool bGlobalVars, bool bLocalVars, bool bParameters)
 {
-	ScrollBoxContent->ClearChildren();
-	ScrollBoxGlobalVarsContent->ClearChildren();
-	ScrollBoxLocalVarsContent->ClearChildren();
-	ParametersScrollBoxContent->ClearChildren();
 	
 	if (DialConfig)
 	{
-		for (const auto L_Character : DialConfig->GetCharacters())
+		if (bCharacters)
 		{
-			AddCharacterRow(L_Character.Id, L_Character.Name);
+			ScrollBoxContent->ClearChildren();
+			for (const auto L_Character : DialConfig->GetCharacters())
+			{
+				AddCharacterRow(L_Character.Id, L_Character.Name);
+			}			
 		}
-		for (const auto L_Var : DialConfig->GetVariables())
+		if (bGlobalVars)
 		{
-			AddGlobalVarRow(L_Var.Key, L_Var.Value, L_Var.Desc);
+			ScrollBoxGlobalVarsContent->ClearChildren();
+			for (const auto L_Var : DialConfig->GetVariables())
+			{
+				AddGlobalVarRow(L_Var.Key, L_Var.Value, L_Var.Desc);
+			}
 		}
-		for (const auto L_Var : DialConfig->GetCustomParameters())
+		if (bParameters)
 		{
-			AddParameterRow(L_Var.Key, L_Var.Desc);
+			ParametersScrollBoxContent->ClearChildren();
+			for (const auto L_Var : DialConfig->GetCustomParameters())
+			{
+				AddParameterRow(L_Var.Key, L_Var.Desc);
+			}
 		}
 	}
 
-	if (SmartDialogueEditor->GetDialogue())
+	if (bLocalVars && SmartDialogueEditor->GetDialogue())
 	{
+		ScrollBoxLocalVarsContent->ClearChildren();
 		auto LocalVars = SmartDialogueEditor->GetDialogue()->GetVariables();
 		for (auto Element : LocalVars)
 		{
@@ -251,16 +262,57 @@ void SDialConfigWidget::UpdateData()
 }
 
 
-FReply SDialConfigWidget::OnAddButtonClicked()
+FReply SDialConfigWidget::OnAddCharacterButtonClicked()
 {
-	// Add a new character with default values
+	UConfigDataHelper::AddCharacter(SmartDialogueEditor, {});
 	AddCharacterRow();
 	return FReply::Handled();
 }
 
 FReply SDialConfigWidget::OnAddParameterClicked()
 {
+	UConfigDataHelper::AddCustomParameter(SmartDialogueEditor, {});
 	AddParameterRow();
+	return FReply::Handled();
+}
+
+void SDialConfigWidget::OnCharacterChanged(const FCharacterData& CharacterData, int32 RowIndex)
+{
+	UConfigDataHelper::UpdateCharacterByIndex(SmartDialogueEditor, RowIndex, CharacterData);
+}
+
+void SDialConfigWidget::OnCustomParameterChanged(const FCustomParameterData& CustomParameterData, int32 RowIndex)
+{
+	UConfigDataHelper::UpdateCustomParameterByIndex(SmartDialogueEditor, RowIndex, CustomParameterData);
+}
+
+void SDialConfigWidget::OnGlobalVarChanged(const FVariableData& VariableData, int32 RowIndex)
+{
+	UConfigDataHelper::UpdateVariableByIndex(SmartDialogueEditor, RowIndex, VariableData);
+}
+
+FReply SDialConfigWidget::OnAddPublicVarClicked()
+{
+	UConfigDataHelper::AddVariable(SmartDialogueEditor, {});
+	AddGlobalVarRow();
+
+	return FReply::Handled();
+}
+
+FReply SDialConfigWidget::OnAddLocalVarClicked()
+{
+	AddLocalVarRow();
+	// // Создайте новый идентификатор переменной и добавьте его в список
+	// TSharedPtr<FString> NewVarId = MakeShareable(new FString(FString::Printf(TEXT("LocalVar%d"), LocalVarCounter++)));
+	// LocalVarIds.Add(NewVarId);
+	//
+	// // Добавьте новую строку в список локальных переменных
+	// ScrollBoxLocalVarsContent->AddSlot()
+	// [
+	// 	SNew(SDialVarListRow)
+	// 		.VarKey(*NewVarId.Get())
+	// ];
+
 	return FReply::Handled();
 }
 
@@ -269,15 +321,10 @@ void SDialConfigWidget::OnCharacterSelected(TSharedPtr<FString> NewSelection)
 	DialConfig->SetHero(*NewSelection);
 }
 
-void SDialConfigWidget::OnDeleteButtonClicked(TSharedPtr<FString> CharacterId)
-{
-	// Remove character with the specified ID
-}
-
 void SDialConfigWidget::AddCharacterRow(FString Id, FText Name)
 {
-	TSharedPtr<FString> SharedId = MakeShared<FString>(Id);
-
+	const int32 RowIndex = ScrollBoxContent->GetChildren()->Num();
+	
 	ScrollBoxContent->AddSlot()
 	.AutoHeight()
 	.Padding(2.0f)
@@ -285,16 +332,18 @@ void SDialConfigWidget::AddCharacterRow(FString Id, FText Name)
 		SNew(SCharacterListRow)
 		.Id(Id)
 		.Name(Name)
-		.OnDeleteButtonClicked(FSimpleDelegate::CreateLambda([this, SharedId]()
+		.OnChanged(this, &SDialConfigWidget::OnCharacterChanged, RowIndex)
+		.OnDeleteButtonClicked(FSimpleDelegate::CreateLambda([this, RowIndex]()
 		{
-			this->OnDeleteButtonClicked(SharedId);
+			UConfigDataHelper::RemoveCharacterByIndex(SmartDialogueEditor, RowIndex);
+			UpdateData(true, false, false, false);
 		}))
 	];
 }
 
 void SDialConfigWidget::AddGlobalVarRow(const FString& Key, const int32& Value, const FString& Desc)
 {
-	TSharedPtr<FString> SharedId = MakeShared<FString>(Key);
+	const int32 RowIndex = ScrollBoxGlobalVarsContent->GetChildren()->Num();
 
 	ScrollBoxGlobalVarsContent->AddSlot()
 	.AutoHeight()
@@ -304,35 +353,38 @@ void SDialConfigWidget::AddGlobalVarRow(const FString& Key, const int32& Value, 
 		.VarKey(Key)
 		.VarValue(Value)
 		.VarDesc(Desc)
-		.OnDeleteButtonClicked(FSimpleDelegate::CreateLambda([this, SharedId]()
+		.OnChanged(this, &SDialConfigWidget::OnGlobalVarChanged, RowIndex)
+		.OnDeleteButtonClicked(FSimpleDelegate::CreateLambda([this, RowIndex]()
 		{
-			this->OnDeleteButtonClicked(SharedId);
+			UConfigDataHelper::RemoveVariableByIndex(SmartDialogueEditor, RowIndex);
+			UpdateData(false, true, false, false);			
 		}))
 	];
 }
 
 void SDialConfigWidget::AddLocalVarRow(const FString& Key, const int32& Value, const FString& Desc)
 {
-	TSharedPtr<FString> SharedId = MakeShared<FString>(Key);
-
-	ScrollBoxLocalVarsContent->AddSlot()
-	.AutoHeight()
-	.Padding(2.0f)
-	[
-		SNew(SDialVarListRow)
-		.VarKey(Key)
-		.VarValue(Value)
-		.VarDesc(Desc)
-		.OnDeleteButtonClicked(FSimpleDelegate::CreateLambda([this, SharedId]()
-		{
-			// this->OnDeleteButtonClicked(SharedId);
-		}))
-	];
+	// TSharedPtr<FString> SharedId = MakeShared<FString>(Key);
+	//
+	// ScrollBoxLocalVarsContent->AddSlot()
+	// .AutoHeight()
+	// .Padding(2.0f)
+	// [
+	// 	SNew(SDialVarListRow)
+	// 	.VarKey(Key)
+	// 	.VarValue(Value)
+	// 	.VarDesc(Desc)
+	// 	.OnDeleteButtonClicked(FSimpleDelegate::CreateLambda([this, SharedId]()
+	// 	{
+	// 		// this->OnDeleteButtonClicked(SharedId);
+	// 	}))
+	// ];
 }
 
 void SDialConfigWidget::AddParameterRow(const FString& Key, const FString& Desc)
 {
-	TSharedPtr<FString> SharedId = MakeShared<FString>(Key);
+	const int32 RowIndex = ParametersScrollBoxContent->GetChildren()->Num();
+	
 	ParametersScrollBoxContent->AddSlot()
 		.AutoHeight()
 		.Padding(2.0f)
@@ -340,45 +392,15 @@ void SDialConfigWidget::AddParameterRow(const FString& Key, const FString& Desc)
 			SNew(SParameterListRow)
 			.Parameter(Key)
 			.Desc(Desc)
-			.OnDeleteButtonClicked(FSimpleDelegate::CreateLambda([this, SharedId]()
+			.OnChanged(this, &SDialConfigWidget::OnCustomParameterChanged, RowIndex)
+			.OnDeleteButtonClicked(FSimpleDelegate::CreateLambda([this, RowIndex]()
 			{
-				this->OnDeleteButtonClicked(SharedId);
+				UConfigDataHelper::RemoveCustomParameterByIndex(SmartDialogueEditor, RowIndex);
+				UpdateData(false, false, false, true);
 			}))
 		];
 }
 
-
-FReply SDialConfigWidget::OnAddPublicVarClicked()
-{
-	// Создайте новый идентификатор переменной и добавьте его в список
-	TSharedPtr<FString> NewVarId = MakeShareable(new FString(FString::Printf(TEXT("Var%d"), PublicVarCounter++)));
-	PublicVarIds.Add(NewVarId);
-
-	// Добавьте новую строку в список глобальных переменных
-	ScrollBoxGlobalVarsContent->AddSlot()
-	[
-		SNew(SDialVarListRow)
-			.VarKey(*NewVarId.Get())
-	];
-
-	return FReply::Handled();
-}
-
-FReply SDialConfigWidget::OnAddLocalVarClicked()
-{
-	// Создайте новый идентификатор переменной и добавьте его в список
-	TSharedPtr<FString> NewVarId = MakeShareable(new FString(FString::Printf(TEXT("LocalVar%d"), LocalVarCounter++)));
-	LocalVarIds.Add(NewVarId);
-
-	// Добавьте новую строку в список локальных переменных
-	ScrollBoxLocalVarsContent->AddSlot()
-	[
-		SNew(SDialVarListRow)
-			.VarKey(*NewVarId.Get())
-	];
-
-	return FReply::Handled();
-}
 
 void SDialConfigWidget::OnLocalVarDeleted(TSharedPtr<FString> VarId)
 {
