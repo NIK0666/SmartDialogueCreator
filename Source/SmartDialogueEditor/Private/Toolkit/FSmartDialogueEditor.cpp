@@ -18,6 +18,7 @@
 #include "Components/SCharacterComboBox.h"
 #include "Graph/SmartDialogueGraph.h"
 #include "AssetBrowser/SSmartDialogueAssetBrowser.h"
+#include "Editor/Transactor.h"
 #include "PlayPanel/SDialoguePlayerTab.h"
 #include "Serializor/JsonParser.h"
 #include "SmartDialogueCore/Private/SmartDialogueSettings.h"
@@ -58,6 +59,18 @@ void FSmartDialogueEditor::InitSmartDialogueEditor(EToolkitMode::Type Mode, cons
 	
 	RegenerateMenusAndToolbars();
 
+	if (GEditor)
+	{
+		GEditor->RegisterForUndo(this);
+	}
+}
+
+FSmartDialogueEditor::~FSmartDialogueEditor()
+{
+	if (GEditor)
+	{
+		GEditor->UnregisterForUndo(this);
+	}
 }
 
 void FSmartDialogueEditor::SetDialogue(USmartDialogue* InDialogue)
@@ -602,29 +615,6 @@ void FSmartDialogueEditor::PlayDialogue()
 	TabManager->TryInvokeTab(SmartDialogue_PlayerTabId);
 }
 
-// void FSmartDialogueEditor::RefreshGraphNodes()
-// {
-// 	if (!Dialogue || !DialogueGraph)
-// 	{
-// 		return;
-// 	}
-//
-// 	// Удалить все существующие ноды
-// 	DialogueGraph->Nodes.Empty();
-//
-// 	// Создать ноды на основе ветвей диалога
-// 	for (const TPair<FName, FSmartDialogueBranch>& Pair : Dialogue->GetBranches())
-// 	{
-// 		UBranchNode* BranchNode = DialogueGraph->CreateBranchNode();
-// 		BranchNode->Initialize(Pair.Key, this);
-//
-// 		DialogueGraph->Nodes.Add(BranchNode);
-// 	}
-//
-// 	// Обновить граф после добавления нод
-// 	DialogueGraph->NotifyGraphChanged();
-// }
-
 USmartDialConfig* FSmartDialogueEditor::GetDialogueConfig()
 {
 	if (DialConfig)
@@ -874,5 +864,27 @@ TArray<TSharedPtr<FString>> FSmartDialogueEditor::GetAllCharactersList()
 
 	return CachedCharactersList;
 }
+
+void FSmartDialogueEditor::PostRedo(bool bSuccess)
+{
+	const FTransaction* Transaction = GEditor->Trans->GetTransaction(GEditor->Trans->GetQueueLength() - GEditor->Trans->GetUndoCount());
+	if (DialConfigWidget && Transaction->ContainsObject(GetDialogueConfig()))
+	{
+		DialConfigWidget->UpdateData();
+	}
+	FEditorUndoClient::PostRedo(bSuccess);
+}
+
+void FSmartDialogueEditor::PostUndo(bool bSuccess)
+{
+	const FTransaction* Transaction = GEditor->Trans->GetTransaction(GEditor->Trans->GetQueueLength() - GEditor->Trans->GetUndoCount());
+	if (DialConfigWidget && Transaction->ContainsObject(GetDialogueConfig()))
+	{
+		DialConfigWidget->UpdateData();
+	}
+	FEditorUndoClient::PostUndo(bSuccess);
+}
+
+
 
 #undef LOCTEXT_NAMESPACE

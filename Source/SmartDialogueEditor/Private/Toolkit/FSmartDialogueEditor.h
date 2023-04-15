@@ -25,11 +25,11 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnBranchSelected, FSmartDialogueBranch&);
 DECLARE_MULTICAST_DELEGATE(FOnResetSelectedBranch);
 
 
-class SMARTDIALOGUEEDITOR_API FSmartDialogueEditor final : public FAssetEditorToolkit, public FNotifyHook
+class SMARTDIALOGUEEDITOR_API FSmartDialogueEditor final : public FAssetEditorToolkit, public FNotifyHook, public FEditorUndoClient
 {
 public:
-	
 	void InitSmartDialogueEditor(EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost >& InitToolkitHost, USmartDialogue* SmartDialogue);
+	~FSmartDialogueEditor();
 	void SetDialogue(USmartDialogue* InDialogue);
 	void OpenNewAssetIntoEditor(USmartDialogue* InDialogue);
 	USmartDialogue* GetDialogue();
@@ -77,8 +77,11 @@ public:
 	virtual void RegisterTabSpawners(const TSharedRef<FTabManager>& TabManager) override;
 	virtual void UnregisterTabSpawners(const TSharedRef<FTabManager>& TabManager) override;
 
-private:
+	virtual void PostRedo(bool bSuccess) override;
+	virtual void PostUndo(bool bSuccess) override;
 
+private:
+	
 	TSharedRef<SDockTab> HandleTabManagerSpawnTabDialogueBranches(const FSpawnTabArgs& Args);
 	TSharedRef<SDockTab> HandleTabManagerSpawnTabDialogueBranchDetails(const FSpawnTabArgs& Args);
 	TSharedRef<SDockTab> HandleTabManagerSpawnTabDialoguePhrasesDetails(const FSpawnTabArgs& Args);
@@ -106,6 +109,7 @@ private:
 	void OnCopyNodesInfo();
 	void SortNodes();
 
+private:
 	TSharedPtr<SDockTab> BranchesListTab;
 	TSharedPtr<SDockTab> SelectedBranchPropertiesTab;
 	TSharedPtr<SDockTab> SelectedBranchPhrasesTab;
