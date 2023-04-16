@@ -20,7 +20,8 @@ UCLASS(BlueprintType, Blueprintable)
 class SMARTDIALOGUECORE_API USmartDialConfig : public UObject
 {
     GENERATED_BODY()
-
+    friend class UEditorDataHelper;
+    
 public:
     // Getter and Setter for Characters
     UFUNCTION(BlueprintPure, Category = "Smart Dial")
@@ -51,7 +52,7 @@ public:
     void SetVariables(const TArray<FVariableData>& NewVariables);
 
 
-    
+protected:    
     // Add new entry methods
     UFUNCTION(BlueprintCallable, Category = "Smart Dial")
     void AddCharacter(const FCharacterData& NewCharacter);
@@ -104,7 +105,6 @@ public:
     UPROPERTY(BlueprintAssignable, Category = "Smart Dial|Delegates")
     FOnVariableRemoved OnVariableRemoved;
 
-protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     TArray<FCharacterData> Characters; //Геттер GetCharacters()
 

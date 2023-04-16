@@ -34,6 +34,7 @@ private:
 	void OnCharacterChanged(const FCharacterData& CharacterData, int32 RowIndex);
 	void OnCustomParameterChanged(const FCustomParameterData& CustomParameterData, int32 RowIndex);
 	void OnGlobalVarChanged(const FVariableData& VariableData, int32 RowIndex);
+	void OnLocalVarChanged(const FVariableData& VariableData, int32 RowIndex);
 
 	void AddCharacterRow(FString Id = "", FText Name = FText::GetEmpty());
 	void AddGlobalVarRow(const FString& Key = "", const int32& Value = 0, const FString& Desc = "");

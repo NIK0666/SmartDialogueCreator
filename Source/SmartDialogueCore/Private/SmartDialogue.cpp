@@ -17,6 +17,7 @@ FString USmartDialogue::GetAutoBranch() const
 
 void USmartDialogue::SetAutoBranch(const FString& NewAutoBranch)
 {
+	Modify();
 	AutoBranch = NewAutoBranch;
 }
 
@@ -27,6 +28,7 @@ FString USmartDialogue::GetCharacter() const
 
 void USmartDialogue::SetCharacter(const FString& NewCharacter)
 {
+	Modify();
 	Character = NewCharacter;
 }
 
@@ -42,15 +44,29 @@ void USmartDialogue::SetVariables(const TArray<FVariableData>& NewVariables)
 
 void USmartDialogue::AddNewBranch(FSmartDialogueBranch& NewBranch)
 {
+	Modify();
 	Branches.Add(NewBranch.Name, NewBranch);
 	LastBranchName = NewBranch.Name;
-	BranchesChanged();
+	OnBranchesChanged.Broadcast();
 }
 
 void USmartDialogue::AddNewVariable(FVariableData& NewVariable)
 {
+	Modify();
 	Variables.Add(NewVariable);
 	//TODO Vars changed!
+}
+
+void USmartDialogue::RemoveVariableByIndex(int32 Index)
+{
+	Modify();
+	Variables.RemoveAt(Index);
+}
+
+void USmartDialogue::UpdateVariableByIndex(int32 Index, const FVariableData& VariableData)
+{
+	Modify();
+	Variables[Index] = VariableData;
 }
 
 FName USmartDialogue::GenerateBranchName() const
@@ -200,11 +216,11 @@ bool USmartDialogue::RenameBranch(FName OldName, FName NewName)
 	if (Branches.Contains(OldName) && !Branches.Contains(NewName))
 	{
 		FSmartDialogueBranch BranchToRename = Branches[OldName];
+		Modify();
 		BranchToRename.Name = NewName;
 		Branches.Remove(OldName);
 		Branches.Add(NewName, BranchToRename);
 		LastBranchName = NewName;
-		MarkAsDirty();
 
 		for (auto Element : Branches)
 		{
@@ -245,7 +261,7 @@ bool USmartDialogue::RemoveBranch(FName BranchName)
 
 	TArray<FName> BranchKeys;
 	Branches.GetKeys(BranchKeys);
-	
+	Modify();
 	for (int32 i = 0; i < BranchKeys.Num(); i++)
 	{
 		RemoveHideBranchByString(BranchKeys[i], BranchNameString);
@@ -263,8 +279,8 @@ void USmartDialogue::AddHideBranchElement(const FName& BranchName, const FString
 	if (Branches.Contains(BranchName))
 	{
 		auto* BranchPtr = &Branches[BranchName];
+		Modify();
 		BranchPtr->Hide.Add(Value);
-
 		OnHideBranchAdded.Broadcast(BranchName, Value);
 	}
 }
@@ -275,8 +291,8 @@ void USmartDialogue::RemoveHideBranchElement(const FName& BranchName, int32 Inde
 	{
 		auto* BranchPtr = &Branches[BranchName];
 		const FString Value = BranchPtr->Hide[Index];
+		Modify();
 		BranchPtr->Hide.RemoveAt(Index);
-
 		OnHideBranchRemoved.Broadcast(BranchName, Index, Value);
 	}
 }
@@ -312,8 +328,8 @@ void USmartDialogue::AddShowBranchElement(const FName& BranchName, const FString
 	if (Branches.Contains(BranchName))
 	{
 		auto* BranchPtr = &Branches[BranchName];
+		Modify();
 		BranchPtr->Show.Add(Value);
-
 		OnShowBranchAdded.Broadcast(BranchName, Value);
 	}
 }
@@ -324,8 +340,8 @@ void USmartDialogue::RemoveShowBranchElement(const FName& BranchName, int32 Inde
 	{
 		auto* BranchPtr = &Branches[BranchName];
 		const FString Value = BranchPtr->Show[Index];
+		Modify();
 		BranchPtr->Show.RemoveAt(Index);
-
 		OnShowBranchRemoved.Broadcast(BranchName, Index, Value);
 	}
 }
@@ -338,9 +354,10 @@ void USmartDialogue::UpdateShowBranchElement(const FName& BranchName, int32 Inde
 		const FString OldValue = BranchPtr->Show[Index];
 		if (BranchPtr->Show.IsValidIndex(Index))
 		{
+			Modify();
 			BranchPtr->Show[Index] = NewValue;
+			OnShowBranchUpdated.Broadcast(BranchName, Index, OldValue, NewValue);
 		}
-		OnShowBranchUpdated.Broadcast(BranchName, Index, OldValue, NewValue);
 	}
 }
 
@@ -351,6 +368,7 @@ void USmartDialogue::RemoveShowBranchByString(const FName& BranchName, const FSt
 		int32 Index = Branches[BranchName].Show.Find(String);
 		if (Index != INDEX_NONE)
 		{
+			Modify();
 			RemoveShowBranchElement(BranchName, Index);
 		}		
 	}
@@ -360,6 +378,7 @@ void USmartDialogue::AddVarElement(const FName& BranchName, const FSmartDialogue
 {
 	if (Branches.Contains(BranchName))
 	{
+		Modify();
 		auto* BranchPtr = &Branches[BranchName];
 		BranchPtr->Vars.Add(NewVar);
 	}
@@ -369,6 +388,7 @@ void USmartDialogue::RemoveVarElement(const FName& BranchName, int32 Index)
 {
 	if (Branches.Contains(BranchName))
 	{
+		Modify();
 		auto* BranchPtr = &Branches[BranchName];
 		BranchPtr->Vars.RemoveAt(Index);
 	}
@@ -381,6 +401,7 @@ void USmartDialogue::UpdateVarElement(const FName& BranchName, int32 Index, cons
 		auto* BranchPtr = &Branches[BranchName];
 		if (BranchPtr->Vars.IsValidIndex(Index))
 		{
+			Modify();
 			BranchPtr->Vars[Index] = Element;
 		}
 	}
@@ -390,6 +411,7 @@ void USmartDialogue::AddIfElement(const FName& BranchName, const FIf& Element)
 {
 	if (Branches.Contains(BranchName))
 	{
+		Modify();
 		auto* BranchPtr = &Branches[BranchName];
 		BranchPtr->If.Add(Element);
 	}
@@ -402,6 +424,7 @@ void USmartDialogue::UpdateIfElement(const FName& BranchName, int32 Index, const
 		auto* BranchPtr = &Branches[BranchName];
 		if (BranchPtr->If.IsValidIndex(Index))
 		{
+			Modify();
 			BranchPtr->If[Index] = Element;
 		}
 	}
@@ -411,6 +434,7 @@ void USmartDialogue::RemoveIfElement(const FName& BranchName, int32 Index)
 {
 	if (Branches.Contains(BranchName))
 	{
+		Modify();
 		auto* BranchPtr = &Branches[BranchName];
 		BranchPtr->If.RemoveAt(Index);
 	}
@@ -429,6 +453,7 @@ bool USmartDialogue::RemoveVarOperation(FName BranchName, const int32 Index)
 {
 	if (Branches.Contains(BranchName))
 	{
+		Modify();
 		const auto L_BranchPtr = &Branches[BranchName];
 		L_BranchPtr->Vars.RemoveAt(Index);
 		return true;
@@ -440,6 +465,7 @@ bool USmartDialogue::RemoveIfOperation(FName BranchName, const int32 Index)
 {
 	if (Branches.Contains(BranchName))
 	{
+		Modify();
 		const auto L_BranchPtr = &Branches[BranchName];
 		L_BranchPtr->If.RemoveAt(Index);
 		return true;
@@ -483,6 +509,7 @@ void USmartDialogue::AddVarOperation(FName BranchName, const FString& VarName, c
 			return;
 		}
 
+		Modify();
 		L_BranchPtr->Vars.Add(NewItem);
 	}
 }
@@ -522,7 +549,7 @@ void USmartDialogue::AddIfOperation(const FName& BranchName, const FString& VarN
 			UE_LOG(LogTemp, Error, TEXT("Invalid OperationString: %s"), *OperationString);
 			return;
 		}
-
+		Modify();
 		L_BranchPtr->If.Add(NewItem);
 	}
 }

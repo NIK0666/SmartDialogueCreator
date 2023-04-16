@@ -2,7 +2,7 @@
 
 #include "SDialConfigWidget.h"
 
-#include "ConfigDataHelper.h"
+#include "Helpers/EditorDataHelper.h"
 #include "SmartDialogueCore/Private/SmartDialogueSettings.h"
 #include "Widgets/Layout/SScrollBox.h"
 #include "Widgets/Text/STextBlock.h"
@@ -264,36 +264,41 @@ void SDialConfigWidget::UpdateData(bool bCharacters, bool bGlobalVars, bool bLoc
 
 FReply SDialConfigWidget::OnAddCharacterButtonClicked()
 {
-	UConfigDataHelper::AddCharacter(SmartDialogueEditor, {});
+	UEditorDataHelper::AddCharacter(SmartDialogueEditor, {});
 	AddCharacterRow();
 	return FReply::Handled();
 }
 
 FReply SDialConfigWidget::OnAddParameterClicked()
 {
-	UConfigDataHelper::AddCustomParameter(SmartDialogueEditor, {});
+	UEditorDataHelper::AddCustomParameter(SmartDialogueEditor, {});
 	AddParameterRow();
 	return FReply::Handled();
 }
 
 void SDialConfigWidget::OnCharacterChanged(const FCharacterData& CharacterData, int32 RowIndex)
 {
-	UConfigDataHelper::UpdateCharacterByIndex(SmartDialogueEditor, RowIndex, CharacterData);
+	UEditorDataHelper::UpdateCharacterByIndex(SmartDialogueEditor, RowIndex, CharacterData);
 }
 
 void SDialConfigWidget::OnCustomParameterChanged(const FCustomParameterData& CustomParameterData, int32 RowIndex)
 {
-	UConfigDataHelper::UpdateCustomParameterByIndex(SmartDialogueEditor, RowIndex, CustomParameterData);
+	UEditorDataHelper::UpdateCustomParameterByIndex(SmartDialogueEditor, RowIndex, CustomParameterData);
 }
 
 void SDialConfigWidget::OnGlobalVarChanged(const FVariableData& VariableData, int32 RowIndex)
 {
-	UConfigDataHelper::UpdateVariableByIndex(SmartDialogueEditor, RowIndex, VariableData);
+	UEditorDataHelper::UpdateVariableByIndex(SmartDialogueEditor, RowIndex, VariableData);
+}
+
+void SDialConfigWidget::OnLocalVarChanged(const FVariableData& VariableData, int32 RowIndex)
+{
+	SmartDialogueEditor->GetDialogue()->UpdateVariableByIndex(RowIndex, VariableData);
 }
 
 FReply SDialConfigWidget::OnAddPublicVarClicked()
 {
-	UConfigDataHelper::AddVariable(SmartDialogueEditor, {});
+	UEditorDataHelper::AddVariable(SmartDialogueEditor, {});
 	AddGlobalVarRow();
 
 	return FReply::Handled();
@@ -301,17 +306,9 @@ FReply SDialConfigWidget::OnAddPublicVarClicked()
 
 FReply SDialConfigWidget::OnAddLocalVarClicked()
 {
-	AddLocalVarRow();
-	// // Создайте новый идентификатор переменной и добавьте его в список
-	// TSharedPtr<FString> NewVarId = MakeShareable(new FString(FString::Printf(TEXT("LocalVar%d"), LocalVarCounter++)));
-	// LocalVarIds.Add(NewVarId);
-	//
-	// // Добавьте новую строку в список локальных переменных
-	// ScrollBoxLocalVarsContent->AddSlot()
-	// [
-	// 	SNew(SDialVarListRow)
-	// 		.VarKey(*NewVarId.Get())
-	// ];
+	FVariableData VariableData = {"", "", 0};
+	SmartDialogueEditor->GetDialogue()->AddNewVariable(VariableData);
+	AddLocalVarRow(VariableData.Key, VariableData.Value, VariableData.Desc);
 
 	return FReply::Handled();
 }
@@ -335,7 +332,7 @@ void SDialConfigWidget::AddCharacterRow(FString Id, FText Name)
 		.OnChanged(this, &SDialConfigWidget::OnCharacterChanged, RowIndex)
 		.OnDeleteButtonClicked(FSimpleDelegate::CreateLambda([this, RowIndex]()
 		{
-			UConfigDataHelper::RemoveCharacterByIndex(SmartDialogueEditor, RowIndex);
+			UEditorDataHelper::RemoveCharacterByIndex(SmartDialogueEditor, RowIndex);
 			UpdateData(true, false, false, false);
 		}))
 	];
@@ -356,7 +353,7 @@ void SDialConfigWidget::AddGlobalVarRow(const FString& Key, const int32& Value, 
 		.OnChanged(this, &SDialConfigWidget::OnGlobalVarChanged, RowIndex)
 		.OnDeleteButtonClicked(FSimpleDelegate::CreateLambda([this, RowIndex]()
 		{
-			UConfigDataHelper::RemoveVariableByIndex(SmartDialogueEditor, RowIndex);
+			UEditorDataHelper::RemoveVariableByIndex(SmartDialogueEditor, RowIndex);
 			UpdateData(false, true, false, false);			
 		}))
 	];
@@ -364,21 +361,24 @@ void SDialConfigWidget::AddGlobalVarRow(const FString& Key, const int32& Value, 
 
 void SDialConfigWidget::AddLocalVarRow(const FString& Key, const int32& Value, const FString& Desc)
 {
-	// TSharedPtr<FString> SharedId = MakeShared<FString>(Key);
-	//
-	// ScrollBoxLocalVarsContent->AddSlot()
-	// .AutoHeight()
-	// .Padding(2.0f)
-	// [
-	// 	SNew(SDialVarListRow)
-	// 	.VarKey(Key)
-	// 	.VarValue(Value)
-	// 	.VarDesc(Desc)
-	// 	.OnDeleteButtonClicked(FSimpleDelegate::CreateLambda([this, SharedId]()
-	// 	{
-	// 		// this->OnDeleteButtonClicked(SharedId);
-	// 	}))
-	// ];
+	
+	const int32 RowIndex = ScrollBoxLocalVarsContent->GetChildren()->Num();
+
+	ScrollBoxLocalVarsContent->AddSlot()
+	.AutoHeight()
+	.Padding(2.0f)
+	[
+		SNew(SDialVarListRow)
+		.VarKey(Key)
+		.VarValue(Value)
+		.VarDesc(Desc)
+		.OnChanged(this, &SDialConfigWidget::OnLocalVarChanged, RowIndex)
+		.OnDeleteButtonClicked(FSimpleDelegate::CreateLambda([this, RowIndex]()
+		{
+			SmartDialogueEditor->GetDialogue()->RemoveVariableByIndex(RowIndex);
+			UpdateData(false, false, true, false);			
+		}))
+	];
 }
 
 void SDialConfigWidget::AddParameterRow(const FString& Key, const FString& Desc)
@@ -395,7 +395,7 @@ void SDialConfigWidget::AddParameterRow(const FString& Key, const FString& Desc)
 			.OnChanged(this, &SDialConfigWidget::OnCustomParameterChanged, RowIndex)
 			.OnDeleteButtonClicked(FSimpleDelegate::CreateLambda([this, RowIndex]()
 			{
-				UConfigDataHelper::RemoveCustomParameterByIndex(SmartDialogueEditor, RowIndex);
+				UEditorDataHelper::RemoveCustomParameterByIndex(SmartDialogueEditor, RowIndex);
 				UpdateData(false, false, false, true);
 			}))
 		];

@@ -22,13 +22,11 @@ UCLASS(BlueprintType, Blueprintable)
 class SMARTDIALOGUECORE_API USmartDialogue : public UObject
 {
 	GENERATED_BODY()
-
+	friend class UEditorDataHelper;
 public:
-	// Геттер для массива Branches
 	UFUNCTION(BlueprintCallable, Category = "SmartDialogue")
 	TMap<FName, FSmartDialogueBranch> GetBranches() const;
 
-	// Геттер для AutoBranch
 	UFUNCTION(BlueprintCallable, Category = "SmartDialogue")
 	FString GetAutoBranch() const;
 
@@ -58,7 +56,8 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "SmartDialogue")
 	void AddNewVariable(FVariableData& NewVariable);
-
+	void RemoveVariableByIndex(int32 Index);
+	void UpdateVariableByIndex(int32 Index, const FVariableData& VariableData);
 
 	FName GenerateBranchName() const;
 
