@@ -3,6 +3,7 @@
 
 #include "SShowBranchesComboBoxList.h"
 #include "SmartDialogue.h"
+#include "Helpers/EditorDataHelper.h"
 
 
 void SShowBranchesComboBoxList::Construct(const FArguments& InArgs)
@@ -115,7 +116,7 @@ FReply SShowBranchesComboBoxList::OnAddButtonClicked()
 	
 	InitialStrings.Add(*Options[0]);
 	RefreshList();
-	Editor->GetDialogue()->AddShowBranchElement(Editor->GetSelectedBranchName(), *Options[0]);
+	UEditorDataHelper::AddShowBranchElement(Editor, Editor->GetSelectedBranchName(), *Options[0]);
 
 	return FReply::Handled();
 }
@@ -125,7 +126,7 @@ void SShowBranchesComboBoxList::OnSelectionChanged(TSharedPtr<FString> NewValue,
 	if (NewValue.IsValid())
 	{
 		InitialStrings[Index] = *NewValue.Get();
-		Editor->GetDialogue()->UpdateShowBranchElement(Editor->GetSelectedBranchName(),Index, *NewValue.Get());
+		UEditorDataHelper::UpdateShowBranchElement(Editor, Editor->GetSelectedBranchName(),Index, *NewValue.Get());
 	}
 }
 
@@ -136,7 +137,7 @@ FReply SShowBranchesComboBoxList::OnDeleteButtonClicked(int32 Index)
 	{
 		InitialStrings.RemoveAt(Index);
 		RefreshList();
-		Editor->GetDialogue()->RemoveShowBranchElement(Editor->GetSelectedBranchName(),Index);
+		UEditorDataHelper::RemoveShowBranchElement(Editor, Editor->GetSelectedBranchName(), Index);
 	}
 
 	return FReply::Handled();

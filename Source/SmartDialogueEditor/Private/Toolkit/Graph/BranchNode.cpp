@@ -5,6 +5,7 @@
 
 #include "SGraphNode_Branch.h"
 #include "SmartDialogue.h"
+#include "Helpers/EditorDataHelper.h"
 #include "Toolkit/FSmartDialogueEditor.h"
 
 
@@ -101,7 +102,7 @@ FSmartDialogueBranch* UBranchNode::GetBranchPtr() const
 void UBranchNode::RenameBranch(const FString& NewNameString)
 {
 	const FName NewName = FName(NewNameString);
-	if (Editor->GetDialogue()->RenameBranch(BranchName, NewName))
+	if (UEditorDataHelper::RenameBranch(Editor, BranchName, NewName))
 	{
 		BranchName = NewName;
 	}

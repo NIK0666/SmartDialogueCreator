@@ -2,6 +2,7 @@
 
 #include "SConditionsComboBoxList.h"
 #include "SmartDialogue.h"
+#include "Helpers/EditorDataHelper.h"
 
 void SConditionsComboBoxList::Construct(const FArguments& InArgs)
 {
@@ -147,7 +148,7 @@ FReply SConditionsComboBoxList::OnAddButtonClicked()
 
     InitialConditions.Add(NewVar);
     RefreshList();
-    Editor->GetDialogue()->AddIfElement(Editor->GetSelectedBranchName(), NewVar);
+    UEditorDataHelper::AddIfElement(Editor, Editor->GetSelectedBranchName(), NewVar);
 
     return FReply::Handled();
 }
@@ -157,7 +158,7 @@ void SConditionsComboBoxList::OnVariableSelectionChanged(TSharedPtr<FString> New
     if (NewValue.IsValid())
     {
         InitialConditions[Index].Key = *NewValue.Get();
-        Editor->GetDialogue()->UpdateIfElement(Editor->GetSelectedBranchName(), Index, InitialConditions[Index]);
+        UEditorDataHelper::UpdateIfElement(Editor, Editor->GetSelectedBranchName(), Index, InitialConditions[Index]);
     }
 }
 
@@ -166,14 +167,14 @@ void SConditionsComboBoxList::OnOperationSelectionChanged(TSharedPtr<FString> Ne
     if (NewValue.IsValid())
     {
         InitialConditions[Index].EqualOperation = ESmartDialogueEqualOperationHelper::EnumOperationFromString(*NewValue.Get());
-        Editor->GetDialogue()->UpdateIfElement(Editor->GetSelectedBranchName(), Index, InitialConditions[Index]);
+        UEditorDataHelper::UpdateIfElement(Editor, Editor->GetSelectedBranchName(), Index, InitialConditions[Index]);
     }
 }
 
 void SConditionsComboBoxList::OnValueTextChanged(const FText& NewValue, int32 Index)
 {    
     InitialConditions[Index].Value = FCString::Atoi(*NewValue.ToString());
-    Editor->GetDialogue()->UpdateIfElement(Editor->GetSelectedBranchName(), Index, InitialConditions[Index]);
+    UEditorDataHelper::UpdateIfElement(Editor, Editor->GetSelectedBranchName(), Index, InitialConditions[Index]);
 }
 
 FReply SConditionsComboBoxList::OnDeleteButtonClicked(int32 Index)
@@ -182,7 +183,7 @@ FReply SConditionsComboBoxList::OnDeleteButtonClicked(int32 Index)
     {
         InitialConditions.RemoveAt(Index);
         RefreshList();
-        Editor->GetDialogue()->RemoveIfElement(Editor->GetSelectedBranchName(), Index);
+        UEditorDataHelper::RemoveIfElement(Editor, Editor->GetSelectedBranchName(), Index);
     }
 
     return FReply::Handled();

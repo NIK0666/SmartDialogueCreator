@@ -288,17 +288,17 @@ void SDialConfigWidget::OnCustomParameterChanged(const FCustomParameterData& Cus
 
 void SDialConfigWidget::OnGlobalVarChanged(const FVariableData& VariableData, int32 RowIndex)
 {
-	UEditorDataHelper::UpdateVariableByIndex(SmartDialogueEditor, RowIndex, VariableData);
+	UEditorDataHelper::UpdatePublicVariableByIndex(SmartDialogueEditor, RowIndex, VariableData);
 }
 
 void SDialConfigWidget::OnLocalVarChanged(const FVariableData& VariableData, int32 RowIndex)
 {
-	SmartDialogueEditor->GetDialogue()->UpdateVariableByIndex(RowIndex, VariableData);
+	UEditorDataHelper::UpdateLocalVariableByIndex(SmartDialogueEditor, RowIndex, VariableData);
 }
 
 FReply SDialConfigWidget::OnAddPublicVarClicked()
 {
-	UEditorDataHelper::AddVariable(SmartDialogueEditor, {});
+	UEditorDataHelper::AddPublicVariable(SmartDialogueEditor, {});
 	AddGlobalVarRow();
 
 	return FReply::Handled();
@@ -307,7 +307,7 @@ FReply SDialConfigWidget::OnAddPublicVarClicked()
 FReply SDialConfigWidget::OnAddLocalVarClicked()
 {
 	FVariableData VariableData = {"", "", 0};
-	SmartDialogueEditor->GetDialogue()->AddNewVariable(VariableData);
+	UEditorDataHelper::AddNewLocalVariable(SmartDialogueEditor, VariableData);
 	AddLocalVarRow(VariableData.Key, VariableData.Value, VariableData.Desc);
 
 	return FReply::Handled();
@@ -353,7 +353,7 @@ void SDialConfigWidget::AddGlobalVarRow(const FString& Key, const int32& Value, 
 		.OnChanged(this, &SDialConfigWidget::OnGlobalVarChanged, RowIndex)
 		.OnDeleteButtonClicked(FSimpleDelegate::CreateLambda([this, RowIndex]()
 		{
-			UEditorDataHelper::RemoveVariableByIndex(SmartDialogueEditor, RowIndex);
+			UEditorDataHelper::RemovePublicVariableByIndex(SmartDialogueEditor, RowIndex);
 			UpdateData(false, true, false, false);			
 		}))
 	];
@@ -375,7 +375,7 @@ void SDialConfigWidget::AddLocalVarRow(const FString& Key, const int32& Value, c
 		.OnChanged(this, &SDialConfigWidget::OnLocalVarChanged, RowIndex)
 		.OnDeleteButtonClicked(FSimpleDelegate::CreateLambda([this, RowIndex]()
 		{
-			SmartDialogueEditor->GetDialogue()->RemoveVariableByIndex(RowIndex);
+			UEditorDataHelper::RemoveLocalVariableByIndex(SmartDialogueEditor, RowIndex);
 			UpdateData(false, false, true, false);			
 		}))
 	];

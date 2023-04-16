@@ -444,6 +444,7 @@ void USmartDialogue::UpdateEventInfo(const FName& BranchName, const FSmartDialog
 {
 	if (Branches.Contains(BranchName))
 	{
+		Modify();
 		auto* BranchPtr = &Branches[BranchName];
 		BranchPtr->Event = Event;
 	}
@@ -551,20 +552,5 @@ void USmartDialogue::AddIfOperation(const FName& BranchName, const FString& VarN
 		}
 		Modify();
 		L_BranchPtr->If.Add(NewItem);
-	}
-}
-
-void USmartDialogue::BranchesChanged()
-{
-	OnBranchesChanged.Broadcast();
-	MarkAsDirty();
-}
-
-void USmartDialogue::MarkAsDirty()
-{
-	UPackage* Package = GetOutermost();
-	if (Package && !Package->IsDirty())
-	{
-		Package->MarkPackageDirty();
 	}
 }

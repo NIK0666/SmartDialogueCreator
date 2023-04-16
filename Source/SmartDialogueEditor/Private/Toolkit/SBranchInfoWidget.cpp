@@ -9,6 +9,7 @@
 #include "Widgets/Input/SButton.h"
 #include "SBranchesWidget.h"
 #include "DragDrop/BranchDragDropOperation.h"
+#include "Helpers/EditorDataHelper.h"
 
 #define LOCTEXT_NAMESPACE "SmartDialogueEditor"
 
@@ -178,7 +179,7 @@ void SBranchInfoWidget::OnBranchNameTextCommitted(const FText& NewText, ETextCom
 			const FName OldName = BranchName;
 			const FName NewName = FName(*NewText.ToString());
 			
-			if (DialoguePtr && DialoguePtr->RenameBranch(OldName, NewName))
+			if (DialoguePtr && UEditorDataHelper::RenameBranch(Editor, OldName, NewName))
 			{
 				BranchName = NewName;
 			}

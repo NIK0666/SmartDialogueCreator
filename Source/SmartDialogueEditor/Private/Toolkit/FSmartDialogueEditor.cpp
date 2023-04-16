@@ -19,6 +19,7 @@
 #include "Graph/SmartDialogueGraph.h"
 #include "AssetBrowser/SSmartDialogueAssetBrowser.h"
 #include "Editor/Transactor.h"
+#include "Helpers/EditorDataHelper.h"
 #include "PlayPanel/SDialoguePlayerTab.h"
 #include "Serializor/JsonParser.h"
 #include "SmartDialogueCore/Private/SmartDialogueSettings.h"
@@ -512,7 +513,7 @@ void FSmartDialogueEditor::AddNewBranch()
 		FSmartDialogueBranch NewBranch;
 		NewBranch.Name = GetDialogue()->GenerateBranchName();
 		NewBranch.Text = FText::GetEmpty();
-		GetDialogue()->AddNewBranch(NewBranch);
+		UEditorDataHelper::AddNewBranch(this, NewBranch);
 
 		OnBranchItemAdded.Broadcast(NewBranch);
 	}
@@ -711,7 +712,7 @@ void FSmartDialogueEditor::RemoveBranch(SBranchInfoWidget* BranchInfoWidget)
 		{
 			ResetSelectedBranch();
 		}
-		GetDialogue()->RemoveBranch(BranchName);
+		UEditorDataHelper::RemoveBranch(this, BranchName);
 		BranchesWidget->RemoveRow(BranchInfoWidget);
 		OnBranchItemRemoved.Broadcast(BranchName);
 	}
@@ -880,7 +881,19 @@ void FSmartDialogueEditor::PostUndo(bool bSuccess)
 	const FTransaction* Transaction = GEditor->Trans->GetTransaction(GEditor->Trans->GetQueueLength() - GEditor->Trans->GetUndoCount());
 	if (DialConfigWidget && Transaction->ContainsObject(GetDialogueConfig()))
 	{
-		DialConfigWidget->UpdateData();
+		DialConfigWidget->UpdateData(true, true, false, true);
+	}
+	if (Transaction->ContainsObject(GetDialogue()))
+	{
+		if (BranchesWidget)
+		{
+			BranchesWidget->UpdateBranchesList();
+		}
+		if (DialogueGraph)
+		{
+			DialogueGraph->LoadNodesFromAsset();
+		}
+		DialConfigWidget->UpdateData(false, false, true, false);
 	}
 	FEditorUndoClient::PostUndo(bSuccess);
 }

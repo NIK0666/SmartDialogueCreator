@@ -23,6 +23,8 @@ class SMARTDIALOGUECORE_API USmartDialogue : public UObject
 {
 	GENERATED_BODY()
 	friend class UEditorDataHelper;
+	friend class UJsonParser;
+	
 public:
 	UFUNCTION(BlueprintCallable, Category = "SmartDialogue")
 	TMap<FName, FSmartDialogueBranch> GetBranches() const;
@@ -51,6 +53,29 @@ public:
 	void SetVariables(const TArray<FVariableData>& NewVariables);
 
 
+
+	FName GenerateBranchName() const;
+
+	FSmartDialogueBranch* GetBranchPtr(const FName& Name);
+	
+	void MakeClean();
+	FString GetDialogueId();
+	void MoveBranch(const FName& DraggedBranchName, const FName& TargetBranchName);
+	void MovePhrase(const FName& BranchName, int32 DraggedIndex, int32 TargetIndex);
+	void UpdateEventInfo(const FName& BranchName, const FSmartDialogueEvent& Event);
+
+	FOnBranchesChanged OnBranchesChanged;	
+	FOnBranchRenamed OnBranchRenamed;
+	FOnBranchRemoved OnBranchRemoved;
+	
+	FOnShowBranchAdded OnShowBranchAdded;
+	FOnHideBranchAdded OnHideBranchAdded;
+	FOnShowBranchRemoved OnShowBranchRemoved;
+	FOnHideBranchRemoved OnHideBranchRemoved;
+	FOnShowBranchUpdated OnShowBranchUpdated;
+	FOnHideBranchUpdated OnHideBranchUpdated;
+
+protected:
 	UFUNCTION(BlueprintCallable, Category = "SmartDialogue")
 	void AddNewBranch(FSmartDialogueBranch& NewBranch);
 	
@@ -58,10 +83,6 @@ public:
 	void AddNewVariable(FVariableData& NewVariable);
 	void RemoveVariableByIndex(int32 Index);
 	void UpdateVariableByIndex(int32 Index, const FVariableData& VariableData);
-
-	FName GenerateBranchName() const;
-
-	FSmartDialogueBranch* GetBranchPtr(const FName& Name);
 	bool RenameBranch(FName OldName, FName NewName);		
 	bool RemoveBranch(FName BranchName);
 	
@@ -89,30 +110,6 @@ public:
 	void UpdateIfElement(const FName& BranchName, int32 Index, const FIf& Element);
 	void RemoveIfElement(const FName& BranchName, int32 Index);
 	
-	void UpdateEventInfo(const FName& BranchName, const FSmartDialogueEvent& Event);
-	
-	void MakeClean();
-	FString GetDialogueId();
-	void MoveBranch(const FName& DraggedBranchName, const FName& TargetBranchName);
-	void MovePhrase(const FName& BranchName, int32 DraggedIndex, int32 TargetIndex);
-
-	FOnBranchesChanged OnBranchesChanged;	
-	FOnBranchRenamed OnBranchRenamed;
-	FOnBranchRemoved OnBranchRemoved;
-	
-	FOnShowBranchAdded OnShowBranchAdded;
-	FOnHideBranchAdded OnHideBranchAdded;
-	FOnShowBranchRemoved OnShowBranchRemoved;
-	FOnHideBranchRemoved OnHideBranchRemoved;
-	FOnShowBranchUpdated OnShowBranchUpdated;
-	FOnHideBranchUpdated OnHideBranchUpdated;
-
-protected:
-	UFUNCTION(BlueprintCallable, Category = "SmartDialogue")
-	void BranchesChanged();
-
-	void MarkAsDirty();
-
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SmartDialogue", meta = (AllowPrivateAccess = "true"))
 	TMap<FName, FSmartDialogueBranch> Branches;

@@ -1,6 +1,7 @@
 #include "SOperationsComboBoxList.h"
 
 #include "SmartDialogue.h"
+#include "Helpers/EditorDataHelper.h"
 
 void SOperationsComboBoxList::Construct(const FArguments& InArgs)
 {
@@ -191,7 +192,7 @@ FReply SOperationsComboBoxList::OnAddButtonClicked()
 
     InitialVars.Add(NewVar);
     RefreshList();
-    Editor->GetDialogue()->AddVarElement(Editor->GetSelectedBranchName(), NewVar);
+    UEditorDataHelper::AddVarElement(Editor, Editor->GetSelectedBranchName(), NewVar);
 
     return FReply::Handled();
 }
@@ -201,7 +202,7 @@ void SOperationsComboBoxList::OnVariableSelectionChanged(TSharedPtr<FString> New
     if (NewValue.IsValid())
     {
         InitialVars[Index].Key = *NewValue.Get();
-        Editor->GetDialogue()->UpdateVarElement(Editor->GetSelectedBranchName(), Index, InitialVars[Index]);
+        UEditorDataHelper::UpdateVarElement(Editor, Editor->GetSelectedBranchName(), Index, InitialVars[Index]);
     }
 }
 
@@ -210,14 +211,14 @@ void SOperationsComboBoxList::OnOperationSelectionChanged(TSharedPtr<FString> Ne
     if (NewValue.IsValid())
     {
         InitialVars[Index].Operation = ESmartDialogueOperationFromString(*NewValue.Get());
-        Editor->GetDialogue()->UpdateVarElement(Editor->GetSelectedBranchName(), Index, InitialVars[Index]);
+        UEditorDataHelper::UpdateVarElement(Editor, Editor->GetSelectedBranchName(), Index, InitialVars[Index]);
     }
 }
 
 void SOperationsComboBoxList::OnValueTextChanged(const FText& NewValue, int32 Index)
 {    
     InitialVars[Index].Value = FCString::Atoi(*NewValue.ToString());
-    Editor->GetDialogue()->UpdateVarElement(Editor->GetSelectedBranchName(), Index, InitialVars[Index]);
+    UEditorDataHelper::UpdateVarElement(Editor, Editor->GetSelectedBranchName(), Index, InitialVars[Index]);
 }
 
 FReply SOperationsComboBoxList::OnDeleteButtonClicked(int32 Index)
@@ -226,7 +227,7 @@ FReply SOperationsComboBoxList::OnDeleteButtonClicked(int32 Index)
     {
         InitialVars.RemoveAt(Index);
         RefreshList();
-        Editor->GetDialogue()->RemoveVarElement(Editor->GetSelectedBranchName(), Index);
+        UEditorDataHelper::RemoveVarElement(Editor, Editor->GetSelectedBranchName(), Index);
     }
 
     return FReply::Handled();

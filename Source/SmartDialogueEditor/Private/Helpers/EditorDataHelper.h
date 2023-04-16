@@ -21,13 +21,13 @@ public:
 	static void SetHero(FSmartDialogueEditor* SmartDialogueEditor, const FString& NewHero);	
 	static void AddCharacter(FSmartDialogueEditor* SmartDialogueEditor, const FCharacterData& NewCharacter);
 	static void AddCustomParameter(FSmartDialogueEditor* SmartDialogueEditor, const FCustomParameterData& NewCustomParameter);
-	static void AddVariable(FSmartDialogueEditor* SmartDialogueEditor, const FVariableData& NewVariable);
+	static void AddPublicVariable(FSmartDialogueEditor* SmartDialogueEditor, const FVariableData& NewVariable);
 	static void RemoveCharacterByIndex(FSmartDialogueEditor* SmartDialogueEditor, int32 Index);
 	static void RemoveCustomParameterByIndex(FSmartDialogueEditor* SmartDialogueEditor, int32 Index);
-	static void RemoveVariableByIndex(FSmartDialogueEditor* SmartDialogueEditor, int32 Index);
+	static void RemovePublicVariableByIndex(FSmartDialogueEditor* SmartDialogueEditor, int32 Index);
 	static void UpdateCharacterByIndex(FSmartDialogueEditor* SmartDialogueEditor, int32 Index, const FCharacterData& UpdatedCharacter);
 	static void UpdateCustomParameterByIndex(FSmartDialogueEditor* SmartDialogueEditor, int32 Index, const FCustomParameterData& UpdatedCustomParameter);
-	static void UpdateVariableByIndex(FSmartDialogueEditor* SmartDialogueEditor, int32 Index, const FVariableData& UpdatedVariable);
+	static void UpdatePublicVariableByIndex(FSmartDialogueEditor* SmartDialogueEditor, int32 Index, const FVariableData& UpdatedVariable);
 
 	// Static methods for modifying USmartDialogue data
 

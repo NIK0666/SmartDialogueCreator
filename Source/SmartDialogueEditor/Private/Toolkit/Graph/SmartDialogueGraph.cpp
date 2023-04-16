@@ -7,6 +7,7 @@
 #include "SmartDialogue.h"
 
 #include "SmartDialogueGraphSchema.h"
+#include "Helpers/EditorDataHelper.h"
 #include "Settings/EditorStyleSettings.h"
 #include "Toolkit/FSmartDialogueEditor.h"
 
@@ -201,11 +202,11 @@ UBranchNode* USmartDialogueGraph::CreateBranchNode(const FName& BranchName)
 				{
 					if (LastFromPin->PinName == UEdGraphSchema_K2::PN_Then)
 					{
-						Editor->GetDialogue()->AddShowBranchElement(OwnBranchNode->GetBranchName(), BranchName.ToString());
+						UEditorDataHelper::AddShowBranchElement(Editor, OwnBranchNode->GetBranchName(), BranchName.ToString());
 					}
 					else if (LastFromPin->PinName == FName(""))
 					{
-						Editor->GetDialogue()->AddHideBranchElement(OwnBranchNode->GetBranchName(), BranchName.ToString());
+						UEditorDataHelper::AddHideBranchElement(Editor, OwnBranchNode->GetBranchName(), BranchName.ToString());
 					}
 				}
 			}
@@ -298,11 +299,11 @@ void USmartDialogueGraph::OnUserConnectPins(UEdGraphPin* A, UEdGraphPin* B)
 	const int32 OutputIndex = OutputNode->Pins.Find(OutputPin);	
 	if (OutputIndex == 1)
 	{
-		Editor->GetDialogue()->AddShowBranchElement(OutputNode->GetBranchName(), InputNode->GetBranchName().ToString());
+		UEditorDataHelper::AddShowBranchElement(Editor, OutputNode->GetBranchName(), InputNode->GetBranchName().ToString());
 	}
 	else if (OutputIndex == 2)
 	{
-		Editor->GetDialogue()->AddHideBranchElement(OutputNode->GetBranchName(), InputNode->GetBranchName().ToString());
+		UEditorDataHelper::AddHideBranchElement(Editor, OutputNode->GetBranchName(), InputNode->GetBranchName().ToString());
 	}
 }
 
@@ -324,11 +325,11 @@ void USmartDialogueGraph::OnUserDisconnectPins(UEdGraphPin* A, UEdGraphPin* B)
 	const int32 OutputIndex = OutputNode->Pins.Find(OutputPin);	
 	if (OutputIndex == 1)
 	{		
-		Editor->GetDialogue()->RemoveShowBranchByString(OutputNode->GetBranchName(), InputNode->GetBranchName().ToString());
+		UEditorDataHelper::RemoveShowBranchByString(Editor, OutputNode->GetBranchName(), InputNode->GetBranchName().ToString());
 	}
 	else if (OutputIndex == 2)
 	{
-		Editor->GetDialogue()->RemoveHideBranchByString(OutputNode->GetBranchName(), InputNode->GetBranchName().ToString());
+		UEditorDataHelper::RemoveHideBranchByString(Editor, OutputNode->GetBranchName(), InputNode->GetBranchName().ToString());
 	}
 }
 

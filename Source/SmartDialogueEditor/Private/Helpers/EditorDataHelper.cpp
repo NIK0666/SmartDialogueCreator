@@ -35,11 +35,11 @@ void UEditorDataHelper::AddCustomParameter(FSmartDialogueEditor* SmartDialogueEd
 	}
 }
 
-void UEditorDataHelper::AddVariable(FSmartDialogueEditor* SmartDialogueEditor, const FVariableData& NewVariable)
+void UEditorDataHelper::AddPublicVariable(FSmartDialogueEditor* SmartDialogueEditor, const FVariableData& NewVariable)
 {
 	if (SmartDialogueEditor)
 	{
-		FScopedTransaction Transaction(TEXT("Add Variable"), LOCTEXT("AddVariable", "Add Variable"), SmartDialogueEditor->GetDialogueConfig());
+		FScopedTransaction Transaction(TEXT("Add Public Variable"), LOCTEXT("AddPublicVariable", "Add Public Variable"), SmartDialogueEditor->GetDialogueConfig());
 		SmartDialogueEditor->GetDialogueConfig()->AddVariable(NewVariable);
 	}
 }
@@ -63,7 +63,7 @@ void UEditorDataHelper::RemoveCustomParameterByIndex(FSmartDialogueEditor* Smart
 }
 
 
-void UEditorDataHelper::RemoveVariableByIndex(FSmartDialogueEditor* SmartDialogueEditor, int32 Index)
+void UEditorDataHelper::RemovePublicVariableByIndex(FSmartDialogueEditor* SmartDialogueEditor, int32 Index)
 {
 	if (SmartDialogueEditor)
 	{
@@ -90,7 +90,7 @@ void UEditorDataHelper::UpdateCustomParameterByIndex(FSmartDialogueEditor* Smart
 	}
 }
 
-void UEditorDataHelper::UpdateVariableByIndex(FSmartDialogueEditor* SmartDialogueEditor, int32 Index, const FVariableData& UpdatedVariable)
+void UEditorDataHelper::UpdatePublicVariableByIndex(FSmartDialogueEditor* SmartDialogueEditor, int32 Index, const FVariableData& UpdatedVariable)
 {
 	if (SmartDialogueEditor)
 	{

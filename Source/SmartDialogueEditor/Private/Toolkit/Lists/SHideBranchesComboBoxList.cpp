@@ -4,6 +4,7 @@
 #include "SHideBranchesComboBoxList.h"
 
 #include "SmartDialogue.h"
+#include "Helpers/EditorDataHelper.h"
 
 void SHideBranchesComboBoxList::Construct(const FArguments& InArgs)
 {
@@ -115,7 +116,7 @@ FReply SHideBranchesComboBoxList::OnAddButtonClicked()
 	
 	InitialStrings.Add(*Options[0]);
 	RefreshList();
-	Editor->GetDialogue()->AddHideBranchElement(Editor->GetSelectedBranchName(), *Options[0]);
+	UEditorDataHelper::AddHideBranchElement(Editor, Editor->GetSelectedBranchName(), *Options[0]);
 
 	return FReply::Handled();
 }
@@ -125,7 +126,7 @@ void SHideBranchesComboBoxList::OnSelectionChanged(TSharedPtr<FString> NewValue,
 	if (NewValue.IsValid())
 	{
 		InitialStrings[Index] = *NewValue.Get();
-		Editor->GetDialogue()->UpdateHideBranchElement(Editor->GetSelectedBranchName(),Index, *NewValue.Get());
+		UEditorDataHelper::UpdateHideBranchElement(Editor, Editor->GetSelectedBranchName(),Index, *NewValue.Get());
 	}
 }
 
@@ -136,7 +137,7 @@ FReply SHideBranchesComboBoxList::OnDeleteButtonClicked(int32 Index)
 	{
 		InitialStrings.RemoveAt(Index);
 		RefreshList();
-		Editor->GetDialogue()->RemoveHideBranchElement(Editor->GetSelectedBranchName(),Index);
+		 UEditorDataHelper::RemoveHideBranchElement(Editor, Editor->GetSelectedBranchName(),Index);
 	}
 
 	return FReply::Handled();
