@@ -164,8 +164,12 @@ void SPhraseListRow::Construct(const FArguments& InArgs)
 }
 
 FSmartDialoguePhrase* SPhraseListRow::GetPhrasePtr() const
-{	
-	return &SmartDialogueEditor->GetSelectedBranch()->Phrases[PhraseIndex];
+{
+	if (SmartDialogueEditor->GetSelectedBranch() && SmartDialogueEditor->GetSelectedBranch()->Phrases.Num() > 0)
+	{
+		return &SmartDialogueEditor->GetSelectedBranch()->Phrases[PhraseIndex];
+	}
+	return nullptr;
 }
 
 void SPhraseListRow::UnderDragState(bool bIsNewState)
@@ -278,16 +282,28 @@ void SPhraseListRow::OnMultiLineTextChanged(const FText& InText)
 
 FText SPhraseListRow::GetCurrentText() const
 {
+	if (!GetPhrasePtr())
+	{
+		return FText::GetEmpty();
+	}
 	return GetPhrasePtr()->Text;
 }
 
 FText SPhraseListRow::GetCurrentCharacterText() const
 {
+	if (!GetPhrasePtr())
+	{
+		return FText::GetEmpty();
+	}
 	return FText::FromString(GetPhrasePtr()->NPC);
 }
 
 FText SPhraseListRow::GetCurrentVarText() const
 {
+	if (!GetPhrasePtr())
+	{
+		return FText::GetEmpty();
+	}
 	return FText::FromString(GetPhrasePtr()->If.Key);
 }
 
@@ -298,6 +314,10 @@ FText SPhraseListRow::GetCurrentComparisonText() const
 
 FText SPhraseListRow::GetAnimationText() const
 {
+	if (!GetPhrasePtr())
+	{
+		return FText::GetEmpty();
+	}
 	return FText::FromString(*GetPhrasePtr()->Anim);
 }
 
@@ -338,11 +358,19 @@ FReply SPhraseListRow::OnMultiLineKeyDown(const FGeometry& MyGeometry, const FKe
 
 EVisibility SPhraseListRow::GetComparisonVisibility() const
 {
+	if (!GetPhrasePtr())
+	{
+		return EVisibility::Collapsed;
+	}
 	return GetPhrasePtr()->If.Key.IsEmpty() ? EVisibility::Collapsed : EVisibility::Visible;
 }
 
 FSlateColor SPhraseListRow::GetBackgroundColor() const
 {
+	if (!GetPhrasePtr())
+	{
+		return FLinearColor::Transparent;
+	}
 	if (bUnderDrag)
 	{
 		return FLinearColor(0.34f, 0.34f, 0.34f, 1.f);

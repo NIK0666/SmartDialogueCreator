@@ -15,21 +15,9 @@ FString USmartDialogue::GetAutoBranch() const
 	return AutoBranch;
 }
 
-void USmartDialogue::SetAutoBranch(const FString& NewAutoBranch)
-{
-	Modify();
-	AutoBranch = NewAutoBranch;
-}
-
 FString USmartDialogue::GetCharacter() const
 {
 	return Character;
-}
-
-void USmartDialogue::SetCharacter(const FString& NewCharacter)
-{
-	Modify();
-	Character = NewCharacter;
 }
 
 TArray<FVariableData> USmartDialogue::GetVariables() const
@@ -40,33 +28,6 @@ TArray<FVariableData> USmartDialogue::GetVariables() const
 void USmartDialogue::SetVariables(const TArray<FVariableData>& NewVariables)
 {
 	Variables = NewVariables;
-}
-
-void USmartDialogue::AddNewBranch(FSmartDialogueBranch& NewBranch)
-{
-	Modify();
-	Branches.Add(NewBranch.Name, NewBranch);
-	LastBranchName = NewBranch.Name;
-	OnBranchesChanged.Broadcast();
-}
-
-void USmartDialogue::AddNewVariable(FVariableData& NewVariable)
-{
-	Modify();
-	Variables.Add(NewVariable);
-	//TODO Vars changed!
-}
-
-void USmartDialogue::RemoveVariableByIndex(int32 Index)
-{
-	Modify();
-	Variables.RemoveAt(Index);
-}
-
-void USmartDialogue::UpdateVariableByIndex(int32 Index, const FVariableData& VariableData)
-{
-	Modify();
-	Variables[Index] = VariableData;
 }
 
 FName USmartDialogue::GenerateBranchName() const
@@ -207,71 +168,6 @@ void USmartDialogue::MovePhrase(const FName& BranchName, int32 DraggedIndex, int
 			// Если индексы равны, ничего не делаем
 		}
 	}
-}
-
-
-
-bool USmartDialogue::RenameBranch(FName OldName, FName NewName)
-{
-	if (Branches.Contains(OldName) && !Branches.Contains(NewName))
-	{
-		FSmartDialogueBranch BranchToRename = Branches[OldName];
-		Modify();
-		BranchToRename.Name = NewName;
-		Branches.Remove(OldName);
-		Branches.Add(NewName, BranchToRename);
-		LastBranchName = NewName;
-
-		for (auto Element : Branches)
-		{
-			auto HideIndex  = Element.Value.Hide.Find(OldName.ToString());
-			if (HideIndex != INDEX_NONE)
-			{
-				Branches[Element.Key].Hide[HideIndex] = NewName.ToString();
-			}
-			auto ShowIndex  = Element.Value.Show.Find(OldName.ToString());
-			if (ShowIndex != INDEX_NONE)
-			{
-				Branches[Element.Key].Show[ShowIndex] = NewName.ToString();
-			}
-			
-			if (Element.Value.ChangeStarted == OldName.ToString())
-			{
-				Branches[Element.Key].ChangeStarted = NewName.ToString();
-			}
-		}
-
-		if (AutoBranch == OldName.ToString())
-		{
-			AutoBranch = NewName.ToString();
-		}
-
-		OnBranchRenamed.Broadcast(OldName, NewName);
-
-		return true;
-	}
-	return false;
-}
-
-
-bool USmartDialogue::RemoveBranch(FName BranchName)
-{
-
-	FString BranchNameString = BranchName.ToString();
-
-	TArray<FName> BranchKeys;
-	Branches.GetKeys(BranchKeys);
-	Modify();
-	for (int32 i = 0; i < BranchKeys.Num(); i++)
-	{
-		RemoveHideBranchByString(BranchKeys[i], BranchNameString);
-		RemoveShowBranchByString(BranchKeys[i], BranchNameString);
-	}
-	Branches.Remove(BranchName);
-
-	OnBranchRemoved.Broadcast(BranchName);
-
-	return true;
 }
 
 void USmartDialogue::AddHideBranchElement(const FName& BranchName, const FString& Value)
@@ -447,71 +343,6 @@ void USmartDialogue::UpdateEventInfo(const FName& BranchName, const FSmartDialog
 		Modify();
 		auto* BranchPtr = &Branches[BranchName];
 		BranchPtr->Event = Event;
-	}
-}
-
-bool USmartDialogue::RemoveVarOperation(FName BranchName, const int32 Index)
-{
-	if (Branches.Contains(BranchName))
-	{
-		Modify();
-		const auto L_BranchPtr = &Branches[BranchName];
-		L_BranchPtr->Vars.RemoveAt(Index);
-		return true;
-	}
-	return false;
-}
-
-bool USmartDialogue::RemoveIfOperation(FName BranchName, const int32 Index)
-{
-	if (Branches.Contains(BranchName))
-	{
-		Modify();
-		const auto L_BranchPtr = &Branches[BranchName];
-		L_BranchPtr->If.RemoveAt(Index);
-		return true;
-	}
-	return false;
-}
-
-void USmartDialogue::AddVarOperation(FName BranchName, const FString& VarName, const FString& OperationString, int32 Value)
-{
-	if (Branches.Contains(BranchName))
-	{
-		const auto L_BranchPtr = &Branches[BranchName];
-
-		FSmartDialogueVars NewItem;
-		NewItem.Key = VarName;
-		NewItem.Value = Value;
-
-		if (OperationString == "=")
-		{
-			NewItem.Operation = ESmartDialogueOperation::EO_Equals;
-		}
-		else if (OperationString == "+")
-		{
-			NewItem.Operation = ESmartDialogueOperation::EO_Plus;
-		}
-		else if (OperationString == "-")
-		{
-			NewItem.Operation = ESmartDialogueOperation::EO_Minus;
-		}
-		else if (OperationString == "*")
-		{
-			NewItem.Operation = ESmartDialogueOperation::EO_Multiply;
-		}
-		else if (OperationString == "/")
-		{
-			NewItem.Operation = ESmartDialogueOperation::EO_Divide;
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("Invalid OperationString: %s"), *OperationString);
-			return;
-		}
-
-		Modify();
-		L_BranchPtr->Vars.Add(NewItem);
 	}
 }
 

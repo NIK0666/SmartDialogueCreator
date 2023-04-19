@@ -103,8 +103,10 @@ void UEditorDataHelper::SetAutoBranch(FSmartDialogueEditor* SmartDialogueEditor,
 {
 	if (SmartDialogueEditor)
 	{
-		FScopedTransaction Transaction(TEXT("Set AutoBranch"), LOCTEXT("SetAutoBranch", "Set AutoBranch"), SmartDialogueEditor->GetDialogue());
-		SmartDialogueEditor->GetDialogue()->SetAutoBranch(NewAutoBranch);
+		USmartDialogue* SmartDialogue = SmartDialogueEditor->GetDialogue();
+		FScopedTransaction Transaction(TEXT("Set AutoBranch"), LOCTEXT("SetAutoBranch", "Set AutoBranch"), SmartDialogue);
+		SmartDialogue->Modify();
+		SmartDialogue->AutoBranch = NewAutoBranch;
 	}
 }
 
@@ -112,8 +114,10 @@ void UEditorDataHelper::SetCharacter(FSmartDialogueEditor* SmartDialogueEditor, 
 {
 	if (SmartDialogueEditor)
 	{
-		FScopedTransaction Transaction(TEXT("Set Character"), LOCTEXT("SetCharacter", "Set Character"), SmartDialogueEditor->GetDialogue());
-		SmartDialogueEditor->GetDialogue()->SetCharacter(NewCharacter);
+		USmartDialogue* SmartDialogue = SmartDialogueEditor->GetDialogue();
+		FScopedTransaction Transaction(TEXT("Set Character"), LOCTEXT("SetCharacter", "Set Character"), SmartDialogue);
+		SmartDialogue->Modify();
+		SmartDialogue->Character = NewCharacter;
 	}
 }
 
@@ -121,8 +125,12 @@ void UEditorDataHelper::AddNewBranch(FSmartDialogueEditor* SmartDialogueEditor, 
 {
 	if (SmartDialogueEditor)
 	{
-		FScopedTransaction Transaction(TEXT("Add New Branch"), LOCTEXT("AddNewBranch", "Add New Branch"), SmartDialogueEditor->GetDialogue());
-		SmartDialogueEditor->GetDialogue()->AddNewBranch(NewBranch);
+		USmartDialogue* SmartDialogue = SmartDialogueEditor->GetDialogue();
+		FScopedTransaction Transaction(TEXT("Add New Branch"), LOCTEXT("AddNewBranch", "Add New Branch"), SmartDialogue);
+		SmartDialogue->Modify();
+		SmartDialogue->Branches.Add(NewBranch.Name, NewBranch);
+		SmartDialogue->LastBranchName = NewBranch.Name;
+		SmartDialogue->OnBranchesChanged.Broadcast();
 	}
 }
 
@@ -130,8 +138,11 @@ void UEditorDataHelper::AddNewLocalVariable(FSmartDialogueEditor* SmartDialogueE
 {
 	if (SmartDialogueEditor)
 	{
-		FScopedTransaction Transaction(TEXT("Add New Local Variable"), LOCTEXT("AddNewLocalVariable", "Add New Local Variable"), SmartDialogueEditor->GetDialogue());
-		SmartDialogueEditor->GetDialogue()->AddNewVariable(NewVariable);
+		USmartDialogue* SmartDialogue = SmartDialogueEditor->GetDialogue();
+		FScopedTransaction Transaction(TEXT("Add New Local Variable"), LOCTEXT("AddNewLocalVariable", "Add New Local Variable"), SmartDialogue);
+		SmartDialogue->Modify();
+		SmartDialogue->Variables.Add(NewVariable);
+		//TODO Vars changed!
 	}
 }
 
@@ -139,8 +150,10 @@ void UEditorDataHelper::RemoveLocalVariableByIndex(FSmartDialogueEditor* SmartDi
 {
 	if (SmartDialogueEditor)
 	{
-		FScopedTransaction Transaction(TEXT("Remove Local Variable"), LOCTEXT("RemoveLocalVariable", "Remove Local Variable"), SmartDialogueEditor->GetDialogue());
-		SmartDialogueEditor->GetDialogue()->RemoveVariableByIndex(Index);
+		USmartDialogue* SmartDialogue = SmartDialogueEditor->GetDialogue();
+		FScopedTransaction Transaction(TEXT("Remove Local Variable"), LOCTEXT("RemoveLocalVariable", "Remove Local Variable"), SmartDialogue);
+		SmartDialogue->Modify();
+		SmartDialogue->Variables.RemoveAt(Index);
 	}
 }
 
@@ -149,8 +162,10 @@ void UEditorDataHelper::UpdateLocalVariableByIndex(FSmartDialogueEditor* SmartDi
 {
 	if (SmartDialogueEditor)
 	{
-		FScopedTransaction Transaction(TEXT("Update Local Variable"), LOCTEXT("UpdateLocalVariable", "Update Local Variable"), SmartDialogueEditor->GetDialogue());
-		SmartDialogueEditor->GetDialogue()->UpdateVariableByIndex(Index, VariableData);
+		USmartDialogue* SmartDialogue = SmartDialogueEditor->GetDialogue();
+		FScopedTransaction Transaction(TEXT("Update Local Variable"), LOCTEXT("UpdateLocalVariable", "Update Local Variable"), SmartDialogue);
+		SmartDialogue->Modify();
+		SmartDialogue->Variables[Index] = VariableData;
 	}
 }
 
@@ -158,8 +173,46 @@ bool UEditorDataHelper::RenameBranch(FSmartDialogueEditor* SmartDialogueEditor, 
 {
 	if (SmartDialogueEditor)
 	{
-		FScopedTransaction Transaction(TEXT("Rename Branch"), LOCTEXT("RenameBranch", "Rename Branch"), SmartDialogueEditor->GetDialogue());
-		return SmartDialogueEditor->GetDialogue()->RenameBranch(OldName, NewName);
+		USmartDialogue* SmartDialogue = SmartDialogueEditor->GetDialogue();
+		FScopedTransaction Transaction(TEXT("Rename Branch"), LOCTEXT("RenameBranch", "Rename Branch"), SmartDialogue);
+
+		if (SmartDialogue->Branches.Contains(OldName) && !SmartDialogue->Branches.Contains(NewName))
+		{
+			FSmartDialogueBranch BranchToRename = SmartDialogue->Branches[OldName];
+			SmartDialogue->Modify();
+			BranchToRename.Name = NewName;
+			SmartDialogue->Branches.Remove(OldName);
+			SmartDialogue->Branches.Add(NewName, BranchToRename);
+			SmartDialogue->LastBranchName = NewName;
+
+			for (auto Element : SmartDialogue->Branches)
+			{
+				auto HideIndex = Element.Value.Hide.Find(OldName.ToString());
+				if (HideIndex != INDEX_NONE)
+				{
+					SmartDialogue->Branches[Element.Key].Hide[HideIndex] = NewName.ToString();
+				}
+				auto ShowIndex = Element.Value.Show.Find(OldName.ToString());
+				if (ShowIndex != INDEX_NONE)
+				{
+					SmartDialogue->Branches[Element.Key].Show[ShowIndex] = NewName.ToString();
+				}
+
+				if (Element.Value.ChangeStarted == OldName.ToString())
+				{
+					SmartDialogue->Branches[Element.Key].ChangeStarted = NewName.ToString();
+				}
+			}
+
+			if (SmartDialogue->AutoBranch == OldName.ToString())
+			{
+				SmartDialogue->AutoBranch = NewName.ToString();
+			}
+
+			SmartDialogue->OnBranchRenamed.Broadcast(OldName, NewName);
+
+			return true;
+		}
 	}
 	return false;
 }
@@ -168,19 +221,42 @@ bool UEditorDataHelper::RemoveBranch(FSmartDialogueEditor* SmartDialogueEditor, 
 {
 	if (SmartDialogueEditor)
 	{
-		FScopedTransaction Transaction(TEXT("Remove Branch"), LOCTEXT("RemoveBranch", "Remove Branch"), SmartDialogueEditor->GetDialogue());
-		return SmartDialogueEditor->GetDialogue()->RemoveBranch(BranchName);
+		USmartDialogue* SmartDialogue = SmartDialogueEditor->GetDialogue();
+		FScopedTransaction Transaction(TEXT("Remove Branch"), LOCTEXT("RemoveBranch", "Remove Branch"), SmartDialogue);
+
+		FString BranchNameString = BranchName.ToString();
+
+		TArray<FName> BranchKeys;
+		SmartDialogue->Branches.GetKeys(BranchKeys);
+		SmartDialogue->Modify();
+		for (int32 i = 0; i < BranchKeys.Num(); i++)
+		{
+			SmartDialogue->RemoveHideBranchByString(BranchKeys[i], BranchNameString);
+			SmartDialogue->RemoveShowBranchByString(BranchKeys[i], BranchNameString);
+		}
+		SmartDialogue->Branches.Remove(BranchName);
+
+		SmartDialogue->OnBranchRemoved.Broadcast(BranchName);
+
+		return true;
 	}
 	return false;
 }
 
-bool UEditorDataHelper::RemoveVarOperation(FSmartDialogueEditor* SmartDialogueEditor, FName BranchName,
-	const int32 Index)
+bool UEditorDataHelper::RemoveVarOperation(FSmartDialogueEditor* SmartDialogueEditor, FName BranchName, const int32 Index)
 {
 	if (SmartDialogueEditor)
 	{
-		FScopedTransaction Transaction(TEXT("Remove Var Operation"), LOCTEXT("RemoveVarOperation", "Remove Var Operation"), SmartDialogueEditor->GetDialogue());
-		return SmartDialogueEditor->GetDialogue()->RemoveVarOperation(BranchName, Index);
+		USmartDialogue* SmartDialogue = SmartDialogueEditor->GetDialogue();
+		FScopedTransaction Transaction(TEXT("Remove Var Operation"), LOCTEXT("RemoveVarOperation", "Remove Var Operation"), SmartDialogue);
+
+		if (SmartDialogue->Branches.Contains(BranchName))
+		{
+			SmartDialogue->Modify();
+			const auto L_BranchPtr = &SmartDialogue->Branches[BranchName];
+			L_BranchPtr->Vars.RemoveAt(Index);
+			return true;
+		}
 	}
 	return false;
 }
@@ -189,8 +265,16 @@ bool UEditorDataHelper::RemoveIfOperation(FSmartDialogueEditor* SmartDialogueEdi
 {
 	if (SmartDialogueEditor)
 	{
-		FScopedTransaction Transaction(TEXT("Remove If Operation"), LOCTEXT("RemoveIfOperation", "Remove If Operation"), SmartDialogueEditor->GetDialogue());
-		return SmartDialogueEditor->GetDialogue()->RemoveIfOperation(BranchName, Index);
+		USmartDialogue* SmartDialogue = SmartDialogueEditor->GetDialogue();
+		FScopedTransaction Transaction(TEXT("Remove If Operation"), LOCTEXT("RemoveIfOperation", "Remove If Operation"), SmartDialogue);
+
+		if (SmartDialogue->Branches.Contains(BranchName))
+		{
+			SmartDialogue->Modify();
+			const auto L_BranchPtr = &SmartDialogue->Branches[BranchName];
+			L_BranchPtr->If.RemoveAt(Index);
+			return true;
+		}
 	}
 	return false;
 }
@@ -200,8 +284,46 @@ void UEditorDataHelper::AddVarOperation(FSmartDialogueEditor* SmartDialogueEdito
 {
 	if (SmartDialogueEditor)
 	{
-		FScopedTransaction Transaction(TEXT("Add Var Operation"), LOCTEXT("AddVarOperation", "Add Var Operation"), SmartDialogueEditor->GetDialogue());
-		SmartDialogueEditor->GetDialogue()->AddVarOperation(BranchName, VarName, OperationString, Value);
+		USmartDialogue* SmartDialogue = SmartDialogueEditor->GetDialogue();
+		FScopedTransaction Transaction(TEXT("Add Var Operation"), LOCTEXT("AddVarOperation", "Add Var Operation"), SmartDialogue);
+
+		if (SmartDialogue->Branches.Contains(BranchName))
+		{
+			const auto L_BranchPtr = &SmartDialogue->Branches[BranchName];
+
+			FSmartDialogueVars NewItem;
+			NewItem.Key = VarName;
+			NewItem.Value = Value;
+
+			if (OperationString == "=")
+			{
+				NewItem.Operation = ESmartDialogueOperation::EO_Equals;
+			}
+			else if (OperationString == "+")
+			{
+				NewItem.Operation = ESmartDialogueOperation::EO_Plus;
+			}
+			else if (OperationString == "-")
+			{
+				NewItem.Operation = ESmartDialogueOperation::EO_Minus;
+			}
+			else if (OperationString == "*")
+			{
+				NewItem.Operation = ESmartDialogueOperation::EO_Multiply;
+			}
+			else if (OperationString == "/")
+			{
+				NewItem.Operation = ESmartDialogueOperation::EO_Divide;
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("Invalid OperationString: %s"), *OperationString);
+				return;
+			}
+
+			SmartDialogue->Modify();
+			L_BranchPtr->Vars.Add(NewItem);
+		}
 	}
 }
 
@@ -352,6 +474,20 @@ void UEditorDataHelper::RemoveIfElement(FSmartDialogueEditor* SmartDialogueEdito
 		FScopedTransaction Transaction(TEXT("Remove If Element"), LOCTEXT("RemoveIfElement", "Remove If Element"), SmartDialogueEditor->GetDialogue());
 		SmartDialogueEditor->GetDialogue()->RemoveIfElement(BranchName, Index);
 	}
+}
+
+void UEditorDataHelper::UpdateBranchText(FSmartDialogueEditor* Editor, const FName& BranchName, const FText& NewText)
+{
+	if (Editor)
+	{
+		if (Editor->GetDialogue()->GetBranches().Contains(BranchName))
+		{
+			const FScopedTransaction Transaction(TEXT("Set Branch Text"), LOCTEXT("SetBranchText", "Set Branch Text"), Editor->GetDialogue());
+			Editor->GetDialogue()->Modify();
+			Editor->GetDialogue()->GetBranchPtr(BranchName)->Text = NewText;
+		}
+	}
+
 }
 
 #undef LOCTEXT_NAMESPACE

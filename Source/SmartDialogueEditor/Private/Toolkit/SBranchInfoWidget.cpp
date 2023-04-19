@@ -35,7 +35,7 @@ FSlateColor SBranchInfoWidget::GetBackgroundColor() const
 		{
 			return FLinearColor(0.91f, 0.3f, 0.24f, 0.5f); // Малиновый цвет с прозрачностью 0.5
 		}
-		else if (SelectedBranch->Show.Contains(BranchName.ToString()))
+		if (SelectedBranch->Show.Contains(BranchName.ToString()))
 		{
 			return FLinearColor(0.4f, 1.0f, 0.4f, 0.5f);
 		}
@@ -49,8 +49,7 @@ void SBranchInfoWidget::Construct(const FArguments& InArgs)
 	BranchName = InArgs._BranchName;
 	Editor = InArgs._Editor;	
 
-	DialoguePtr = Editor->GetDialogue();
-	BranchRenamedHandle = DialoguePtr->OnBranchRenamed.AddRaw(this, &SBranchInfoWidget::OnBranchRenamed);
+	BranchRenamedHandle = Editor->GetDialogue()->OnBranchRenamed.AddRaw(this, &SBranchInfoWidget::OnBranchRenamed);
 
 	ChildSlot
 	[
@@ -117,7 +116,7 @@ void SBranchInfoWidget::Construct(const FArguments& InArgs)
 
 SBranchInfoWidget::~SBranchInfoWidget()
 {
-	DialoguePtr->OnBranchRenamed.Remove(BranchRenamedHandle);
+	Editor->GetDialogue()->OnBranchRenamed.Remove(BranchRenamedHandle);
 }
 
 FName SBranchInfoWidget::GetBranchName() const
@@ -163,7 +162,7 @@ void SBranchInfoWidget::OnBranchRenamed(FName OldName, FName NewName)
 
 FText SBranchInfoWidget::GetBranchText() const
 {
-	if (const auto BranchPtr = DialoguePtr->GetBranchPtr(BranchName))
+	if (const auto BranchPtr = Editor->GetDialogue()->GetBranchPtr(BranchName))
 	{
 		return BranchPtr->Text;
 	}
@@ -179,7 +178,7 @@ void SBranchInfoWidget::OnBranchNameTextCommitted(const FText& NewText, ETextCom
 			const FName OldName = BranchName;
 			const FName NewName = FName(*NewText.ToString());
 			
-			if (DialoguePtr && UEditorDataHelper::RenameBranch(Editor, OldName, NewName))
+			if (Editor->GetDialogue() && UEditorDataHelper::RenameBranch(Editor, OldName, NewName))
 			{
 				BranchName = NewName;
 			}
@@ -196,14 +195,12 @@ void SBranchInfoWidget::OnBranchTextTextCommitted(const FText& NewText, ETextCom
 {
 	if (CommitType == ETextCommit::OnEnter || CommitType == ETextCommit::OnUserMovedFocus)
 	{
-		if (const auto BranchPtr = DialoguePtr->GetBranchPtr(BranchName))
+		if (const auto BranchPtr = Editor->GetDialogue()->GetBranchPtr(BranchName))
 		{
 			if (!NewText.EqualTo(BranchPtr->Text))
 			{
-				const FScopedTransaction Transaction(LOCTEXT("SmartDialogueEditor_SetBranchText", "Set Branch Text"));
-				DialoguePtr->Modify();
+				UEditorDataHelper::UpdateBranchText(Editor, BranchName, NewText);
 				BranchPtr->Text = NewText;
-				DialoguePtr->PostEditChange();
 			}
 		}
 	}
@@ -264,7 +261,7 @@ void SBranchInfoWidget::SetIsFocused(bool bNewValue)
 
 FText SBranchInfoWidget::GetPlaceholderText() const
 {
-	if (const auto BranchPtr = DialoguePtr->GetBranchPtr(BranchName))
+	if (const auto BranchPtr = Editor->GetDialogue()->GetBranchPtr(BranchName))
 	{
 		if (BranchPtr->Phrases.Num() > 0)
 		{

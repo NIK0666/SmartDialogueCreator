@@ -22,7 +22,7 @@
 #include "Helpers/EditorDataHelper.h"
 #include "PlayPanel/SDialoguePlayerTab.h"
 #include "Serializor/JsonParser.h"
-#include "SmartDialogueCore/Private/SmartDialogueSettings.h"
+#include "SmartDialogueSettings.h"
 #include "Windows/WindowsPlatformApplicationMisc.h"
 
 #define LOCTEXT_NAMESPACE "SmartDialogueEditor"
@@ -177,7 +177,7 @@ TSharedPtr<FExtender> FSmartDialogueEditor::GetToolbarExtender()
 					.SmartDialogueEditor(this)
 					.OnItemSelected_Lambda([this](TSharedPtr<FString> NewSelection)
 					{
-						GetDialogue()->SetAutoBranch(*NewSelection);
+						UEditorDataHelper::SetAutoBranch(this, *NewSelection);
 					})
 					.DefaultText(GetDialogue()->GetAutoBranch())
 				]
@@ -503,7 +503,7 @@ TSharedRef<FTabManager::FLayout> FSmartDialogueEditor::GetDefaultTabContents()
 
 void FSmartDialogueEditor::OnHeroCharacterSelected(TSharedPtr<FString> NewSelection)
 {
-	GetDialogue()->SetCharacter(*NewSelection.Get());
+	UEditorDataHelper::SetCharacter(this, *NewSelection.Get());
 }
 
 void FSmartDialogueEditor::AddNewBranch()
@@ -885,6 +885,8 @@ void FSmartDialogueEditor::PostUndo(bool bSuccess)
 	}
 	if (Transaction->ContainsObject(GetDialogue()))
 	{
+		SetSelectedBranchName(GetSelectedBranchName());
+		
 		if (BranchesWidget)
 		{
 			BranchesWidget->UpdateBranchesList();

@@ -205,7 +205,7 @@ void SDialoguePlayerTab::OnHideBranchOptionsHandler()
 }
 
 
-void SDialoguePlayerTab::OnShowPhraseHandler(const FText& PhraseText, const FString& SpeakerId)
+void SDialoguePlayerTab::OnShowPhraseHandler(const FText& PhraseText, const FString& SpeakerId, const FString& AnimName, const TMap<FString, FString>& CustomParams)
 {
     UE_LOG(LogTemp, Log, TEXT("OnShowPhrase: %s (Speaker: %s)"), *PhraseText.ToString(), *SpeakerId);
 

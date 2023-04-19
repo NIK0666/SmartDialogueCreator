@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
 #include "SmartDialogueData.h"
+#include "Toolkit/SBranchInfoWidget.h"
 #include "EditorDataHelper.generated.h"
 
 class FSmartDialogueEditor;
@@ -57,4 +58,5 @@ public:
     static void AddIfElement(FSmartDialogueEditor* SmartDialogueEditor, const FName& BranchName, const FIf& Element);
     static void UpdateIfElement(FSmartDialogueEditor* SmartDialogueEditor, const FName& BranchName, int32 Index, const FIf& Element);
     static void RemoveIfElement(FSmartDialogueEditor* SmartDialogueEditor, const FName& BranchName, int32 Index);
+	static void UpdateBranchText(FSmartDialogueEditor* Editor, const FName& BranchName, const FText& NewText);
 };

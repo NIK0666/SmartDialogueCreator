@@ -34,14 +34,14 @@ bool UJsonParser::ParseJson(const FString& FilePath, USmartDialogue* DialogueAss
     FString Character;
     if (JsonObject->TryGetStringField("Character", Character))
     {
-        DialogueAsset->SetCharacter(Character);
+        DialogueAsset->Character = Character;
     }
 
     // Parse Autobranch
     FString AutoBranch;
     if (JsonObject->TryGetStringField("Autobranch", AutoBranch))
     {
-        DialogueAsset->SetAutoBranch(AutoBranch);
+        DialogueAsset->AutoBranch = AutoBranch;
     }
     const TArray<TSharedPtr<FJsonValue>>* BranchesArray;
     if (JsonObject->TryGetArrayField("Branches", BranchesArray))
@@ -223,7 +223,7 @@ bool UJsonParser::ParseJson(const FString& FilePath, USmartDialogue* DialogueAss
                 Branch.If.Add(If);
             }
 
-            DialogueAsset->AddNewBranch(Branch);
+            DialogueAsset->Branches.Add(Branch.Name, Branch);
         }
     }
 
@@ -240,8 +240,8 @@ bool UJsonParser::ParseJson(const FString& FilePath, USmartDialogue* DialogueAss
             Variable.Desc = VariableObject->GetStringField("Desc");
             Variable.Key = VariableObject->GetStringField("Key");
             Variable.Value = VariableObject->GetIntegerField("Value");
-
-            DialogueAsset->AddNewVariable(Variable);
+            
+            DialogueAsset->Variables.Add(Variable);
         }
     }
 

@@ -4,11 +4,16 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "SmartDialogueData.h"
+
 #include "DialogueManager.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnShowBranchOptionsDelegate, const TArray<FText>& /*BranchTexts*/, const TArray<int32>& /*BranchIndices*/);
 DECLARE_MULTICAST_DELEGATE(FOnHideBranchOptionsDelegate);
-DECLARE_MULTICAST_DELEGATE_TwoParams(FOnShowPhraseDelegate, const FText& /*PhraseText*/, const FString& /*SpeakerId*/);
+
+using FCustomParamsMap = TMap<FString, FString>;
+DECLARE_MULTICAST_DELEGATE_FourParams(FOnShowPhraseDelegate, const FText& /*PhraseText*/, const FString& /*SpeakerId*/,
+	const FString& /*AnimName*/, const FCustomParamsMap& /*CustomParams*/);
+
 DECLARE_MULTICAST_DELEGATE(FOnCloseDialogueDelegate);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnEventTriggeredDelegate, const FString& /*EventName*/, const FString& /*EventParam*/);
 DECLARE_MULTICAST_DELEGATE_FourParams(FOnVariableChangedDelegate, bool /*bIsPublic*/, const FString& /*VarName*/, int32 /*OldValue*/, int32 /*NewValue*/);
@@ -32,17 +37,23 @@ public:
 	void PerformPostPhraseActions();
 	bool HasValidRemainingPhrases();
 	void SelectBranch(int32 BranchIndex);
+	FInfoProgress GetInfoProgress() const { return DialogueProgress; }
+	void SetInfoProgress(const FInfoProgress& InfoProgress) { DialogueProgress = InfoProgress; }
+
 
 	bool IsDialogueProgressInitialized() { return bDialogueProgressInitialized; }
 
 	// Delegates for handling dialogue events
 	FOnShowBranchOptionsDelegate OnShowBranchOptions;
 	FOnHideBranchOptionsDelegate OnHideBranchOptions;
-	FOnShowPhraseDelegate OnShowPhrase;
+	FOnShowPhraseDelegate OnShowPhrase; 
 	FOnCloseDialogueDelegate OnCloseDialogue;
 	FOnEventTriggeredDelegate OnEventTriggered;
 	FOnVariableChangedDelegate OnVariableChanged;
+
+	
 	bool bNeedDialogueClose = false;
+
 
 private:
 	// Helper methods for dialogue processing

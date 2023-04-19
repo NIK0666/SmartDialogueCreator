@@ -32,17 +32,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SmartDialogue")
 	FString GetAutoBranch() const;
 
-	// Сеттер для AutoBranch
-	UFUNCTION(BlueprintCallable, Category = "SmartDialogue")
-	void SetAutoBranch(const FString& NewAutoBranch);
-
 	// Геттер для Character
 	UFUNCTION(BlueprintCallable, Category = "SmartDialogue")
 	FString GetCharacter() const;
-
-	// Сеттер для AutoBranch
-	UFUNCTION(BlueprintCallable, Category = "SmartDialogue")
-	void SetCharacter(const FString& NewCharacter);
 
 	// Геттер для Variables
 	UFUNCTION(BlueprintPure, Category = "Smart Dial")
@@ -76,20 +68,7 @@ public:
 	FOnHideBranchUpdated OnHideBranchUpdated;
 
 protected:
-	UFUNCTION(BlueprintCallable, Category = "SmartDialogue")
-	void AddNewBranch(FSmartDialogueBranch& NewBranch);
 	
-	UFUNCTION(BlueprintCallable, Category = "SmartDialogue")
-	void AddNewVariable(FVariableData& NewVariable);
-	void RemoveVariableByIndex(int32 Index);
-	void UpdateVariableByIndex(int32 Index, const FVariableData& VariableData);
-	bool RenameBranch(FName OldName, FName NewName);		
-	bool RemoveBranch(FName BranchName);
-	
-	bool RemoveVarOperation(FName BranchName, const int32 Index);
-	bool RemoveIfOperation(FName BranchName, int32 Index);
-	
-	void AddVarOperation(FName BranchName, const FString& VarName, const FString& OperationString, int32 Value);
 	void AddIfOperation(const FName& BranchName, const FString& VarName, const FString& OperationString, int32 Value);
 
 	void AddHideBranchElement(const FName& BranchName, const FString& Value);

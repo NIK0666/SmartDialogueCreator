@@ -43,7 +43,8 @@ void UDialogueManager::StartDialogue(USmartDialogue* DialogueAsset)
 	}
 }
 
-void UDialogueManager::ShowNextPhrase() {
+void UDialogueManager::ShowNextPhrase()
+{
 	if (bNeedDialogueClose)
 	{		
 		OnCloseDialogue.Broadcast();
@@ -77,7 +78,19 @@ void UDialogueManager::ShowNextPhrase() {
 		}
 
 		FSmartDialoguePhrase& CurrentPhrase = CurrentBranch.Phrases[CurrentPhraseIndex];
-		OnShowPhrase.Broadcast(CurrentPhrase.Text, CurrentPhrase.NPC);
+
+		TMap<FString, FString> CustomParams;		
+		if (!CurrentPhrase.CustomParams.IsEmpty()) {
+			for (auto Element : CurrentPhrase.CustomParams)
+			{
+				if (!Element.Value.IsEmpty())
+				{
+					CustomParams.Add(Element.Key, Element.Value);
+				}
+			}			
+		}
+		
+		OnShowPhrase.Broadcast(CurrentPhrase.Text, CurrentPhrase.NPC, CurrentPhrase.Anim, CustomParams);
 		PerformPostPhraseActions();
 		return;
 	}
@@ -95,7 +108,17 @@ void UDialogueManager::ShowNextPhrase() {
         }
 
         FSmartDialoguePhrase& CurrentPhrase = CurrentBranch.Phrases[CurrentPhraseIndex];
-        OnShowPhrase.Broadcast(CurrentPhrase.Text, CurrentPhrase.NPC);
+    	TMap<FString, FString> CustomParams;		
+    	if (!CurrentPhrase.CustomParams.IsEmpty()) {
+    		for (auto Element : CurrentPhrase.CustomParams)
+    		{
+    			if (!Element.Value.IsEmpty())
+    			{
+    				CustomParams.Add(Element.Key, Element.Value);
+    			}
+    		}			
+    	}
+        OnShowPhrase.Broadcast(CurrentPhrase.Text, CurrentPhrase.NPC, CurrentPhrase.Anim, CustomParams);
     	bCanShowOneChoice = false;
     }
     

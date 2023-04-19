@@ -50,7 +50,7 @@ protected:
 
 	void OnShowBranchOptionsHandler(const TArray<FText>& BranchTexts, const TArray<int32>& BranchIndices);
 	void OnHideBranchOptionsHandler();
-	void OnShowPhraseHandler(const FText& PhraseText, const FString& SpeakerId);
+	void OnShowPhraseHandler(const FText& PhraseText, const FString& SpeakerId, const FString& AnimName, const TMap<FString, FString>& CustomParams);
 	void OnCloseDialogueHandler();
 	void OnEventTriggeredHandler(const FString& EventName, const FString& EventParam);
 	void OnVariableChanged(bool bisPublic, const FString& VarName, int OldValue, int NewValue);

@@ -3,7 +3,7 @@
 #include "SDialConfigWidget.h"
 
 #include "Helpers/EditorDataHelper.h"
-#include "SmartDialogueCore/Private/SmartDialogueSettings.h"
+#include "SmartDialogueSettings.h"
 #include "Widgets/Layout/SScrollBox.h"
 #include "Widgets/Text/STextBlock.h"
 #include "EditorStyleSet.h"

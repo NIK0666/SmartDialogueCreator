@@ -61,7 +61,6 @@ private:
 	FDelegateHandle BranchRenamedHandle;
 
 	
-	USmartDialogue* DialoguePtr = nullptr;
 	bool bIsFocused = false;
 	bool bUnderDrag = false;
 	bool bDragged = false;

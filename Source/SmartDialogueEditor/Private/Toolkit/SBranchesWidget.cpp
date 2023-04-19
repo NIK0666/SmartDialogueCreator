@@ -53,19 +53,69 @@ void SBranchesWidget::UpdateBranchesList()
 		return;
 	}
 
-	BranchesInfoWidgets.Empty();
-	USmartDialogue* Dialogue = SmartDialogueEditor->GetDialogue();
-
-	if (Dialogue)
+	TArray<FName> CurrentBranchNames;
+	for (const auto& Widget : BranchesInfoWidgets)
 	{
+		CurrentBranchNames.Add(Widget->GetBranchName());
+	}
+
+	if (const USmartDialogue* Dialogue = SmartDialogueEditor->GetDialogue())
+	{
+		TArray<FName> NewBranchNames;
 		for (const TPair<FName, FSmartDialogueBranch>& Pair : Dialogue->GetBranches())
 		{
-			BranchesInfoWidgets.Add(
-				SNew(SBranchInfoWidget)
-				.BranchName(Pair.Key)
-				.Editor(SmartDialogueEditor)
-			);
+			NewBranchNames.Add(Pair.Key);
+
+			if (!CurrentBranchNames.Contains(Pair.Key))
+			{
+				BranchesInfoWidgets.Add(
+					SNew(SBranchInfoWidget)
+					.BranchName(Pair.Key)
+					.Editor(SmartDialogueEditor)
+				);
+			}
 		}
+
+		// Remove extra widgets
+		for (int32 i = BranchesInfoWidgets.Num() - 1; i >= 0; --i)
+		{
+			if (!NewBranchNames.Contains(BranchesInfoWidgets[i]->GetBranchName()))
+			{
+				BranchesInfoWidgets.RemoveAt(i);
+			}
+		}
+
+		// Reorder widgets according to the new order
+		BranchesInfoWidgets.Sort([Dialogue](const TSharedPtr<SBranchInfoWidget>& A, const TSharedPtr<SBranchInfoWidget>& B)
+		{
+			const auto& Branches = Dialogue->GetBranches();
+			int32 IndexA = INDEX_NONE;
+			int32 IndexB = INDEX_NONE;
+			int32 CurrentIndex = 0;
+
+			for (const auto& Branch : Branches)
+			{
+				if (Branch.Key == A->GetBranchName())
+				{
+					IndexA = CurrentIndex;
+				}
+
+				if (Branch.Key == B->GetBranchName())
+				{
+					IndexB = CurrentIndex;
+				}
+
+				++CurrentIndex;
+
+				// If both indices are found, no need to continue the loop
+				if (IndexA != INDEX_NONE && IndexB != INDEX_NONE)
+				{
+					break;
+				}
+			}
+
+			return IndexA < IndexB;
+		});
 	}
 
 	if (BranchesList.IsValid())
@@ -73,6 +123,7 @@ void SBranchesWidget::UpdateBranchesList()
 		BranchesList->RequestListRefresh();
 	}
 }
+
 
 void SBranchesWidget::RemoveRow(SBranchInfoWidget* BranchInfoWidget)
 {
