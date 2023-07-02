@@ -30,17 +30,21 @@ class SMARTDIALOGUECORE_API UDialogueManager : public UObject
 public:
 	// Methods for initialization and starting the dialogue
 	void InitializeDialogueProgress(USmartDialConfig* InDialConfig);
-	void StartDialogue(USmartDialogue* DialogueAsset);
+	void StartDialogue(USmartDialogue* DialogueAsset, const FString& InBranch = "");
 
 	// Methods to control dialogue playback
+	UFUNCTION(BlueprintCallable)
 	void ShowNextPhrase();
+	
 	void PerformPostPhraseActions();
 	bool HasValidRemainingPhrases();
 	void SelectBranch(int32 BranchIndex);
 	FInfoProgress GetInfoProgress() const { return DialogueProgress; }
 	void SetInfoProgress(const FInfoProgress& InfoProgress) { DialogueProgress = InfoProgress; }
 
-
+	UFUNCTION(BlueprintPure)
+	bool IsActiveDialog();
+	
 	bool IsDialogueProgressInitialized() { return bDialogueProgressInitialized; }
 
 	// Delegates for handling dialogue events
@@ -53,6 +57,7 @@ public:
 
 	
 	bool bNeedDialogueClose = false;
+	bool bIsActiveDialog = false;
 
 
 private:

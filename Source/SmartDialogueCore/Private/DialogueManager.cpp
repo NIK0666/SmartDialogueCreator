@@ -17,7 +17,12 @@ void UDialogueManager::InitializeDialogueProgress(USmartDialConfig* InDialConfig
 	bDialogueProgressInitialized = true;
 }
 
-void UDialogueManager::StartDialogue(USmartDialogue* DialogueAsset)
+bool UDialogueManager::IsActiveDialog()
+{
+	return bIsActiveDialog;
+}
+
+void UDialogueManager::StartDialogue(USmartDialogue* DialogueAsset, const FString& InBranch)
 {
 	// Implement the dialogue starting logic
 	// Steps 1-4 from your algorithm
@@ -26,14 +31,17 @@ void UDialogueManager::StartDialogue(USmartDialogue* DialogueAsset)
 	{
 		UpdateDialogueProgress(DialogueAsset);
 	}
-	
+	bIsActiveDialog = true;
 	bNeedDialogueClose = false;
 	
 	FDialogueProgress& DialogueProg = DialogueProgress.Dials.FindOrAdd(DialogueAsset->GetDialogueId());
 	OnHideBranchOptions.Broadcast();
-	if (!DialogueProg.Auto.IsEmpty())
+
+	const FString AutoBranchStr = InBranch != "" ? InBranch : (!DialogueProg.Auto.IsEmpty() ? DialogueProg.Auto : "");
+
+	if (!AutoBranchStr.IsEmpty())
 	{
-		const FName AutoBranch = FName(*DialogueProg.Auto);
+		const FName AutoBranch = FName(*AutoBranchStr);
 		DialogueProg.Auto = "";
 		PlayBranch(AutoBranch); 
 	}
@@ -49,6 +57,7 @@ void UDialogueManager::ShowNextPhrase()
 	{		
 		OnCloseDialogue.Broadcast();
 		bNeedDialogueClose = false;
+		bIsActiveDialog = false;
 		return;
 	}
 	
